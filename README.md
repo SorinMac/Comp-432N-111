@@ -23,8 +23,8 @@ Steps to Compiling/Running:
 
 4) if you have arguments on command line it will be handled as so
 
-  i.e.
+   i.e.
 
-  Command: java Compiler Hello World
+   Command: java Compiler Hello World
 
-  When this command is ran the Hello is args[0], and World is args[1]. I can then use this fact to do as I please with the arguments from command line.
+   When this command is ran the Hello is args[0], and World is args[1]. I can then use this fact to do as I please with the arguments from command line.
