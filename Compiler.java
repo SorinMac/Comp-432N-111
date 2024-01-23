@@ -1,6 +1,3 @@
-//as in the lab 0 build enviorment there is a txt file that we have to be able to get info from, using the command line
-//these are the classes used to so that i can give output based on what is in the test.txt file
-
 import java.io.File; 
 import java.io.FileNotFoundException;  
 import java.util.Scanner; 
