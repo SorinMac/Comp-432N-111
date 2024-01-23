@@ -10,18 +10,16 @@ args[0], args[1] and so on to get the data.
 
 Steps to Compiling/Running:
 
-1) cd into the src folder in order to have all the file ready to go.
-
-2) run command javac Compiler.java
+1) run command javac Compiler.java
 
    This will compile the Compiler.Java file I have in the src folder and make a class file of the same name that can be ran at
    command line.
 
-3) run command java Compiler
+2) run command java Compiler
 
    This will run the class file of the same name
 
-4) if you have arguments on command line it will be handled as so
+3) if you have arguments on command line it will be handled as so
 
    i.e.
 
