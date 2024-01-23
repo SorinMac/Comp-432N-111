@@ -29,7 +29,7 @@ public class Compiler {
     static List<TokenBuilder> Lexer(String code){
         List<TokenBuilder> Token = new ArrayList<>();
 
-        String check = "\\b(if|else)\\b|[a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[-+*/=(){}]";
+        String check = "\\b(if|else)\\b|[a-z]+|[0-9]+|[+(){}]|[=][ ]";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -45,6 +45,9 @@ public class Compiler {
     //this will find out what the correct discription will be for the particual unknow object
     static String GetDescription(String unknown_item){
         String TokenDisc = "";
+
+        //not get around comments
+        //and does not have quotes ready
 
         if(unknown_item.equals("{")){
             TokenDisc = "Left_Bracket";
@@ -66,13 +69,9 @@ public class Compiler {
             TokenDisc = "InTop";
         }else if(unknown_item.equals("=")){
             TokenDisc = "AssignmentStatement";
-        }else if(unknown_item.matches("\u201C")){
-            TokenDisc = "Left_Quote";
-        }else if(unknown_item.matches("\u201D")){
-            TokenDisc = "Right_Quote";
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
-        }else if(unknown_item.matches("[a-z]")){
+        }else if(unknown_item.matches("[a-z]+")){
             TokenDisc = "CHAR";
         }else if(unknown_item.matches("[0-9]+")){
             TokenDisc = "DIGIT";
@@ -88,7 +87,7 @@ public class Compiler {
 
         try {
             //gets the file ready for reading
-            File commandTXT = new File("test.txt");
+            File commandTXT = new File("test2.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
