@@ -28,7 +28,7 @@ public class Compiler {
     //this will be where the Lexer work happens
     static List<TokenBuilder> Lexer(String code){
         List<TokenBuilder> Token = new ArrayList<>();
-        int Check_Doubel_Quote = 0;
+        int Check_Comment = 0;
 
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
@@ -39,12 +39,14 @@ public class Compiler {
 
         while(tokenFinder.find()){
 
-            if(tokenFinder.group().equals("/")){
-                Check_Doubel_Quote = 1;
+            if(tokenFinder.group().equals("/") || Check_Comment == 1){
+                Check_Comment = 1;
                 continue;
+            }else if(tokenFinder.group().equals("/") && Check_Comment == 1){
+               Check_Comment = 0;
             }else{
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Doubel_Quote);
+                String item_decloration = GetDescription(item);
                 Token.add(new TokenBuilder(item_decloration, item));
             }
         }
@@ -53,12 +55,12 @@ public class Compiler {
     }
 
     //this will find out what the correct discription will be for the particual unknow object
-    static String GetDescription(String unknown_item, int If_Double_Quote){
+    static String GetDescription(String unknown_item){
         String TokenDisc = "";
 
-        //double check the ignore quotes
         //have when in string do it as all single chars (count space only here as well)
         //blocks
+        //line num and place
 
         if(unknown_item.equals("{")){
             TokenDisc = "Left_Bracket";
