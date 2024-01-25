@@ -28,26 +28,37 @@ public class Compiler {
     //this will be where the Lexer work happens
     static List<TokenBuilder> Lexer(String code){
         List<TokenBuilder> Token = new ArrayList<>();
+        int Check_Doubel_Quote = 0;
 
-        String check = "\\b(if|else)\\b|[a-z]+|[0-9]+|[+(){}]|[=][ ]";
+        //this while check for white space have not made somehing to handle it only being in the string
+        //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
+
+        String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
         while(tokenFinder.find()){
-            String item = tokenFinder.group();
-            String item_decloration = GetDescription(item);
-            Token.add(new TokenBuilder(item_decloration, item));
+            if(tokenFinder.group() == String.valueOf('"')){
+                Check_Doubel_Quote = 1;
+                continue;
+            }else{
+                String item = tokenFinder.group();
+                String item_decloration = GetDescription(item, Check_Doubel_Quote);
+                Token.add(new TokenBuilder(item_decloration, item));
+            }
         }
 
         return Token;
     }
 
     //this will find out what the correct discription will be for the particual unknow object
-    static String GetDescription(String unknown_item){
+    static String GetDescription(String unknown_item, int If_Double_Quote){
         String TokenDisc = "";
 
         //not get around comments
         //and does not have quotes ready
+        //have when in string do it as all single chars (count space only here as well)
+        //blocks
 
         if(unknown_item.equals("{")){
             TokenDisc = "Left_Bracket";
@@ -63,12 +74,14 @@ public class Compiler {
             TokenDisc = "While_Statment";
         }else if(unknown_item.equals("if")){
             TokenDisc = "If_Statment";
-        }else if(unknown_item.equals(" ")){
+        }else if(unknown_item.equals(" ") && If_Double_Quote == 1){
             TokenDisc = "SPACE";
         }else if(unknown_item.equals("+")){
             TokenDisc = "InTop";
         }else if(unknown_item.equals("=")){
             TokenDisc = "AssignmentStatement";
+        }else if(unknown_item == String.valueOf('"')){
+            TokenDisc = "QUOTE";
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
@@ -83,16 +96,18 @@ public class Compiler {
 
     public static void main(String[] args){
         //sets the value up
-        String line = "";
+        List<String> code = new ArrayList<>();
+        List<TokenBuilder> Tokens_List = new ArrayList<>();
+        List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
 
         try {
             //gets the file ready for reading
-            File commandTXT = new File("test2.txt");
+            File commandTXT = new File("test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
             while (reader.hasNextLine()) {
-                line = line + reader.nextLine();
+                code.add(reader.nextLine());
             }
 
             reader.close();
@@ -105,13 +120,23 @@ public class Compiler {
 
         //going to store all the Tokens into a arraylist so that i do not have to worry about the amount i need alocated to the array
         //Lexer will also be the function in which i will do the Lexer's work
-        List<TokenBuilder> Tokens = Lexer(line);
+        for(int i = 0; i < code.size(); i++){
+            Temp_Token_Holder = Lexer(code.get(i));
+
+            if(Temp_Token_Holder.size() > 0){
+                for(int k  = 0; k < Temp_Token_Holder.size(); k++){
+                    Tokens_List.add(Temp_Token_Holder.get(k));
+                }
+            }
+        }
 
         //simple way to print out all the tokens in the array list
-        for(TokenBuilder Token: Tokens){
+        for(TokenBuilder Token: Tokens_List){
             System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at: ");
         }
 
         System.out.println("Done");
+
+        System.exit(0);
     }
 }
