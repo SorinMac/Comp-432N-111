@@ -33,12 +33,14 @@ public class Compiler {
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
 
-        String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+";
+        String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|/\\\\*|\\\"";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
         while(tokenFinder.find()){
-            if(tokenFinder.group() == String.valueOf('"')){
+            System.out.println(tokenFinder.group());
+
+            if(tokenFinder.group().equals("/")){
                 Check_Doubel_Quote = 1;
                 continue;
             }else{
@@ -55,8 +57,7 @@ public class Compiler {
     static String GetDescription(String unknown_item, int If_Double_Quote){
         String TokenDisc = "";
 
-        //not get around comments
-        //and does not have quotes ready
+        //double check the ignore quotes
         //have when in string do it as all single chars (count space only here as well)
         //blocks
 
@@ -74,13 +75,13 @@ public class Compiler {
             TokenDisc = "While_Statment";
         }else if(unknown_item.equals("if")){
             TokenDisc = "If_Statment";
-        }else if(unknown_item.equals(" ") && If_Double_Quote == 1){
+        }else if(unknown_item.matches("\s")){
             TokenDisc = "SPACE";
         }else if(unknown_item.equals("+")){
             TokenDisc = "InTop";
         }else if(unknown_item.equals("=")){
             TokenDisc = "AssignmentStatement";
-        }else if(unknown_item == String.valueOf('"')){
+        }else if(unknown_item.matches("\"")){
             TokenDisc = "QUOTE";
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
