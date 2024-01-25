@@ -38,7 +38,6 @@ public class Compiler {
         Matcher tokenFinder = tokenCheck.matcher(code);
 
         while(tokenFinder.find()){
-            System.out.println(tokenFinder.group());
 
             if(tokenFinder.group().equals("/")){
                 Check_Doubel_Quote = 1;
