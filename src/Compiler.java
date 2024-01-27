@@ -104,7 +104,7 @@ public class Compiler {
 
         try {
             //gets the file ready for reading
-            File commandTXT = new File("./test.txt");
+            File commandTXT = new File("test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
