@@ -10,6 +10,8 @@ args[0], args[1] and so on to get the data.
 
 Steps to Compiling/Running:
 
+CD INTO SRC FILE
+
 1) run command javac Compiler.java
 
    This will compile the Compiler.Java file I have in the src folder and make a class file of the same name that can be ran at

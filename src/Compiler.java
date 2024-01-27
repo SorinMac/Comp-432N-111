@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.CheckedInputStream;
 
 
 public class Compiler {
@@ -25,26 +26,45 @@ public class Compiler {
 
     }
 
+    static List<TokenBuilder> Token = new ArrayList<>();
+
     //this will be where the Lexer work happens
     static List<TokenBuilder> Lexer(String code){
-        List<TokenBuilder> Token = new ArrayList<>();
         int Check_Comment = 0;
+        int Check_Quote = 0;
 
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
 
-        String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|/\\\\*|\\\"";
+        String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
         while(tokenFinder.find()){
+
+            if(tokenFinder.group().equals("\"") || Check_Quote == 1){
+                Check_Quote = 1;
+            }else if(tokenFinder.group().equals("\"") && Check_Quote == 1){
+                Check_Quote = 0;
+            }
+
 
             if(tokenFinder.group().equals("/") || Check_Comment == 1){
                 Check_Comment = 1;
                 continue;
             }else if(tokenFinder.group().equals("/") && Check_Comment == 1){
                Check_Comment = 0;
-            }else{
+            }else if(tokenFinder.group().matches("int|string|boolean")){
+                String item = tokenFinder.group();
+                String item_decloration = GetDescription(item);
+                Token.add(new TokenBuilder(item_decloration, item));
+            }else if(tokenFinder.group().matches("[a-z]+")){
+                GetDescription(tokenFinder.group());
+                continue;
+            }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
+                GetDescription(tokenFinder.group());
+                continue;
+            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|[=]+|\\\"")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item);
                 Token.add(new TokenBuilder(item_decloration, item));
@@ -58,7 +78,8 @@ public class Compiler {
     static String GetDescription(String unknown_item){
         String TokenDisc = "";
 
-        //have when in string do it as all single chars (count space only here as well)
+
+        //have when in string do it as all single chars (count space only here as well) [a-z]?
         //blocks
         //line num and place
 
@@ -77,7 +98,9 @@ public class Compiler {
         }else if(unknown_item.equals("if")){
             TokenDisc = "If_Statment";
         }else if(unknown_item.matches("\s")){
-            TokenDisc = "SPACE";
+            String item = unknown_item;
+            String item_decloration = "SPACE";
+            Token.add(new TokenBuilder(item_decloration, item));
         }else if(unknown_item.equals("+")){
             TokenDisc = "InTop";
         }else if(unknown_item.equals("=")){
@@ -87,7 +110,14 @@ public class Compiler {
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
-            TokenDisc = "CHAR";
+            String[] char_Holder = unknown_item.split("");
+
+            for(int i = 0; i < char_Holder.length; i++){
+                String item = char_Holder[i];
+                String item_decloration = "CHAR";
+                Token.add(new TokenBuilder(item_decloration, item));
+            }
+
         }else if(unknown_item.matches("[0-9]+")){
             TokenDisc = "DIGIT";
         }
@@ -136,8 +166,6 @@ public class Compiler {
         for(TokenBuilder Token: Tokens_List){
             System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at: ");
         }
-
-        System.out.println("Done");
 
         System.exit(0);
     }
