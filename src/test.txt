@@ -1,2 +1,2 @@
 /* Hello */
-string a == "hello world"
+string a != False

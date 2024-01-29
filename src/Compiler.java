@@ -1,3 +1,4 @@
+
 import java.io.File; 
 import java.io.FileNotFoundException;  
 import java.util.Scanner; 
@@ -36,7 +37,7 @@ public class Compiler {
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
         //block code
-        String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|/\\\\*|\\\"|\\s";
+        String check = "\\b(if)\\b|string|boolean|int|!=|==|=|True|False|[a-z]+|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -64,7 +65,7 @@ public class Compiler {
             }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
                 GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
-            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|[=]+|\\\"|==||!=")){
+            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
@@ -84,13 +85,13 @@ public class Compiler {
         //change {} from left and right bracket to start and end block
 
         if(unknown_item.equals("{")){
-            TokenDisc = "Left_Bracket";
+            TokenDisc = "Begin_Block";
         }else if(unknown_item.equals("}")){
-            TokenDisc = "Right_Bracket";
+            TokenDisc = "End_Block";
         }else if(unknown_item.equals("(")){
-            TokenDisc = "Left_Paran";
+            TokenDisc = "Open_Expression";
         }else if(unknown_item.equals(")")){
-            TokenDisc = "Right_Paran";
+            TokenDisc = "Close_Expression";
         }else if(unknown_item.equals("print")){
             TokenDisc = "Print_Statment";
         }else if(unknown_item.equals("while")){
@@ -101,6 +102,10 @@ public class Compiler {
             TokenDisc = "Equal";
         }else if(unknown_item.equals("!=")){
             TokenDisc = "Not_Equal";
+        }else if(unknown_item.equals("True")){
+            TokenDisc = "Boolean";
+        }else if(unknown_item.equals("False")){
+            TokenDisc = "Boolean";
         }else if(unknown_item.matches("\s")){
             String item = unknown_item;
             String item_decloration = "SPACE";
@@ -144,7 +149,7 @@ public class Compiler {
 
         try {
             //gets the file ready for reading
-            File commandTXT = new File("test.txt");
+            File commandTXT = new File("src/test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -169,6 +174,8 @@ public class Compiler {
                 for(int k  = 0; k < Temp_Token_Holder.size(); k++){
                     Tokens_List.add(Temp_Token_Holder.get(k));
                 }
+
+                Temp_Token_Holder.clear();
             }
         }
 
