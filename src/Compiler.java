@@ -37,7 +37,7 @@ public class Compiler {
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
         //block code
-        String check = "\\b(if)\\b|string|boolean|int|!=|==|=|True|False|[a-z]+|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        String check = "\\b(if)\\b|string|boolean|int|!=|==|=|True|False|[$]|[a-z]+|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -65,7 +65,7 @@ public class Compiler {
             }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
                 GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
-            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False")){
+            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
@@ -82,7 +82,6 @@ public class Compiler {
         //blocks
         //line num and place
         //debugg mode and non debugg mode
-        //change {} from left and right bracket to start and end block
 
         if(unknown_item.equals("{")){
             TokenDisc = "Begin_Block";
@@ -106,6 +105,8 @@ public class Compiler {
             TokenDisc = "Boolean";
         }else if(unknown_item.equals("False")){
             TokenDisc = "Boolean";
+        }else if(unknown_item.equals("$")){
+            TokenDisc = "END_OF_PROGRAM";
         }else if(unknown_item.matches("\s")){
             String item = unknown_item;
             String item_decloration = "SPACE";
@@ -182,6 +183,10 @@ public class Compiler {
         //simple way to print out all the tokens in the array list
         for(TokenBuilder Token: Tokens_List){
             System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at: ");
+
+            if(Token.unknown_item.equals("$")){
+                System.out.println("End of Program :)" + "\n");
+            }
         }
 
         System.exit(0);
