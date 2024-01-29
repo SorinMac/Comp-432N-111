@@ -35,7 +35,7 @@ public class Compiler {
 
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
-
+        //block code
         String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
