@@ -56,17 +56,17 @@ public class Compiler {
                Check_Comment = 0;
             }else if(tokenFinder.group().matches("int|string|boolean")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item);
+                String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
             }else if(tokenFinder.group().matches("[a-z]+")){
-                GetDescription(tokenFinder.group());
+                GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
             }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
-                GetDescription(tokenFinder.group());
+                GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
-            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|[=]+|\\\"")){
+            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|[=]+|\\\"|==||!=")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item);
+                String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
             }
         }
@@ -75,13 +75,13 @@ public class Compiler {
     }
 
     //this will find out what the correct discription will be for the particual unknow object
-    static String GetDescription(String unknown_item){
+    static String GetDescription(String unknown_item, int Quote){
         String TokenDisc = "";
 
-
-        //have when in string do it as all single chars (count space only here as well) [a-z]?
         //blocks
         //line num and place
+        //debugg mode and non debugg mode
+        //change {} from left and right bracket to start and end block
 
         if(unknown_item.equals("{")){
             TokenDisc = "Left_Bracket";
@@ -97,6 +97,10 @@ public class Compiler {
             TokenDisc = "While_Statment";
         }else if(unknown_item.equals("if")){
             TokenDisc = "If_Statment";
+        }else if(unknown_item.equals("==")){
+            TokenDisc = "Equal";
+        }else if(unknown_item.equals("!=")){
+            TokenDisc = "Not_Equal";
         }else if(unknown_item.matches("\s")){
             String item = unknown_item;
             String item_decloration = "SPACE";
@@ -110,11 +114,17 @@ public class Compiler {
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
-            String[] char_Holder = unknown_item.split("");
+            if(Quote == 1){
+                String[] char_Holder = unknown_item.split("");
 
-            for(int i = 0; i < char_Holder.length; i++){
-                String item = char_Holder[i];
-                String item_decloration = "CHAR";
+                for(int i = 0; i < char_Holder.length; i++){
+                    String item = char_Holder[i];
+                    String item_decloration = "CHAR";
+                    Token.add(new TokenBuilder(item_decloration, item));
+                }
+            }else{
+                String item = unknown_item;
+                String item_decloration = "ID";
                 Token.add(new TokenBuilder(item_decloration, item));
             }
 
