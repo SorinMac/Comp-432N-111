@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.CheckedInputStream;
 
 
 public class Compiler {
@@ -37,7 +36,7 @@ public class Compiler {
         //this while check for white space have not made somehing to handle it only being in the string
         //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
         //block code
-        String check = "\\b(if)\\b|string|boolean|int|!=|==|=|True|False|[$]|[a-z]+|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        String check = "if|string|boolean|int|while|!=|==|=|True|False|[$]|[a-z]+|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -59,13 +58,25 @@ public class Compiler {
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
+            }else if(tokenFinder.group().matches("if")){
+                String item = tokenFinder.group();
+                String item_decloration = GetDescription(item, Check_Quote);
+                Token.add(new TokenBuilder(item_decloration, item));
+            }else if(tokenFinder.group().matches("while")){
+                String item = tokenFinder.group();
+                String item_decloration = GetDescription(item, Check_Quote);
+                Token.add(new TokenBuilder(item_decloration, item));
+            }else if(tokenFinder.group().matches("print")){
+                String item = tokenFinder.group();
+                String item_decloration = GetDescription(item, Check_Quote);
+                Token.add(new TokenBuilder(item_decloration, item));
             }else if(tokenFinder.group().matches("[a-z]+")){
                 GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
             }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
                 GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
-            }else if(tokenFinder.group().matches("\\b(if)\\b|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
+            }else if(tokenFinder.group().matches("|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
@@ -79,7 +90,7 @@ public class Compiler {
     static String GetDescription(String unknown_item, int Quote){
         String TokenDisc = "";
 
-        //blocks
+        //how handles comments cancels out the last stuff
         //line num and place
         //debugg mode and non debugg mode
 
