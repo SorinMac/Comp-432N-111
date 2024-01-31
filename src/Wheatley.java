@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Compiler {
+public class Wheatley {
 
     //class for the tokens
     static class TokenBuilder{
