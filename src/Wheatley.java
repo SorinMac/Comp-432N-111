@@ -29,7 +29,7 @@ public class Wheatley {
     static List<TokenBuilder> Token = new ArrayList<>();
 
     //this will be where the Lexer work happens
-    static List<TokenBuilder> Lexer(String code){
+    static List<TokenBuilder> Lexer(String code){   
         int Check_Comment = 0;
         int Check_Quote = 0;
 
