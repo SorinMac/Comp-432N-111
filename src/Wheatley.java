@@ -74,7 +74,7 @@ public class Wheatley {
             }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
                 GetDescription(tokenFinder.group(), Check_Quote);
                 continue;
-            }else if(tokenFinder.group().matches("|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
+            }else if(tokenFinder.group().matches("int|string|boolean|[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote);
                 Token.add(new TokenBuilder(item_decloration, item));
@@ -137,6 +137,7 @@ public class Wheatley {
                     String item_decloration = "CHAR";
                     Token.add(new TokenBuilder(item_decloration, item));
                 }
+                
             }else{
                 String item = unknown_item;
                 String item_decloration = "ID";
