@@ -177,6 +177,9 @@ public class Wheatley {
         List<TokenBuilder> Tokens_List = new ArrayList<>();
         List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
 
+        //have the lexer output as a option for a debugg mode
+        int Lexer_Output_Boolean = 1;
+
         try {
             //gets the file ready for reading
             File commandTXT = new File("src/test.txt");
@@ -214,12 +217,16 @@ public class Wheatley {
         }
 
         //simple way to print out all the tokens in the array list
-        for(TokenBuilder Token: Tokens_List){
-            System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at: ");
+        if(Lexer_Output_Boolean == 1){
+            for(TokenBuilder Token: Tokens_List){
+                System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at: ");
 
-            if(Token.unknown_item.equals("$")){
-                System.out.println("End of Program :)" + "\n");
+                if(Token.unknown_item.equals("$")){
+                    System.out.println("End of Current Program :)" + "\n");
+                }
             }
+        }else{
+            System.out.println("Done :)");
         }
 
         System.exit(0);
