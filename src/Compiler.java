@@ -33,27 +33,25 @@ public class Compiler {
         int Check_Comment = 0;
         int Check_Quote = 0;
 
-        //this while check for white space have not made somehing to handle it only being in the string
-        //String check = "\\b(if)\\b|[a-z]+|[0-9]+|[+(){}]|[=]+|\\s|";
         //block code
-        String check = "if|string|boolean|int|while|!=|==|=|True|False|[$]|[a-z]+|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        String check = "if|string|boolean|int|[a-z]+|while|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
         while(tokenFinder.find()){
 
-            if(tokenFinder.group().equals("\"") || Check_Quote == 1){
-                Check_Quote = 1;
-            }else if(tokenFinder.group().equals("\"") && Check_Quote == 1){
-                Check_Quote = 0;
+            //System.out.println(tokenFinder.group());
+
+            if (tokenFinder.group().equals("\"")) {
+                Check_Quote = (Check_Quote == 0) ? 1 : 0;
             }
 
 
-            if(tokenFinder.group().equals("/") || Check_Comment == 1){
-                Check_Comment = 1;
+            if(tokenFinder.group().equals("/") && Check_Comment == 1){
+                Check_Comment = 0;
                 continue;
-            }else if(tokenFinder.group().equals("/") && Check_Comment == 1){
-               Check_Comment = 0;
+            }else if(tokenFinder.group().equals("/") || Check_Comment == 1){
+               Check_Comment = 1;
             }else if(tokenFinder.group().matches("int|string|boolean")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote);
@@ -90,7 +88,7 @@ public class Compiler {
     static String GetDescription(String unknown_item, int Quote){
         String TokenDisc = "";
 
-        //how handles comments cancels out the last stuff
+        //handle second thing
         //line num and place
         //debugg mode and non debugg mode
 
