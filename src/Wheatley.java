@@ -34,11 +34,13 @@ public class Wheatley {
         int Check_Quote = 0;
 
         //block code
-        //while do it all correct
-        //String check = "if|string|boolean|int|[a-z]|while|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        //original one
+        //String check = "if|string|boolean|int|[a-z]+|while|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        //i think it is all correct double check all the toekns are there or not
+        //comment it all out
 
         
-        String check = "if|string|boolean|int|[a-z]+|while|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        String check = "if|string|boolean|int|while|print|[a-z]|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
