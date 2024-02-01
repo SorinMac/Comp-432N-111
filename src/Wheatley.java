@@ -17,11 +17,13 @@ public class Wheatley {
         //will make it easier to assign the description when i need to do that 
         String description;
         String unknown_item;
+        int line_num;
 
         //simple constructor for building the tokens out when i need that to be done
-        TokenBuilder(String description, String unknown_item){
+        TokenBuilder(String description, String unknown_item, int num){
             this.description = description;
             this.unknown_item = unknown_item;
+            this.line_num = num;
         }
 
     }
@@ -30,16 +32,12 @@ public class Wheatley {
     static List<TokenBuilder> Token = new ArrayList<>();
 
     //this will be where the Lexer work happens
-    static List<TokenBuilder> Lexer(String code){   
+    static List<TokenBuilder> Lexer(String code, int line_num){   
         int Check_Comment = 0;
         int Check_Quote = 0;
 
         //block code
-        //line num and place
-        //debugg mode and non debugg mode
-        //original one
-        //String check = "if|string|boolean|int|[a-z]+|while|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
-        //i think it is all correct double check all the toekns are there or not
+        //place
 
         //this is my java regualar expression tokenization string
         String check = "if|string|boolean|int|while|print|[a-z]|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
@@ -65,36 +63,36 @@ public class Wheatley {
             //logic to handle types
             }else if(tokenFinder.group().matches("int|string|boolean")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Quote);
-                Token.add(new TokenBuilder(item_decloration, item));
+                String item_decloration = GetDescription(item, Check_Quote, line_num);
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             //logic for if's
             }else if(tokenFinder.group().matches("if")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Quote);
-                Token.add(new TokenBuilder(item_decloration, item));
+                String item_decloration = GetDescription(item, Check_Quote, line_num);
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             //logic for while
             }else if(tokenFinder.group().matches("while")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Quote);
-                Token.add(new TokenBuilder(item_decloration, item));
+                String item_decloration = GetDescription(item, Check_Quote, line_num);
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             //and logic for print stuff
             }else if(tokenFinder.group().matches("print")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Quote);
-                Token.add(new TokenBuilder(item_decloration, item));
+                String item_decloration = GetDescription(item, Check_Quote, line_num);
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             //this is seperate so that when i go to the .mathces for a-z i can check if i am in quotes or not and do stuff apporoeratly
             }else if(tokenFinder.group().matches("[a-z]+")){
-                GetDescription(tokenFinder.group(), Check_Quote);
+                GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for spaces
             }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
-                GetDescription(tokenFinder.group(), Check_Quote);
+                GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for everything else
             }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Quote);
-                Token.add(new TokenBuilder(item_decloration, item));
+                String item_decloration = GetDescription(item, Check_Quote, line_num);
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             }
         }
 
@@ -102,7 +100,7 @@ public class Wheatley {
     }
 
     //this will find out what the correct discription will be for the particual unknow object
-    static String GetDescription(String unknown_item, int Quote){
+    static String GetDescription(String unknown_item, int Quote, int line_num){
         String TokenDisc = "";
 
         //lots of logic to handle what the discription of the token should be 
@@ -134,7 +132,7 @@ public class Wheatley {
         }else if(unknown_item.matches("\s")){
             String item = unknown_item;
             String item_decloration = "SPACE";
-            Token.add(new TokenBuilder(item_decloration, item));
+            Token.add(new TokenBuilder(item_decloration, item, line_num+1));
         }else if(unknown_item.equals("+")){
             TokenDisc = "InTop";
         }else if(unknown_item.equals("=")){
@@ -153,14 +151,14 @@ public class Wheatley {
                 for(int i = 0; i < char_Holder.length; i++){
                     String item = char_Holder[i];
                     String item_decloration = "CHAR";
-                    Token.add(new TokenBuilder(item_decloration, item));
+                    Token.add(new TokenBuilder(item_decloration, item, line_num+1));
                 }
             
             //if not then its an ID
             }else{
                 String item = unknown_item;
                 String item_decloration = "ID";
-                Token.add(new TokenBuilder(item_decloration, item));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             }
 
         }else if(unknown_item.matches("[0-9]+")){
@@ -176,12 +174,15 @@ public class Wheatley {
         List<String> code = new ArrayList<>();
         List<TokenBuilder> Tokens_List = new ArrayList<>();
         List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
+        int Error_EOP_Boolean = 0;
 
         //have the lexer output as a option for a debugg mode
         int Lexer_Output_Boolean = 1;
 
         try {
             //gets the file ready for reading
+            //args[0] for when you need to take in a argurment from the command line
+            // "src/test.txt" when you want to use the break points
             File commandTXT = new File("src/test.txt");
             Scanner reader = new Scanner(commandTXT);
 
@@ -203,7 +204,7 @@ public class Wheatley {
         for(int i = 0; i < code.size(); i++){
             //temp holder
             //since we go in line by line (as best test case) then i need a temp holder to add to the total holder
-            Temp_Token_Holder = Lexer(code.get(i));
+            Temp_Token_Holder = Lexer(code.get(i), i);
 
             if(Temp_Token_Holder.size() > 0){
                 for(int k  = 0; k < Temp_Token_Holder.size(); k++){
@@ -219,12 +220,16 @@ public class Wheatley {
         //simple way to print out all the tokens in the array list
         if(Lexer_Output_Boolean == 1){
             for(TokenBuilder Token: Tokens_List){
-                System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at: ");
+                System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at line " + Token.line_num);
 
                 if(Token.unknown_item.equals("$")){
+                    Error_EOP_Boolean = 1;
                     System.out.println("End of Current Program :)" + "\n");
+                }else{
+                    Error_EOP_Boolean = 0;
                 }
             }
+
         }else{
             System.out.println("Done :)");
         }

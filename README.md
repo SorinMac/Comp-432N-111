@@ -10,12 +10,16 @@ args[0], args[1] and so on to get the data.
 
 Steps to Compiling/Running:
 
-1) run command javac src/Wheatley.java
+Wheatley is the Compiler
+
+CD src 
+
+1) run command javac Wheatley.java
 
    This will compile the Compiler.Java file I have in the src folder and make a class file of the same name that can be ran at
    command line.
 
-2) run command java -cp src Wheatley
+2) run command java Wheatley (argument for text file)
 
    This will run the class file of the same name
 
@@ -23,6 +27,6 @@ Steps to Compiling/Running:
 
    i.e.
 
-   Command: java Compiler Hello World
+   Command: java Wheatley Hello World
 
    When this command is ran the Hello is args[0], and World is args[1]. I can then use this fact to do as I please with the arguments from command line.
