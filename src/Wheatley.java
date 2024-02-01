@@ -174,7 +174,6 @@ public class Wheatley {
         List<String> code = new ArrayList<>();
         List<TokenBuilder> Tokens_List = new ArrayList<>();
         List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
-        int Error_EOP_Boolean = 0;
 
         //have the lexer output as a option for a debugg mode
         int Lexer_Output_Boolean = 1;
@@ -204,6 +203,16 @@ public class Wheatley {
         for(int i = 0; i < code.size(); i++){
             //temp holder
             //since we go in line by line (as best test case) then i need a temp holder to add to the total holder
+            if(code.get(i).isEmpty() || i == code.size()-1){
+                if(i == code.size()-1){
+                    if(!code.get(i).contains("$")){
+                        System.out.println("EOP Error: Your program does not end with $ at line " + (i+1) + "\n");
+                    }
+                }else if(!code.get(i-1).contains("$")){
+                    System.out.println("EOP Error: Your program does not end with $ at line " + (i+1));
+                }
+            }
+
             Temp_Token_Holder = Lexer(code.get(i), i);
 
             if(Temp_Token_Holder.size() > 0){
@@ -223,15 +232,12 @@ public class Wheatley {
                 System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at line " + Token.line_num);
 
                 if(Token.unknown_item.equals("$")){
-                    Error_EOP_Boolean = 1;
                     System.out.println("End of Current Program :)" + "\n");
-                }else{
-                    Error_EOP_Boolean = 0;
                 }
             }
 
         }else{
-            System.out.println("Done :)");
+            System.out.println("Done Compiling :)");
         }
 
         System.exit(0);
