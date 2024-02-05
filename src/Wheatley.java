@@ -255,9 +255,10 @@ public class Wheatley {
 
             //checking for the error tokens and then removing them 
             //makes the for loop get out of order
-            for(TokenBuilder Token: Tokens_List){
+            for(int i = 0; i < Tokens_List.size(); i++){
+                TokenBuilder Token = Tokens_List.get(i);
                 if(Token.description.contains("Error")){
-                    //Tokens_List.remove(Token);
+                    Tokens_List.remove(Token);
                 }
             }
 
