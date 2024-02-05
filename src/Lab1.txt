@@ -1,0 +1,123 @@
+Dragon:
+
+    1.1.4:
+
+        A compiler that translates a high-level language into another
+        high-level language is called a source-to-source translator. What advantages are
+        there to using C as a target language for a compiler? 
+
+        From theory class you explained that C compilers are so well optomizewd that people would right there code in c, and 
+        then when they found any bottle necks in the code they would programm that in assembly so that it would be the fastest possible.
+        So for one thing C has fast compiling of code. C also has direct hardware access, which you had also brought up in Theory as a
+        security issue but in this case it might be beneficial.
+
+    1.6.1:
+
+        For the block-structured C code of Fig. 1.13(a), indicate the
+        values assigned to w, x, y, and z.
+
+        w = 13
+        x = 11
+        y = 13
+        z = 11
+
+Crafting a Compiler
+
+    1.11:
+
+        The Measure Of Software Similarity (MOSS) [SWA03] tool can detect
+        similarity of programs written in a variety of modern programming languages. Its main application has been in detecting similarity of programs
+        submitted in computer science classes, where such similarity may indicate plagiarism (students, beware!). In theory, detecting equivalence of
+        two programs is undecidable, but MOSS does a very good job of finding
+        similarity in spite of that limitation.
+        Investigate the techniques MOSS uses to find similarity. How does MOSS
+        differ from other approaches for detecting possible plagiarism?
+
+        MOSS analys the structeral patterns of the code rather that variables/commments and thing like that. This allows for MOSS
+        to be able to detect plagiarism even if the names and or comments have been changed from the original copy paste.
+        In all MOSS ignores changes to whitespace, capitialization, or text in comments.
+
+    3.1
+
+        Assume the following text is presented to a C scanner:
+
+        main(){
+            const float payment = 384.00;
+            float bal;
+            int month = 0;
+            bal=15000;
+            while (bal>0){
+                printf("Month: %2d Balance: %10.2f\n", month, bal);
+                bal=bal-payment+0.015*bal;
+                month=month+1;
+            }
+        }
+
+        What token sequence is produced? For which tokens must extra information be returned in addition to the token code?
+
+        This will print out the statment with the values until the balance is under 0. To be more specific it will print out the statment
+        then do the math of taking the valance subtracting the payment and adding 1.5% of the current balance to the payment. Then adds one
+        to month in order to keep track of how long this has gone. This is showing how many time you can pay the payment with the current balance
+        if the balance does not have anything added to it.
+
+        Month:  0 Balance:   15000.00
+        Month:  1 Balance:   14841.00
+        Month:  2 Balance:   14679.62
+        Month:  3 Balance:   14515.81
+        Month:  4 Balance:   14349.55
+        Month:  5 Balance:   14180.79
+        Month:  6 Balance:   14009.50
+        Month:  7 Balance:   13835.64
+        Month:  8 Balance:   13659.18
+        Month:  9 Balance:   13480.07
+        Month: 10 Balance:   13298.27
+        Month: 11 Balance:   13113.74
+        Month: 12 Balance:   12926.45
+        Month: 13 Balance:   12736.34
+        Month: 14 Balance:   12543.39
+        Month: 15 Balance:   12347.54
+        Month: 16 Balance:   12148.75
+        Month: 17 Balance:   11946.98
+        Month: 18 Balance:   11742.19
+        Month: 19 Balance:   11534.32
+        Month: 20 Balance:   11323.34
+        Month: 21 Balance:   11109.19
+        Month: 22 Balance:   10891.82
+        Month: 23 Balance:   10671.20
+        Month: 24 Balance:   10447.27
+        Month: 25 Balance:   10219.98
+        Month: 26 Balance:    9989.28
+        Month: 27 Balance:    9755.12
+        Month: 28 Balance:    9517.44
+        Month: 29 Balance:    9276.21
+        Month: 30 Balance:    9031.35
+        Month: 31 Balance:    8782.82
+        Month: 32 Balance:    8530.56
+        Month: 33 Balance:    8274.52
+        Month: 34 Balance:    8014.64
+        Month: 35 Balance:    7750.86
+        Month: 36 Balance:    7483.12
+        Month: 37 Balance:    7211.37
+        Month: 38 Balance:    6935.54
+        Month: 39 Balance:    6655.57
+        Month: 40 Balance:    6371.40
+        Month: 41 Balance:    6082.98
+        Month: 42 Balance:    5790.22
+        Month: 43 Balance:    5493.07
+        Month: 44 Balance:    5191.47
+        Month: 45 Balance:    4885.34
+        Month: 46 Balance:    4574.62
+        Month: 47 Balance:    4259.24
+        Month: 48 Balance:    3939.13
+        Month: 49 Balance:    3614.22
+        Month: 50 Balance:    3284.43
+        Month: 51 Balance:    2949.70
+        Month: 52 Balance:    2609.94
+        Month: 53 Balance:    2265.09
+        Month: 54 Balance:    1915.07
+        Month: 55 Balance:    1559.79
+        Month: 56 Balance:    1199.19
+        Month: 57 Balance:     833.18
+        Month: 58 Balance:     461.68
+        Month: 59 Balance:      84.60
+
