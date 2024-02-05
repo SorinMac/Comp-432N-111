@@ -40,7 +40,7 @@ public class Wheatley {
         //place
 
         //this is my java regualar expression tokenization string
-        String check = "if|string|boolean|int|while|print|[a-z]|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s";
+        String check = "if|string|boolean|int|while|print|[a-z]|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s|.";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -89,10 +89,9 @@ public class Wheatley {
                 GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for everything else
-            }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|")){
+            }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|.")){
                 String item = tokenFinder.group();
-                String item_decloration = GetDescription(item, Check_Quote, line_num);
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                GetDescription(item, Check_Quote, line_num);
             }
         }
 
@@ -107,10 +106,13 @@ public class Wheatley {
         //for the tokens that where found
         if(unknown_item.equals("{")){
             TokenDisc = "Begin_Block";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("}")){
             TokenDisc = "End_Block";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("(")){
             TokenDisc = "Open_Expression";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals(")")){
             TokenDisc = "Close_Expression";
         }else if(unknown_item.equals("print")){
@@ -121,24 +123,32 @@ public class Wheatley {
             TokenDisc = "If_Statment";
         }else if(unknown_item.equals("==")){
             TokenDisc = "Equal";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("!=")){
             TokenDisc = "Not_Equal";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("True")){
             TokenDisc = "Boolean";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("False")){
             TokenDisc = "Boolean";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("$")){
             TokenDisc = "END_OF_PROGRAM";
-        }else if(unknown_item.matches("\s")){
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+        }else if(unknown_item.matches("\s") && Quote == 1){
             String item = unknown_item;
             String item_decloration = "SPACE";
             Token.add(new TokenBuilder(item_decloration, item, line_num+1));
         }else if(unknown_item.equals("+")){
             TokenDisc = "InTop";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.equals("=")){
             TokenDisc = "AssignmentStatement";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.matches("\"")){
             TokenDisc = "QUOTE";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
@@ -163,6 +173,16 @@ public class Wheatley {
 
         }else if(unknown_item.matches("[0-9]+")){
             TokenDisc = "DIGIT";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+        }else{
+            if(unknown_item.matches("\s")){
+                
+            }else{
+                String item = unknown_item;
+                String item_decloration = "Error: non recognized symbol ";
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+
+            }
         }
 
         return TokenDisc;
@@ -228,9 +248,21 @@ public class Wheatley {
 
         //simple way to print out all the tokens in the array list
         if(Lexer_Output_Boolean == 1){
+            //output
             for(TokenBuilder Token: Tokens_List){
                 System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at line " + Token.line_num);
+            }
 
+            //checking for the error tokens and then removing them 
+            //makes the for loop get out of order
+            for(TokenBuilder Token: Tokens_List){
+                if(Token.description.contains("Error")){
+                    //Tokens_List.remove(Token);
+                }
+            }
+
+            //then checking if at end of program to move on to parse and other things
+            for(TokenBuilder Token: Tokens_List){
                 if(Token.unknown_item.equals("$")){
                     System.out.println("End of Current Program :)" + "\n");
                 }
