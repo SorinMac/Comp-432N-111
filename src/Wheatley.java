@@ -153,7 +153,6 @@ public class Wheatley {
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
             //special logic
-
             //if i am in quotes then you have to print out every character and the spaces
             if(Quote == 1){
                 String[] char_Holder = unknown_item.split("");
@@ -171,15 +170,19 @@ public class Wheatley {
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             }
 
-        }else if(unknown_item.matches("[0-9]+")){
+        }else if(unknown_item.matches("[0-9]+") && Quote == 0){
             TokenDisc = "DIGIT";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
         }else{
             if(unknown_item.matches("\s")){
                 
+            }else if(unknown_item.matches("[0-9]+")){
+                String item = unknown_item;
+                String item_decloration = "Error: int not allowed in string";
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
             }else{
                 String item = unknown_item;
-                String item_decloration = "Error: non recognized symbol ";
+                String item_decloration = "Error: non recognized symbol";
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1));
 
             }
