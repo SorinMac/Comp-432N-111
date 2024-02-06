@@ -192,11 +192,18 @@ public class Wheatley {
 
     }
 
+    static String printOut(List<TokenBuilder> Token_List){
+        
+        return  "H";
+    }
+
     public static void main(String[] args){
         //sets the value up
         List<String> code = new ArrayList<>();
         List<TokenBuilder> Tokens_List = new ArrayList<>();
         List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
+        int num_of_program = 1;
+        int num_of_error = 0;
 
         //have the lexer output as a option for a debugg mode
         int Lexer_Output_Boolean = 1;
@@ -205,7 +212,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test2.txt");
+            File commandTXT = new File("src/test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -252,8 +259,18 @@ public class Wheatley {
         //simple way to print out all the tokens in the array list
         if(Lexer_Output_Boolean == 1){
             //output
-            for(TokenBuilder Token: Tokens_List){
-                System.out.println(Token.description + " [ " + Token.unknown_item + " ] " + "Found at line " + Token.line_num);
+            for(int i = 0; i < Tokens_List.size(); i++){
+                System.out.println(Tokens_List.get(i).description + " [ " + Tokens_List.get(i).unknown_item + " ] " + "Found at line " + Tokens_List.get(i).line_num);
+
+                if(Tokens_List.get(i).description.contains("Error")){
+                    num_of_error++;
+                }
+
+                if(Tokens_List.get(i).unknown_item.equals("$")){
+                    System.out.println("Number of Errors is " + num_of_error + " :(");
+                    System.out.println("End of program " + num_of_program + " :)" + "\n");
+                    num_of_program++;
+                }
             }
 
             //checking for the error tokens and then removing them 
@@ -262,13 +279,6 @@ public class Wheatley {
                 TokenBuilder Token = Tokens_List.get(i);
                 if(Token.description.contains("Error")){
                     Tokens_List.remove(Token);
-                }
-            }
-
-            //then checking if at end of program to move on to parse and other things
-            for(TokenBuilder Token: Tokens_List){
-                if(Token.unknown_item.equals("$")){
-                    System.out.println("End of Current Program :)" + "\n");
                 }
             }
 
