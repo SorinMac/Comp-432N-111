@@ -73,17 +73,17 @@ public class Wheatley {
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //logic for if's
-            }else if(tokenFinder.group().matches("if")){
+            }else if(tokenFinder.group().matches("if") && Check_Quote == 0){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //logic for while
-            }else if(tokenFinder.group().matches("while")){
+            }else if(tokenFinder.group().matches("while") && Check_Quote == 0){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //and logic for print stuff
-            }else if(tokenFinder.group().matches("print")){
+            }else if(tokenFinder.group().matches("print") && Check_Quote == 0){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
@@ -111,53 +111,53 @@ public class Wheatley {
 
         //lots of logic to handle what the discription of the token should be 
         //for the tokens that where found
-        if(unknown_item.equals("{")){
+        if(unknown_item.equals("{") && Quote == 0){
             TokenDisc = "Begin_Block";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("}")){
+        }else if(unknown_item.equals("}") && Quote == 0){
             TokenDisc = "End_Block";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("(")){
+        }else if(unknown_item.equals("(") && Quote == 0){
             TokenDisc = "Open_Expression";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals(")")){
+        }else if(unknown_item.equals(")")&& Quote == 0){
             TokenDisc = "Close_Expression";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("print")){
+        }else if(unknown_item.equals("print") && Quote == 0){
             TokenDisc = "Print_Statment";
-        }else if(unknown_item.equals("while")){
+        }else if(unknown_item.equals("while") && Quote == 0){
             TokenDisc = "While_Statment";
-        }else if(unknown_item.equals("if")){
+        }else if(unknown_item.equals("if") && Quote == 0){
             TokenDisc = "If_Statment";
-        }else if(unknown_item.equals("==")){
+        }else if(unknown_item.equals("==") && Quote == 0){
             TokenDisc = "Equal";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("!=")){
+        }else if(unknown_item.equals("!=") && Quote == 0){
             TokenDisc = "Not_Equal";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("true")){
-            TokenDisc = "Boolean";
+        }else if(unknown_item.equals("true") && Quote == 0){
+            TokenDisc = "Boolean_Value";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("false")){
-            TokenDisc = "Boolean";
+        }else if(unknown_item.equals("false") && Quote == 0){
+            TokenDisc = "Boolean_Value";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("$")){
+        }else if(unknown_item.equals("$") && Quote == 0){
             TokenDisc = "END_OF_PROGRAM";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.matches("\s") && Quote == 1){
             String item = unknown_item;
             String item_decloration = "SPACE";
             Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
-        }else if(unknown_item.equals("+")){
+        }else if(unknown_item.equals("+") && Quote == 0){
             TokenDisc = "InTop";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("=")){
+        }else if(unknown_item.equals("=") && Quote == 0){
             TokenDisc = "AssignmentStatement";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.matches("\"")){
             TokenDisc = "QUOTE";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.matches("int|string|boolean")){
+        }else if(unknown_item.matches("int|string|boolean") && Quote == 0){
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
             //special logic
