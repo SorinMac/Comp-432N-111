@@ -122,6 +122,7 @@ public class Wheatley {
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals(")")){
             TokenDisc = "Close_Expression";
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("print")){
             TokenDisc = "Print_Statment";
         }else if(unknown_item.equals("while")){
@@ -215,7 +216,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File(args[0]);
+            File commandTXT = new File("src/test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
