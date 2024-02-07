@@ -268,6 +268,7 @@ public class Wheatley {
 
                 if(Tokens_List.get(i).unknown_item.equals("$")){
                     System.out.println("Number of Errors is " + num_of_error + " :(");
+                    num_of_error = 0;
                     System.out.println("End of program " + num_of_program + " :)" + "\n");
                     num_of_program++;
                 }

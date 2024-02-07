@@ -13,13 +13,13 @@
                 b = 1 + b
                 if (b == 2) {
                     /* Print Statement */
-                    print("there is no spoon" /* This will do nothing */ )
+                    print("there is no 9spoon" /* This will do nothing */ )
                 }
             }
-            b = 0
+            b = -0
             a = 1+a
         }
     }
 $
 
-/*LongTestCase-EverythingExceptBooleanDeclaration*/{/*IntDeclaration*/intaintba=0b=0/*WhileLoop*/while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){/*PrintStatement*/print("there is no spoon"/*Thiswilldonothing*/)}}b=0a=1+a}}$
+/*LongTestCase-EverythingExceptBooleanDeclaration*/{/*IntDeclaration*/intaintba=0b=0/*WhileLoop*/while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){/*PrintStatement*/print("there is no 1spoon"/*Thiswilldonothing*/)}}b=0a=1+a}}$
