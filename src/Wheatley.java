@@ -43,7 +43,7 @@ public class Wheatley {
         //place
 
         //this is my java regualar expression tokenization string
-        String check = "if|string|boolean|int|while|print|[a-z]|!=|==|=|True|False|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s|.";
+        String check = "if|string|boolean|int|while|print|true|false|[a-z]|!=|==|=|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s|.";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -68,7 +68,7 @@ public class Wheatley {
             }else if(tokenFinder.group().equals("/") || Check_Comment == 1){
                Check_Comment = 1;
             //logic to handle types
-            }else if(tokenFinder.group().matches("int|string|boolean")){
+            }else if(tokenFinder.group().matches("int|string|boolean") && Check_Quote == 0){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
@@ -96,7 +96,7 @@ public class Wheatley {
                 GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for everything else
-            }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|True|False|[$]|.")){
+            }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|true|false|[$]|.")){
                 String item = tokenFinder.group();
                 GetDescription(item, Check_Quote, line_num);
             }
@@ -135,10 +135,10 @@ public class Wheatley {
         }else if(unknown_item.equals("!=")){
             TokenDisc = "Not_Equal";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("True")){
+        }else if(unknown_item.equals("true")){
             TokenDisc = "Boolean";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.equals("False")){
+        }else if(unknown_item.equals("false")){
             TokenDisc = "Boolean";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("$")){
@@ -216,7 +216,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test.txt");
+            File commandTXT = new File("src/test2.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
