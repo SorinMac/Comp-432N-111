@@ -18,18 +18,21 @@ public class Wheatley {
         String description;
         String unknown_item;
         int line_num;
+        int place_num;
 
         //simple constructor for building the tokens out when i need that to be done
-        TokenBuilder(String description, String unknown_item, int num){
+        TokenBuilder(String description, String unknown_item, int num, int place){
             this.description = description;
             this.unknown_item = unknown_item;
             this.line_num = num;
+            this.place_num = place;
         }
 
     }
 
     //global Token array list so that you can add things when needed
     static List<TokenBuilder> Token = new ArrayList<>();
+    static int place = 0;
 
     //this will be where the Lexer work happens
     static List<TokenBuilder> Lexer(String code, int line_num){   
@@ -49,6 +52,10 @@ public class Wheatley {
             //testing
             //System.out.println(tokenFinder.group());
 
+            //this is how it get the index of the token
+            place = tokenFinder.end();
+
+
             //logic for if i am inside quotes or not
             if (tokenFinder.group().equals("\"")) {
                 Check_Quote = (Check_Quote == 0) ? 1 : 0;
@@ -64,22 +71,22 @@ public class Wheatley {
             }else if(tokenFinder.group().matches("int|string|boolean")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //logic for if's
             }else if(tokenFinder.group().matches("if")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //logic for while
             }else if(tokenFinder.group().matches("while")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //and logic for print stuff
             }else if(tokenFinder.group().matches("print")){
                 String item = tokenFinder.group();
                 String item_decloration = GetDescription(item, Check_Quote, line_num);
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             //this is seperate so that when i go to the .mathces for a-z i can check if i am in quotes or not and do stuff apporoeratly
             }else if(tokenFinder.group().matches("[a-z]+")){
                 GetDescription(tokenFinder.group(), Check_Quote, line_num);
@@ -106,13 +113,13 @@ public class Wheatley {
         //for the tokens that where found
         if(unknown_item.equals("{")){
             TokenDisc = "Begin_Block";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("}")){
             TokenDisc = "End_Block";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("(")){
             TokenDisc = "Open_Expression";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals(")")){
             TokenDisc = "Close_Expression";
         }else if(unknown_item.equals("print")){
@@ -123,32 +130,32 @@ public class Wheatley {
             TokenDisc = "If_Statment";
         }else if(unknown_item.equals("==")){
             TokenDisc = "Equal";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("!=")){
             TokenDisc = "Not_Equal";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("True")){
             TokenDisc = "Boolean";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("False")){
             TokenDisc = "Boolean";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("$")){
             TokenDisc = "END_OF_PROGRAM";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.matches("\s") && Quote == 1){
             String item = unknown_item;
             String item_decloration = "SPACE";
-            Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+            Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
         }else if(unknown_item.equals("+")){
             TokenDisc = "InTop";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.equals("=")){
             TokenDisc = "AssignmentStatement";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.matches("\"")){
             TokenDisc = "QUOTE";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else if(unknown_item.matches("int|string|boolean")){
             TokenDisc = "TYPE";
         }else if(unknown_item.matches("[a-z]+")){
@@ -160,30 +167,30 @@ public class Wheatley {
                 for(int i = 0; i < char_Holder.length; i++){
                     String item = char_Holder[i];
                     String item_decloration = "CHAR";
-                    Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                    Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
                 }
             
             //if not then its an ID
             }else{
                 String item = unknown_item;
                 String item_decloration = "ID";
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             }
 
         }else if(unknown_item.matches("[0-9]+") && Quote == 0){
             TokenDisc = "DIGIT";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1));
+            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
         }else{
             if(unknown_item.matches("\s")){
                 
             }else if(unknown_item.matches("[0-9]+")){
                 String item = unknown_item;
                 String item_decloration = "Error: int not allowed in string";
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
             }else{
                 String item = unknown_item;
                 String item_decloration = "Error: non recognized symbol";
-                Token.add(new TokenBuilder(item_decloration, item, line_num+1));
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
 
             }
         }
@@ -192,18 +199,14 @@ public class Wheatley {
 
     }
 
-    static String printOut(List<TokenBuilder> Token_List){
-        
-        return  "H";
-    }
-
     public static void main(String[] args){
         //sets the value up
         List<String> code = new ArrayList<>();
         List<TokenBuilder> Tokens_List = new ArrayList<>();
         List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
+        //nums of the error and number of programs
         int num_of_program = 1;
-        int num_of_error = 0;
+        int lexer_num_of_error = 0;
 
         //have the lexer output as a option for a debugg mode
         int Lexer_Output_Boolean = 1;
@@ -212,7 +215,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test.txt");
+            File commandTXT = new File(args[0]);
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -235,9 +238,11 @@ public class Wheatley {
             //since we go in line by line (as best test case) then i need a temp holder to add to the total holder
             if(code.get(i).isEmpty() || i == code.size()-1){
                 if(i == code.size()-1){
+                    //this will only check for the end of program when there are spaces in between them
                     if(!code.get(i).contains("$")){
                         System.out.println("EOP Error: Your program does not end with $ at line " + (i+1) + "\n");
                     }
+                //this will check the end of the file
                 }else if(!code.get(i-1).contains("$")){
                     System.out.println("EOP Error: Your program does not end with $ at line " + (i+1));
                 }
@@ -260,16 +265,19 @@ public class Wheatley {
         if(Lexer_Output_Boolean == 1){
             //output
             for(int i = 0; i < Tokens_List.size(); i++){
-                System.out.println(Tokens_List.get(i).description + " [ " + Tokens_List.get(i).unknown_item + " ] " + "Found at line " + Tokens_List.get(i).line_num);
+                System.out.println(Tokens_List.get(i).description + " [ " + Tokens_List.get(i).unknown_item + " ] " + "Found at line " + Tokens_List.get(i).line_num + " : " + Tokens_List.get(i).place_num);
 
                 if(Tokens_List.get(i).description.contains("Error")){
-                    num_of_error++;
+                    lexer_num_of_error++;
                 }
 
                 if(Tokens_List.get(i).unknown_item.equals("$")){
-                    System.out.println("Number of Errors is " + num_of_error + " :(");
-                    num_of_error = 0;
-                    System.out.println("End of program " + num_of_program + " :)" + "\n");
+                    System.out.println("Number of Errors is " + lexer_num_of_error + " :(");
+                    if(lexer_num_of_error > 0){
+                        System.out.println("Lexer failed :(");
+                    }
+                    lexer_num_of_error = 0;
+                    System.out.println("End of program " + num_of_program + "\n");
                     num_of_program++;
                 }
             }
@@ -284,7 +292,17 @@ public class Wheatley {
             }
 
         }else{
-            System.out.println("Done Compiling :)");
+            for(int i = 0; i < Tokens_List.size(); i++){
+                if(Tokens_List.get(i).description.contains("Error")){
+                    lexer_num_of_error++;
+                }
+            }
+            
+            if(lexer_num_of_error > 0){
+                System.out.println("Lexer Error did not fully compile :( \n");
+            }else{
+                System.out.println("Done \n");
+            }
         }
 
         System.exit(0);
