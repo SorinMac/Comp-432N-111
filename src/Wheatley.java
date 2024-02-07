@@ -216,7 +216,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test2.txt");
+            File commandTXT = new File("src/test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -237,14 +237,8 @@ public class Wheatley {
         for(int i = 0; i < code.size(); i++){
             //temp holder
             //since we go in line by line (as best test case) then i need a temp holder to add to the total holder
-            if(code.get(i).isEmpty() || i == code.size()-1){
-                if(i == code.size()-1){
-                    //this will only check for the end of program when there are spaces in between them
-                    if(!code.get(i).contains("$")){
-                        System.out.println("EOP Error: Your program does not end with $ at line " + (i+1) + "\n");
-                    }
-                //this will check the end of the file
-                }else if(!code.get(i-1).contains("$")){
+            if(code.get(i).isEmpty() && i == code.size()-1){
+                if(!code.get(i-1).contains("$")){
                     System.out.println("EOP Error: Your program does not end with $ at line " + (i+1));
                 }
             }
