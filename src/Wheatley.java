@@ -179,8 +179,14 @@ public class Wheatley {
             }
 
         }else if(unknown_item.matches("[0-9]+") && Quote == 0){
-            TokenDisc = "DIGIT";
-            Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
+            String[] int_Holder = unknown_item.split("");
+
+            for(int i = 0; i < int_Holder.length; i++){
+                String item = int_Holder[i];
+                TokenDisc = "DIGIT";
+                Token.add(new TokenBuilder(TokenDisc, item, line_num+1, place));
+            }
+
         }else{
             if(unknown_item.matches("\s")){
                 
@@ -216,7 +222,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test2.txt");
+            File commandTXT = new File("src/test.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
