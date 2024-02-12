@@ -1,1 +1,6 @@
-{/* Comment!!!*/ () print=whileif"teststring" intstringbooleanfalse true ==!=+ a 0123456789}$
+{
+    "hello 
+    how 
+    are
+    you"
+}
