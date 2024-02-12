@@ -33,17 +33,17 @@ public class Wheatley {
     //global Token array list so that you can add things when needed
     static List<TokenBuilder> Token = new ArrayList<>();
     static int place = 0;
+    static int Check_Quote = 0;
 
     //this will be where the Lexer work happens
     static List<TokenBuilder> Lexer(String code, int line_num){   
         int Check_Comment = 0;
-        int Check_Quote = 0;
 
         //block code
         //place
 
         //this is my java regualar expression tokenization string
-        String check = "if|string|boolean|int|while|print|true|false|[a-z]|!=|==|=|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s|.";
+        String check = "if|string|boolean|int|while|print|true|false|[a-z]|!=|==|=|[$]|[0-9]+|[+(){}]|/\\\\*|\\\"|\\s|$|.";
         Pattern tokenCheck = Pattern.compile(check);
         Matcher tokenFinder = tokenCheck.matcher(code);
 
@@ -96,7 +96,7 @@ public class Wheatley {
                 GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for everything else
-            }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|true|false|[$]|.")){
+            }else if(tokenFinder.group().matches("[0-9]+|[+(){}]|==|!=|=|\\\"|true|false|[$]|$|.")){
                 String item = tokenFinder.group();
                 GetDescription(item, Check_Quote, line_num);
             }
@@ -194,7 +194,11 @@ public class Wheatley {
                 String item = unknown_item;
                 String item_decloration = "Error: int not allowed in string";
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
-            }else{
+            }else if (unknown_item.matches("") && Check_Quote == 1){
+                String item = unknown_item;
+                String item_decloration = "Error: new line not allowed in string";
+                Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
+            }else if(!unknown_item.matches("")){
                 String item = unknown_item;
                 String item_decloration = "Error: non recognized symbol";
                 Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));

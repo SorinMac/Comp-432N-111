@@ -30,3 +30,5 @@ CD src
    Command: java Wheatley Hello World
 
    When this command is ran the Hello is args[0], and World is args[1]. I can then use this fact to do as I please with the arguments from command line.
+
+   For my test cases the file is called test.txt
