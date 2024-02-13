@@ -226,6 +226,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
+            //hello
             File commandTXT = new File(args[0]);
             Scanner reader = new Scanner(commandTXT);
 
