@@ -1,5 +1,3 @@
-package src;
-
 import java.io.File; 
 import java.io.FileNotFoundException;  
 import java.util.Scanner; 
@@ -212,6 +210,7 @@ public class Wheatley {
     }
 
     public static void main(String[] args){
+        test file1 = new test();
         //sets the value up
         List<String> code = new ArrayList<>();
         List<TokenBuilder> Tokens_List = new ArrayList<>();
@@ -222,6 +221,8 @@ public class Wheatley {
 
         //have the lexer output as a option for a debugg mode
         int Lexer_Output_Boolean = 1;
+
+        file1.Hello();
 
         try {
             //gets the file ready for reading
