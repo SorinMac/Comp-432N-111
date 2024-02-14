@@ -3,38 +3,17 @@ import java.io.FileNotFoundException;
 import java.util.Scanner; 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class Wheatley {
 
-    //class for the tokens
-    public class TokenBuilder{
-
-        //in my searches across the internet i learned of enums in Java
-        //will make it easier to assign the description when i need to do that 
-        String description;
-        String unknown_item;
-        int line_num;
-        int place_num;
-
-        //simple constructor for building the tokens out when i need that to be done
-        TokenBuilder(String description, String unknown_item, int num, int place){
-            this.description = description;
-            this.unknown_item = unknown_item;
-            this.line_num = num;
-            this.place_num = place;
-        }
-
-    }
-
     public static void main(String[] args){
         Comp_Lexer Comp_Lexer = new Comp_Lexer();
+        Comp_Paser Comp_Paser = new Comp_Paser();
         //sets the value up
         List<String> code = new ArrayList<>();
-        List<TokenBuilder> Tokens_List = new ArrayList<>();
-        List<TokenBuilder> Temp_Token_Holder = new ArrayList<>();
+        List<Comp_Lexer.TokenBuilder> Tokens_List = new ArrayList<>();
+        List<Comp_Lexer.TokenBuilder> Temp_Token_Holder = new ArrayList<>();
         //nums of the error and number of programs
         int num_of_program = 1;
         int lexer_num_of_error = 0;
@@ -46,7 +25,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test2.txt");
+            File commandTXT = new File(args[0]);
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -110,7 +89,7 @@ public class Wheatley {
             //checking for the error tokens and then removing them 
             //makes the for loop get out of order
             for(int i = 0; i < Tokens_List.size(); i++){
-                TokenBuilder Token = Tokens_List.get(i);
+                Comp_Lexer.TokenBuilder Token = Tokens_List.get(i);
                 if(Token.description.contains("Error")){
                     Tokens_List.remove(Token);
                 }
