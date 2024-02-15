@@ -80,6 +80,7 @@ public class Wheatley {
                     if(lexer_num_of_error > 0){
                         System.out.println("Lexer failed :(");
                     }else{
+                        System.out.println("Paser starting :)");
                         Comp_Paser.Parser_Start(Tokens_List);
                     }
                     lexer_num_of_error = 0;

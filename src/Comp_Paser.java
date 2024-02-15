@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.List;
 
 public class Comp_Paser {
@@ -36,62 +37,122 @@ public class Comp_Paser {
     }
 
     static void Parse_Program(){
-
+        Parse_Block();
+        Parse_Match("$");
     }
 
     static void Parse_Block(){
-        
+        Parse_Match("{");
+        Parse_Statement_List();
+        Parse_Match("}");
     }
 
     static void Parse_Statement_List(){
+        if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
+            Parse_Statement();
+            Parse_Statement_List();
+        }else{
+            // it’s a ɛ
+        }
         
     }
 
     static void Parse_Statement(){
-
+        if(current_Token.unknown_item.equals("print")){
+            Parse_Print_Statment();
+        }else if(current_Token.unknown_item.matches("[a-z]")){
+            Parse_Assignment_Statment();
+        }else if(current_Token.unknown_item.matches("int|string|boolean")){
+            Parse_Var_Decl();
+        }else if(current_Token.unknown_item.equals("while")){
+            Parse_While_Statment();
+        }else if(current_Token.unknown_item.equals("if")){
+            Parse_If_Statment();
+        }else if(current_Token.unknown_item.equals("{")){
+            Parse_Block();
+        }
     }
 
     static void Parse_Print_Statment(){
-
+        Parse_Match("print");
+        Parse_Match("(");
+        Parse_Expr();
     }
 
     static void Parse_Assignment_Statment(){
+        Parse_Id();
+        Parse_Match("=");
+        Parse_Expr();
 
     }
 
     static void Parse_Var_Decl(){
-
+        Parse_Type();
+        Parse_Id();
     }
 
     static void Parse_While_Statment(){
-
+        Parse_Match("while");
+        Parse_Boolean_Expr();
+        Parse_Block();
     }
 
     static void Parse_If_Statment(){
-
+        Parse_Match("if");
+        Parse_Boolean_Expr();
+        Parse_Block();
     }
 
     static void Parse_Expr(){
-
+        if(current_Token.unknown_item.equals("int")){
+            Parse_Int_Expr();
+        }else if(current_Token.unknown_item.equals("string")){
+            Parse_String_Expr();
+        }else if(current_Token.unknown_item.equals("boolean")){
+            Parse_Boolean_Expr();
+        }else{
+            Parse_Id();
+        }
     }
 
+    //what is the best way to differentiate the two possibilities for this one
     static void Parse_Int_Expr(){
 
     }
 
     static void Parse_String_Expr(){
-
+        Parse_Match("\"");
+        Parse_Char_List();
+        Parse_Match("\"");
     }
 
     static void Parse_Boolean_Expr(){
+        if(current_Token.unknown_item.equals("(")){
+            Parse_Match("(");
+            Parse_Expr();
+            Parse_Boolop();
+            Parse_Expr();
+            Parse_Match("(");
+        }else{
+            Parse_Boolval();
+        }
 
     }
 
     static void Parse_Id(){
-
+        Parse_Char();
     }
 
     static void Parse_Char_List(){
+        if (current_Token.unknown_item.equals("char")){
+            Parse_Char();
+            Parse_Char_List();
+        }else if (current_Token.unknown_item.equals(" ")){
+            Parse_Space();
+            Parse_Char_List();
+        }else{
+            // it’s a ɛ
+        }
 
     }
 
@@ -112,6 +173,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Char(){
+        //ask him if this is correct
         switch (current_Token.unknown_item) {
             case "a":
                 Parse_Match("a");
@@ -192,6 +254,7 @@ public class Comp_Paser {
                 Parse_Match("z");
                 break;
             default:
+                Parse_Match("null");
                 break;
         }
     }
@@ -233,6 +296,7 @@ public class Comp_Paser {
                 Parse_Match("9");
                 break;
             default:
+                Parse_Match("null");
                 break;
         }
     }
@@ -246,6 +310,7 @@ public class Comp_Paser {
                 Parse_Match("!=");
                 break;
             default:
+                Parse_Match("null");
                 break;
         }
     }
@@ -259,6 +324,7 @@ public class Comp_Paser {
                 Parse_Match("true");
                 break;
             default:
+                Parse_Match("null");
                 break;
         }
     }
