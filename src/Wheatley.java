@@ -25,7 +25,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File(args[0]);
+            File commandTXT = new File("src/test2.txt");
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -48,7 +48,7 @@ public class Wheatley {
             //since we go in line by line (as best test case) then i need a temp holder to add to the total holder
             if(code.get(i).isEmpty() && i == code.size()-1){
                 if(!code.get(i-1).contains("$")){
-                    System.out.println("EOP Error: Your program does not end with $ at line " + (i+1));
+                    System.out.println("EOP Warning: Your program does not end with $ at line " + (i+1));
                 }
             }
 
@@ -76,9 +76,11 @@ public class Wheatley {
                 }
 
                 if(Tokens_List.get(i).unknown_item.equals("$")){
-                    System.out.println("Number of Errors is " + lexer_num_of_error + " :(");
+                    System.out.println("Lexer Number of Errors is " + lexer_num_of_error + " :(");
                     if(lexer_num_of_error > 0){
                         System.out.println("Lexer failed :(");
+                    }else{
+                        Comp_Paser.Parser_Start(Tokens_List);
                     }
                     lexer_num_of_error = 0;
                     System.out.println("End of program " + num_of_program + "\n");
