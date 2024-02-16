@@ -1,44 +1,35 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.List;
 
 public class Comp_Paser {
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
     static Comp_Lexer.TokenBuilder current_Token;
+    static int token_place = 0;
+    static List<Comp_Lexer.TokenBuilder> Parser_Token_List;
+    //this will return if parse was done correct or not 
+    static boolean Parse_Done;
 
     //should the parser be allowed to start at anything
     //or is it only allowed to start with a {}
     //like can is start with a a Char
     //how does this need to kick off?
     public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
-        for(int i = 0; i < Token_List.size(); i++){
-            current_Token = Token_List.get(i);
-            switch (Token_List.get(i).unknown_item) {
-                case "{":
-                    break;
-                case "(":
-                    break;
-                case "print":
-                    break;
-                case "while":
-                    break;
-                case "if":
-                    break;
-                case "int":
-                    break;
-                case "string":
-                    break;
-                case "boolean":
-                    break;
-                default:
-                    break;
-            }
+        Parser_Token_List = Token_List;
+        token_place = 0;
+        current_Token = Token_List.get(token_place);
+        switch (Token_List.get(token_place).unknown_item) {
+            case "{":
+                Parse_Program();
+                break;
+            default:
+                Parse_Match("null");
+                break;
         }
     }
 
     static void Parse_Program(){
         Parse_Block();
         Parse_Match("$");
+        System.out.println("Parse No errors :)");
     }
 
     static void Parse_Block(){
@@ -77,6 +68,7 @@ public class Comp_Paser {
         Parse_Match("print");
         Parse_Match("(");
         Parse_Expr();
+        Parse_Match(")");
     }
 
     static void Parse_Assignment_Statment(){
@@ -104,11 +96,12 @@ public class Comp_Paser {
     }
 
     static void Parse_Expr(){
-        if(current_Token.unknown_item.equals("int")){
+        //this one right now does not work
+        if(current_Token.unknown_item.matches("[0-9]+")){
             Parse_Int_Expr();
-        }else if(current_Token.unknown_item.equals("string")){
+        }else if(current_Token.unknown_item.equals("\"")){
             Parse_String_Expr();
-        }else if(current_Token.unknown_item.equals("boolean")){
+        }else if(current_Token.unknown_item.equals("(")){
             Parse_Boolean_Expr();
         }else{
             Parse_Id();
@@ -117,7 +110,13 @@ public class Comp_Paser {
 
     //what is the best way to differentiate the two possibilities for this one
     static void Parse_Int_Expr(){
-
+        if(Parser_Token_List.get(token_place+1).unknown_item.equals("+")){
+            Parse_Digit();
+            Parse_intop();
+            Parse_Expr();
+        }else{
+            Parse_Digit();
+        }
     }
 
     static void Parse_String_Expr(){
@@ -132,7 +131,7 @@ public class Comp_Paser {
             Parse_Expr();
             Parse_Boolop();
             Parse_Expr();
-            Parse_Match("(");
+            Parse_Match(")");
         }else{
             Parse_Boolval();
         }
@@ -144,7 +143,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Char_List(){
-        if (current_Token.unknown_item.equals("char")){
+        if (current_Token.unknown_item.matches("[a-z]")){
             Parse_Char();
             Parse_Char_List();
         }else if (current_Token.unknown_item.equals(" ")){
@@ -335,6 +334,12 @@ public class Comp_Paser {
 
     static void Parse_Match(String expected_Token){
         if(current_Token.unknown_item.equals(expected_Token)){
+            token_place++;
+            if(token_place > Parser_Token_List.size()-1){
+                current_Token = Parser_Token_List.get(token_place-1);
+            }else{
+                current_Token = Parser_Token_List.get(token_place);
+            }
             //building tree logic i think
             //do not want to cosnume token (get rid of it/loose the memory for it)
             //inc program counter is done with for loop
