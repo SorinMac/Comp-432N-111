@@ -5,6 +5,8 @@ public class Comp_Paser {
     static Comp_Lexer.TokenBuilder current_Token;
     static int token_place = 0;
     static List<Comp_Lexer.TokenBuilder> Parser_Token_List;
+    static int parse_num_errors = 0;
+    static int debugg_mode = 0;
     //this will return if parse was done correct or not 
     static boolean Parse_Done;
 
@@ -15,7 +17,11 @@ public class Comp_Paser {
     public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
         Parser_Token_List = Token_List;
         token_place = 0;
+        parse_num_errors = 0;
         current_Token = Token_List.get(token_place);
+        if(debugg_mode == 1){
+            System.out.println("Parseing for token " + current_Token.unknown_item);
+        }
         switch (Token_List.get(token_place).unknown_item) {
             case "{":
                 Parse_Program();
@@ -29,7 +35,11 @@ public class Comp_Paser {
     static void Parse_Program(){
         Parse_Block();
         Parse_Match("$");
-        System.out.println("Parse No errors :)");
+        if(parse_num_errors > 0){
+            System.out.println("Parse has " + parse_num_errors + " errors :(");
+        }else{
+            System.out.println("Parse No errors :)");
+        }
     }
 
     static void Parse_Block(){
@@ -101,7 +111,7 @@ public class Comp_Paser {
             Parse_Int_Expr();
         }else if(current_Token.unknown_item.equals("\"")){
             Parse_String_Expr();
-        }else if(current_Token.unknown_item.equals("(")){
+        }else if(current_Token.unknown_item.equals("(") || current_Token.unknown_item.equals("true") || current_Token.unknown_item.equals("false")){
             Parse_Boolean_Expr();
         }else{
             Parse_Id();
@@ -340,11 +350,16 @@ public class Comp_Paser {
             }else{
                 current_Token = Parser_Token_List.get(token_place);
             }
+
+            if(debugg_mode == 1){
+                System.out.println("Parseing for token " + current_Token.unknown_item);
+            }
             //building tree logic i think
             //do not want to cosnume token (get rid of it/loose the memory for it)
             //inc program counter is done with for loop
         }else{
             System.out.println("Parse Error: Expected " + expected_Token + " but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+            parse_num_errors++;
         }
     }
 

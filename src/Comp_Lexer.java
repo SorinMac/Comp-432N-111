@@ -180,7 +180,8 @@ public class Comp_Lexer {
                 TokenDisc = "DIGIT";
                 Token.add(new TokenBuilder(TokenDisc, item, line_num+1, place));
             }
-
+        
+        //anything that is unknown to the lexer is then handled as a error and is give a specific error based on it process
         }else{
             if(unknown_item.matches("\s")){
                 

@@ -19,6 +19,7 @@ public class Wheatley {
         int lexer_num_of_error = 0;
 
         //have the lexer output as a option for a debugg mode
+        //will make it do all tokens all at once in one shot
         int Lexer_Output_Boolean = 1;
 
         try {
@@ -76,7 +77,7 @@ public class Wheatley {
                 }
 
                 if(Tokens_List.get(i).unknown_item.equals("$")){
-                    System.out.println("Lexer Number of Errors is " + lexer_num_of_error + " :(");
+                    System.out.println("Lexer Number of Errors is " + lexer_num_of_error);
                     if(lexer_num_of_error > 0){
                         System.out.println("Lexer failed :(");
                     }else{
@@ -108,7 +109,9 @@ public class Wheatley {
             if(lexer_num_of_error > 0){
                 System.out.println("Lexer Error did not fully compile :( \n");
             }else{
-                System.out.println("Done \n");
+                System.out.println("Done");
+                System.out.println("Paser starting :)");
+                Comp_Paser.Parser_Start(Tokens_List);
             }
         }
 
