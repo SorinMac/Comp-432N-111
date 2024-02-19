@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Comp_Paser {
@@ -6,20 +7,47 @@ public class Comp_Paser {
     static int token_place = 0;
     static List<Comp_Lexer.TokenBuilder> Parser_Token_List;
     static int parse_num_errors = 0;
-    static int debugg_mode = 0;
-    //this will return if parse was done correct or not 
-    static boolean Parse_Done;
+    static int debugg_mode_token = 0;
+    static int debugg_mode_function = 1;
+    
+    public class Tree_Node{
+        String name;
+        Tree_Node parent;
+        ArrayList<Tree_Node> children;
 
-    //should the parser be allowed to start at anything
-    //or is it only allowed to start with a {}
-    //like can is start with a a Char
-    //how does this need to kick off?
+        Tree_Node(String name){
+            this.name = name;
+            this.parent = null;
+            this.children = new ArrayList<>();
+        }
+
+    }
+
+    public class BST{
+        Tree_Node root;
+        Tree_Node current;
+
+        BST(){
+            this.root = null;
+            this.current = null;
+        }
+
+        public void addNode(){
+
+        }
+
+        public void end_all_children(){
+            
+        }
+    }
+
+
     public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
         Parser_Token_List = Token_List;
         token_place = 0;
         parse_num_errors = 0;
         current_Token = Token_List.get(token_place);
-        if(debugg_mode == 1){
+        if(debugg_mode_token == 1){
             System.out.println("Parseing for token " + current_Token.unknown_item);
         }
         switch (Token_List.get(token_place).unknown_item) {
@@ -33,7 +61,9 @@ public class Comp_Paser {
     }
 
     static void Parse_Program(){
-        System.out.println("Parseing: Parse_Program()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Program()");
+        }
         Parse_Block();
         Parse_Match("$");
         if(parse_num_errors > 0){
@@ -44,14 +74,18 @@ public class Comp_Paser {
     }
 
     static void Parse_Block(){
-        System.out.println("Parseing: Parse_Block()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Block()");
+        }
         Parse_Match("{");
         Parse_Statement_List();
         Parse_Match("}");
     }
 
     static void Parse_Statement_List(){
-        System.out.println("Parseing: Parse_Statement_List()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Statement_List()");
+        }
         if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             Parse_Statement();
             Parse_Statement_List();
@@ -62,7 +96,9 @@ public class Comp_Paser {
     }
 
     static void Parse_Statement(){
-        System.out.println("Parseing: Parse_Statement()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Statement()");
+        }
         if(current_Token.unknown_item.equals("print")){
             Parse_Print_Statment();
         }else if(current_Token.unknown_item.matches("[a-z]")){
@@ -79,7 +115,9 @@ public class Comp_Paser {
     }
 
     static void Parse_Print_Statment(){
-        System.out.println("Parseing: Parse_Print_Statment()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Print_Statment()");
+        }
         Parse_Match("print");
         Parse_Match("(");
         Parse_Expr();
@@ -87,7 +125,9 @@ public class Comp_Paser {
     }
 
     static void Parse_Assignment_Statment(){
-        System.out.println("Parseing: Parse_Assignment_Statment()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Assignment_Statment()");
+        }
         Parse_Id();
         Parse_Match("=");
         Parse_Expr();
@@ -95,27 +135,35 @@ public class Comp_Paser {
     }
 
     static void Parse_Var_Decl(){
-        System.out.println("Parseing: Parse_Var_Decl()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Var_Decl()");
+        }
         Parse_Type();
         Parse_Id();
     }
 
     static void Parse_While_Statment(){
-        System.out.println("Parseing: Parse_While_Statment()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_While_Statment()");
+        }
         Parse_Match("while");
         Parse_Boolean_Expr();
         Parse_Block();
     }
 
     static void Parse_If_Statment(){
-        System.out.println("Parseing: Parse_Assignment_Statment()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_If_Statment()");
+        }
         Parse_Match("if");
         Parse_Boolean_Expr();
         Parse_Block();
     }
 
     static void Parse_Expr(){
-        System.out.println("Parseing: Parse_Expr()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Expr()");
+        }
         if(current_Token.unknown_item.matches("[0-9]+")){
             Parse_Int_Expr();
         }else if(current_Token.unknown_item.equals("\"")){
@@ -128,7 +176,9 @@ public class Comp_Paser {
     }
 
     static void Parse_Int_Expr(){
-        System.out.println("Parseing: Parse_Int_Expr()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Int_Expr()");
+        }
         if(Parser_Token_List.get(token_place+1).unknown_item.equals("+")){
             Parse_Digit();
             Parse_intop();
@@ -139,14 +189,18 @@ public class Comp_Paser {
     }
 
     static void Parse_String_Expr(){
-        System.out.println("Parseing: Parse_String_Expr()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_String_Expr()");
+        }
         Parse_Match("\"");
         Parse_Char_List();
         Parse_Match("\"");
     }
 
     static void Parse_Boolean_Expr(){
-        System.out.println("Parseing: Parse_Boolean_Expr()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Boolean_Expr()");
+        }
         if(current_Token.unknown_item.equals("(")){
             Parse_Match("(");
             Parse_Expr();
@@ -160,12 +214,16 @@ public class Comp_Paser {
     }
 
     static void Parse_Id(){
-        System.out.println("Parseing: Parse_Id()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Id()");
+        }
         Parse_Char();
     }
 
     static void Parse_Char_List(){
-        System.out.println("Parseing: Parse_Char_List()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Char_List()");
+        }
         if (current_Token.unknown_item.matches("[a-z]")){
             Parse_Char();
             Parse_Char_List();
@@ -179,7 +237,9 @@ public class Comp_Paser {
     }
 
     static void Parse_Type(){
-        System.out.println("Parseing: Parse_Type()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Type()");
+        }
         switch (current_Token.unknown_item) {
             case "int":
                 Parse_Match("int");
@@ -191,13 +251,15 @@ public class Comp_Paser {
                 Parse_Match("boolean");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Type");
                 break;
         }
     }
 
     static void Parse_Char(){
-        System.out.println("Parseing: Parse_Char()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Char()");
+        }
         switch (current_Token.unknown_item) {
             case "a":
                 Parse_Match("a");
@@ -278,25 +340,29 @@ public class Comp_Paser {
                 Parse_Match("z");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Char");
                 break;
         }
     }
 
     static void Parse_Space(){
-        System.out.println("Parseing: Parse_Space()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Space()");
+        }
         switch (current_Token.unknown_item) {
             case " ":
                 Parse_Match(" ");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Space");
                 break;
         }
     }
 
     static void Parse_Digit(){
-        System.out.println("Parseing: Parse_Digit()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Digit()");
+        }
         switch (current_Token.unknown_item) {
             case "0":
                 Parse_Match("0");
@@ -329,13 +395,15 @@ public class Comp_Paser {
                 Parse_Match("9");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Digit");
                 break;
         }
     }
 
     static void Parse_Boolop(){
-        System.out.println("Parseing: Parse_Boolop()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Boolop()");
+        }
         switch (current_Token.unknown_item) {
             case "==":
                 Parse_Match("==");
@@ -344,13 +412,15 @@ public class Comp_Paser {
                 Parse_Match("!=");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Bool Op");
                 break;
         }
     }
 
     static void Parse_Boolval(){
-        System.out.println("Parseing: Parse_Boolval()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_Boolval()");
+        }
         switch (current_Token.unknown_item) {
             case "false":
                 Parse_Match("false");
@@ -359,19 +429,21 @@ public class Comp_Paser {
                 Parse_Match("true");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Boolean Value");
                 break;
         }
     }
 
     static void Parse_intop(){
-        System.out.println("Parseing: Parse_intop()");
+        if(debugg_mode_function == 1){
+            System.out.println("Parseing: Parse_intop()");
+        }
         switch (current_Token.unknown_item) {
             case "+":
                 Parse_Match("+");
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Int Op");
                 break;
         }
     }
@@ -385,7 +457,7 @@ public class Comp_Paser {
                 current_Token = Parser_Token_List.get(token_place);
             }
 
-            if(debugg_mode == 1){
+            if(debugg_mode_token == 1){
                 System.out.println("Parseing for token " + current_Token.unknown_item);
             }
             //building tree logic i think
@@ -394,7 +466,7 @@ public class Comp_Paser {
         }else{
             //this is the wrong error you need to ouptut what should be there and then what is expected not the null shit
             //test to see if this works or not
-            System.out.println("Parse Error: Expected " + current_Token.description + " but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+            System.out.println("Parse Error: Expected " + expected_Token + " but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
             parse_num_errors++;
         }
     }
