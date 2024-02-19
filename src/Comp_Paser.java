@@ -33,6 +33,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Program(){
+        System.out.println("Parseing: Parse_Program()");
         Parse_Block();
         Parse_Match("$");
         if(parse_num_errors > 0){
@@ -43,12 +44,14 @@ public class Comp_Paser {
     }
 
     static void Parse_Block(){
+        System.out.println("Parseing: Parse_Block()");
         Parse_Match("{");
         Parse_Statement_List();
         Parse_Match("}");
     }
 
     static void Parse_Statement_List(){
+        System.out.println("Parseing: Parse_Statement_List()");
         if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             Parse_Statement();
             Parse_Statement_List();
@@ -59,6 +62,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Statement(){
+        System.out.println("Parseing: Parse_Statement()");
         if(current_Token.unknown_item.equals("print")){
             Parse_Print_Statment();
         }else if(current_Token.unknown_item.matches("[a-z]")){
@@ -75,6 +79,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Print_Statment(){
+        System.out.println("Parseing: Parse_Print_Statment()");
         Parse_Match("print");
         Parse_Match("(");
         Parse_Expr();
@@ -82,6 +87,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Assignment_Statment(){
+        System.out.println("Parseing: Parse_Assignment_Statment()");
         Parse_Id();
         Parse_Match("=");
         Parse_Expr();
@@ -89,24 +95,27 @@ public class Comp_Paser {
     }
 
     static void Parse_Var_Decl(){
+        System.out.println("Parseing: Parse_Var_Decl()");
         Parse_Type();
         Parse_Id();
     }
 
     static void Parse_While_Statment(){
+        System.out.println("Parseing: Parse_While_Statment()");
         Parse_Match("while");
         Parse_Boolean_Expr();
         Parse_Block();
     }
 
     static void Parse_If_Statment(){
+        System.out.println("Parseing: Parse_Assignment_Statment()");
         Parse_Match("if");
         Parse_Boolean_Expr();
         Parse_Block();
     }
 
     static void Parse_Expr(){
-        //this one right now does not work
+        System.out.println("Parseing: Parse_Expr()");
         if(current_Token.unknown_item.matches("[0-9]+")){
             Parse_Int_Expr();
         }else if(current_Token.unknown_item.equals("\"")){
@@ -118,8 +127,8 @@ public class Comp_Paser {
         }
     }
 
-    //what is the best way to differentiate the two possibilities for this one
     static void Parse_Int_Expr(){
+        System.out.println("Parseing: Parse_Int_Expr()");
         if(Parser_Token_List.get(token_place+1).unknown_item.equals("+")){
             Parse_Digit();
             Parse_intop();
@@ -130,12 +139,14 @@ public class Comp_Paser {
     }
 
     static void Parse_String_Expr(){
+        System.out.println("Parseing: Parse_String_Expr()");
         Parse_Match("\"");
         Parse_Char_List();
         Parse_Match("\"");
     }
 
     static void Parse_Boolean_Expr(){
+        System.out.println("Parseing: Parse_Boolean_Expr()");
         if(current_Token.unknown_item.equals("(")){
             Parse_Match("(");
             Parse_Expr();
@@ -149,10 +160,12 @@ public class Comp_Paser {
     }
 
     static void Parse_Id(){
+        System.out.println("Parseing: Parse_Id()");
         Parse_Char();
     }
 
     static void Parse_Char_List(){
+        System.out.println("Parseing: Parse_Char_List()");
         if (current_Token.unknown_item.matches("[a-z]")){
             Parse_Char();
             Parse_Char_List();
@@ -166,6 +179,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Type(){
+        System.out.println("Parseing: Parse_Type()");
         switch (current_Token.unknown_item) {
             case "int":
                 Parse_Match("int");
@@ -177,12 +191,13 @@ public class Comp_Paser {
                 Parse_Match("boolean");
                 break;
             default:
+                Parse_Match("null");
                 break;
         }
     }
 
     static void Parse_Char(){
-        //ask him if this is correct
+        System.out.println("Parseing: Parse_Char()");
         switch (current_Token.unknown_item) {
             case "a":
                 Parse_Match("a");
@@ -269,10 +284,19 @@ public class Comp_Paser {
     }
 
     static void Parse_Space(){
-        Parse_Match(" ");
+        System.out.println("Parseing: Parse_Space()");
+        switch (current_Token.unknown_item) {
+            case " ":
+                Parse_Match(" ");
+                break;
+            default:
+                Parse_Match("null");
+                break;
+        }
     }
 
     static void Parse_Digit(){
+        System.out.println("Parseing: Parse_Digit()");
         switch (current_Token.unknown_item) {
             case "0":
                 Parse_Match("0");
@@ -311,6 +335,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Boolop(){
+        System.out.println("Parseing: Parse_Boolop()");
         switch (current_Token.unknown_item) {
             case "==":
                 Parse_Match("==");
@@ -325,6 +350,7 @@ public class Comp_Paser {
     }
 
     static void Parse_Boolval(){
+        System.out.println("Parseing: Parse_Boolval()");
         switch (current_Token.unknown_item) {
             case "false":
                 Parse_Match("false");
@@ -339,7 +365,15 @@ public class Comp_Paser {
     }
 
     static void Parse_intop(){
-        Parse_Match("+");
+        System.out.println("Parseing: Parse_intop()");
+        switch (current_Token.unknown_item) {
+            case "+":
+                Parse_Match("+");
+                break;
+            default:
+                Parse_Match("null");
+                break;
+        }
     }
 
     static void Parse_Match(String expected_Token){
@@ -358,7 +392,9 @@ public class Comp_Paser {
             //do not want to cosnume token (get rid of it/loose the memory for it)
             //inc program counter is done with for loop
         }else{
-            System.out.println("Parse Error: Expected " + expected_Token + " but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+            //this is the wrong error you need to ouptut what should be there and then what is expected not the null shit
+            //test to see if this works or not
+            System.out.println("Parse Error: Expected " + current_Token.description + " but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
             parse_num_errors++;
         }
     }
