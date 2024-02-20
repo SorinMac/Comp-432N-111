@@ -9,44 +9,62 @@ public class Comp_Paser {
     static int parse_num_errors = 0;
     static int debugg_mode_token = 0;
     static int debugg_mode_function = 1;
-    
+
+
+    //test to see if this all works or not
     public class Tree_Node{
         String name;
         Tree_Node parent;
         ArrayList<Tree_Node> children;
 
-        Tree_Node(String name){
-            this.name = name;
+        Tree_Node(){
+            this.name = "";
             this.parent = null;
             this.children = new ArrayList<>();
         }
 
     }
 
-    public class BST{
+    public class CST{
         Tree_Node root;
         Tree_Node current;
 
-        BST(){
+        CST(){
             this.root = null;
             this.current = null;
         }
 
-        public void addNode(){
+        public void addNode(String kind, String label){
+            Tree_Node Temp_Node = new Tree_Node();
+            Temp_Node.name = label;
 
+            if(this.root == null){
+                root = Temp_Node;
+            }else{
+                Temp_Node.parent = current;
+                Temp_Node.parent.children.add(Temp_Node);
+            }
+
+            if (kind != "leaf"){
+                current = Temp_Node;
+            }
         }
 
         public void end_all_children(){
-            
+            current = current.parent;
         }
     }
 
+    static CST Concreat_Syntax_Tree;
+
 
     public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
+        Concreat_Syntax_Tree = new CST();
         Parser_Token_List = Token_List;
         token_place = 0;
         parse_num_errors = 0;
         current_Token = Token_List.get(token_place);
+        Concreat_Syntax_Tree.addNode("root", "start");
         if(debugg_mode_token == 1){
             System.out.println("Parseing for token " + current_Token.unknown_item);
         }
@@ -55,12 +73,15 @@ public class Comp_Paser {
                 Parse_Program();
                 break;
             default:
-                Parse_Match("null");
+                Parse_Match("Block");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
+        
     }
 
     static void Parse_Program(){
+        Concreat_Syntax_Tree.addNode("branch", "program");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Program()");
         }
@@ -71,18 +92,22 @@ public class Comp_Paser {
         }else{
             System.out.println("Parse No errors :)");
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Block(){
+        Concreat_Syntax_Tree.addNode("branch", "block");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Block()");
         }
         Parse_Match("{");
         Parse_Statement_List();
         Parse_Match("}");
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Statement_List(){
+        Concreat_Syntax_Tree.addNode("branch", "statement_list");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Statement_List()");
         }
@@ -92,10 +117,11 @@ public class Comp_Paser {
         }else{
             // it’s a ɛ
         }
-        
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Statement(){
+        Concreat_Syntax_Tree.addNode("branch", "statement");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Statement()");
         }
@@ -112,9 +138,11 @@ public class Comp_Paser {
         }else if(current_Token.unknown_item.equals("{")){
             Parse_Block();
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Print_Statment(){
+        Concreat_Syntax_Tree.addNode("branch", "print_statment");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Print_Statment()");
         }
@@ -122,45 +150,54 @@ public class Comp_Paser {
         Parse_Match("(");
         Parse_Expr();
         Parse_Match(")");
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Assignment_Statment(){
+        Concreat_Syntax_Tree.addNode("branch", "assignment_statment");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Assignment_Statment()");
         }
         Parse_Id();
         Parse_Match("=");
         Parse_Expr();
-
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Var_Decl(){
+        Concreat_Syntax_Tree.addNode("branch", "var_decl");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Var_Decl()");
         }
         Parse_Type();
         Parse_Id();
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_While_Statment(){
+        Concreat_Syntax_Tree.addNode("branch", "while_statment");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_While_Statment()");
         }
         Parse_Match("while");
         Parse_Boolean_Expr();
         Parse_Block();
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_If_Statment(){
+        Concreat_Syntax_Tree.addNode("branch", "if_statment");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_If_Statment()");
         }
         Parse_Match("if");
         Parse_Boolean_Expr();
         Parse_Block();
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Expr(){
+        Concreat_Syntax_Tree.addNode("branch", "expr");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Expr()");
         }
@@ -173,9 +210,11 @@ public class Comp_Paser {
         }else{
             Parse_Id();
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Int_Expr(){
+        Concreat_Syntax_Tree.addNode("branch", "int_expr");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Int_Expr()");
         }
@@ -186,18 +225,22 @@ public class Comp_Paser {
         }else{
             Parse_Digit();
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_String_Expr(){
+        Concreat_Syntax_Tree.addNode("branch", "string_expr");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_String_Expr()");
         }
         Parse_Match("\"");
         Parse_Char_List();
         Parse_Match("\"");
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Boolean_Expr(){
+        Concreat_Syntax_Tree.addNode("branch", "boolean_expr");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Boolean_Expr()");
         }
@@ -210,17 +253,20 @@ public class Comp_Paser {
         }else{
             Parse_Boolval();
         }
-
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Id(){
+        Concreat_Syntax_Tree.addNode("branch", "id");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Id()");
         }
         Parse_Char();
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Char_List(){
+        Concreat_Syntax_Tree.addNode("branch", "char_list");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Char_List()");
         }
@@ -233,10 +279,11 @@ public class Comp_Paser {
         }else{
             // it’s a ɛ
         }
-
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Type(){
+        Concreat_Syntax_Tree.addNode("branch", "type");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Type()");
         }
@@ -254,9 +301,11 @@ public class Comp_Paser {
                 Parse_Match("Type");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Char(){
+        Concreat_Syntax_Tree.addNode("branch", "char");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Char()");
         }
@@ -343,9 +392,11 @@ public class Comp_Paser {
                 Parse_Match("Char");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Space(){
+        Concreat_Syntax_Tree.addNode("branch", "space");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Space()");
         }
@@ -357,9 +408,11 @@ public class Comp_Paser {
                 Parse_Match("Space");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Digit(){
+        Concreat_Syntax_Tree.addNode("branch", "digit");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Digit()");
         }
@@ -398,9 +451,11 @@ public class Comp_Paser {
                 Parse_Match("Digit");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Boolop(){
+        Concreat_Syntax_Tree.addNode("branch", "boolop");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Boolop()");
         }
@@ -415,9 +470,11 @@ public class Comp_Paser {
                 Parse_Match("Bool Op");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Boolval(){
+        Concreat_Syntax_Tree.addNode("branch", "boolval");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Boolval()");
         }
@@ -432,9 +489,11 @@ public class Comp_Paser {
                 Parse_Match("Boolean Value");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_intop(){
+        Concreat_Syntax_Tree.addNode("branch", "intop");
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_intop()");
         }
@@ -446,6 +505,7 @@ public class Comp_Paser {
                 Parse_Match("Int Op");
                 break;
         }
+        Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Match(String expected_Token){
@@ -460,9 +520,7 @@ public class Comp_Paser {
             if(debugg_mode_token == 1){
                 System.out.println("Parseing for token " + current_Token.unknown_item);
             }
-            //building tree logic i think
-            //do not want to cosnume token (get rid of it/loose the memory for it)
-            //inc program counter is done with for loop
+            Concreat_Syntax_Tree.addNode("leaf", expected_Token);
         }else{
             //this is the wrong error you need to ouptut what should be there and then what is expected not the null shit
             //test to see if this works or not
