@@ -1,7 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
 
+//things to do
+//check the is a leaf stuff and make sure it is right or not
+//test to see if the string stuff is being done correctly
+//and the print out for grow
+
 public class Comp_Paser {
+    //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
     static Comp_Lexer.TokenBuilder current_Token;
     static int token_place = 0;
@@ -9,9 +15,10 @@ public class Comp_Paser {
     static int parse_num_errors = 0;
     static int debugg_mode_token = 0;
     static int debugg_mode_function = 1;
+    static int Program_Num = 0;
 
 
-    //test to see if this all works or not
+    //class for the nodes of the CST
     public class Tree_Node{
         String name;
         Tree_Node parent;
@@ -25,6 +32,7 @@ public class Comp_Paser {
 
     }
 
+    //class for the actual CST and the root and current all that stuff
     public class CST{
         Tree_Node root;
         Tree_Node current;
@@ -34,55 +42,84 @@ public class Comp_Paser {
             this.current = null;
         }
 
+        //how we add node taken from https://www.labouseur.com/
         public void addNode(String kind, String label){
+            //creates a temp node to be used for placment on the cst
             Tree_Node Temp_Node = new Tree_Node();
             Temp_Node.name = label;
 
+            //if this is the first run then we just make it the root
             if(this.root == null){
                 root = Temp_Node;
+            //else we have to add it so that we can account for it 
             }else{
+                //the parent of this will be the one before or the current current ಠ_ಠ
                 Temp_Node.parent = current;
+                //then the child
                 Temp_Node.parent.children.add(Temp_Node);
             }
 
+            //if it is not a leaf node then that means we are still traversing down so we make the new current what the temp
+            //node was
             if (kind != "leaf"){
                 current = Temp_Node;
             }
         }
 
+        //this will be used to go back up the tree
         public void end_all_children(){
             current = current.parent;
         }
 
-        public void grow(Tree_Node Start_Node, int depth){
-
-        }
-    
-        public String CST_String_Output(Tree_Node Start_Node){
+        //this is to give the output of the tree
+        public void grow(Tree_Node Node, int depth){
+            //default 
             String output =  "";
-    
-            this.grow(Start_Node, 0);
 
-            return output;
-    
+            //will make the first set of dashes
+            for(int i = 0; i < depth; i++){
+                output += "-";
+            }
+
+            //something to check if the node is a leaf node (still needs to be fixed i think)
+            if(Node.name.equals("children") || Node.children.size() == 0){
+                output += "[" + Node.name + "]";
+                output += "\n";
+            }else{
+                //else its a branch so just output it
+                output += "<" + Node.name + "> \n";
+                for(int i = 0; i < Node.children.size(); i++){
+                    grow(Node.children.get(i), depth + 1);
+                }
+            }
+
+            //print it all out when done
+            System.out.println(output);
         }
         
     }
 
+    //decleration of the CST that will be used
     static CST Concreat_Syntax_Tree;
 
 
     public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
+        //some default values
         Concreat_Syntax_Tree = new CST();
         Parser_Token_List = Token_List;
         token_place = 0;
         parse_num_errors = 0;
+        Program_Num++;
         current_Token = Token_List.get(token_place);
 
+        //gives the node to the CST
         Concreat_Syntax_Tree.addNode("root", "start");
+        //to set or stop the debug mode
         if(debugg_mode_token == 1){
             System.out.println("Parseing for token " + current_Token.unknown_item);
         }
+
+        //this will check if the start is valid or not
         switch (Token_List.get(token_place).unknown_item) {
             case "{":
                 Parse_Program();
@@ -91,22 +128,36 @@ public class Comp_Paser {
                 Parse_Match("Block");
                 break;
         }
+        //this will be used with recursion to bring everything back up to the top/root
         Concreat_Syntax_Tree.end_all_children();
         
     }
 
     static void Parse_Program(){
+        //same kind of pattern
+        //this is the call for the node to be built
         Concreat_Syntax_Tree.addNode("branch", "program");
+        //debug stuff
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Program()");
         }
+        //then calls all the approeratie functions needed for the LL(1) based on the BNF
         Parse_Block();
         Parse_Match("$");
+        //if it gets to here thats the end of the current program so check for errors and print out tree
+        System.out.println("Parse for Program " + Program_Num + " Done");
         if(parse_num_errors > 0){
+            //this will be displayed if there are errors letting the user know
             System.out.println("Parse has " + parse_num_errors + " errors :(");
+            System.out.println("No CST will be made :(");
         }else{
+            //this will be displayed if there are no errors
             System.out.println("Parse No errors :)");
+            //and start the cst build and display
+            System.out.println("CST will be displayed :)");
+            Concreat_Syntax_Tree.grow(Concreat_Syntax_Tree.root, 0);
         }
+        //go back 
         Concreat_Syntax_Tree.end_all_children();
     }
 
