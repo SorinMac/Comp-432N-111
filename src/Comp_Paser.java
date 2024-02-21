@@ -53,6 +53,18 @@ public class Comp_Paser {
         public void end_all_children(){
             current = current.parent;
         }
+        
+    }
+
+    public void grow(CST Program_Concrete_Sytax_Tree, int depth){
+
+    }
+
+    public void CST_String_Output(CST Program_Concrete_Sytax_Tree){
+        String output =  "";
+
+        
+
     }
 
     static CST Concreat_Syntax_Tree;
