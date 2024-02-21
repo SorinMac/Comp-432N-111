@@ -53,18 +53,20 @@ public class Comp_Paser {
         public void end_all_children(){
             current = current.parent;
         }
+
+        public void grow(Tree_Node Start_Node, int depth){
+
+        }
+    
+        public String CST_String_Output(Tree_Node Start_Node){
+            String output =  "";
+    
+            this.grow(Start_Node, 0);
+
+            return output;
+    
+        }
         
-    }
-
-    public void grow(CST Program_Concrete_Sytax_Tree, int depth){
-
-    }
-
-    public void CST_String_Output(CST Program_Concrete_Sytax_Tree){
-        String output =  "";
-
-        
-
     }
 
     static CST Concreat_Syntax_Tree;
@@ -76,6 +78,7 @@ public class Comp_Paser {
         token_place = 0;
         parse_num_errors = 0;
         current_Token = Token_List.get(token_place);
+
         Concreat_Syntax_Tree.addNode("root", "start");
         if(debugg_mode_token == 1){
             System.out.println("Parseing for token " + current_Token.unknown_item);
