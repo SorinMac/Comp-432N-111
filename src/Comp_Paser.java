@@ -113,7 +113,6 @@ public class Comp_Paser {
         current_Token = Token_List.get(token_place);
 
         //gives the node to the CST
-        Concreat_Syntax_Tree.addNode("root", "start");
         //to set or stop the debug mode
         if(debugg_mode_token == 1){
             System.out.println("Parseing for token " + current_Token.unknown_item);
@@ -128,15 +127,13 @@ public class Comp_Paser {
                 Parse_Match("Block");
                 break;
         }
-        //this will be used with recursion to bring everything back up to the top/root
-        Concreat_Syntax_Tree.end_all_children();
         
     }
 
     static void Parse_Program(){
         //same kind of pattern
         //this is the call for the node to be built
-        Concreat_Syntax_Tree.addNode("branch", "program");
+        Concreat_Syntax_Tree.addNode("root", "program");
         //debug stuff
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Program()");
