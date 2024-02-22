@@ -82,19 +82,19 @@ public class Comp_Paser {
             }
 
             //something to check if the node is a leaf node (still needs to be fixed i think)
-            if(Node.name.equals("children") || Node.children.size() == 0){
+            if(Node.children.size() == 0){
                 output += "[" + Node.name + "]";
                 output += "\n";
+                System.out.println(output);
             }else{
                 //else its a branch so just output it
                 output += "<" + Node.name + "> \n";
+                System.out.println(output);
                 for(int i = 0; i < Node.children.size(); i++){
                     grow(Node.children.get(i), depth + 1);
                 }
             }
 
-            //print it all out when done
-            System.out.println(output);
         }
         
     }
@@ -159,35 +159,47 @@ public class Comp_Paser {
     }
 
     static void Parse_Block(){
+        //add the node when it is made
         Concreat_Syntax_Tree.addNode("branch", "block");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Block()");
         }
+        //reset fo things that are needed in order to do the rest of the work
         Parse_Match("{");
         Parse_Statement_List();
         Parse_Match("}");
+        //gpo back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Statement_List(){
+        //add the new node
         Concreat_Syntax_Tree.addNode("branch", "statement_list");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Statement_List()");
         }
+        //this will check to see what procedure the parser should take
         if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             Parse_Statement();
             Parse_Statement_List();
         }else{
             // it’s a ɛ
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Statement(){
+        //add the new node
         Concreat_Syntax_Tree.addNode("branch", "statement");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Statement()");
         }
+        //this is more checking to see what kind of statment that it is
+        //so that the parser cna figure out where to go with ll1
         if(current_Token.unknown_item.equals("print")){
             Parse_Print_Statment();
         }else if(current_Token.unknown_item.matches("[a-z]")){
@@ -201,18 +213,23 @@ public class Comp_Paser {
         }else if(current_Token.unknown_item.equals("{")){
             Parse_Block();
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Print_Statment(){
+        //add the node
         Concreat_Syntax_Tree.addNode("branch", "print_statment");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Print_Statment()");
         }
+        //the other steps that need to be taken based on the bnf
         Parse_Match("print");
         Parse_Match("(");
         Parse_Expr();
         Parse_Match(")");
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
