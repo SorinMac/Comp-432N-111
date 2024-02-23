@@ -2,9 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 //things to do
-//check the is a leaf stuff and make sure it is right or not
-//test to see if the string stuff is being done correctly
-//and the print out for grow
+//test to see if the output is correct for larger cases
+//test for mutiple program files
+
+//go back = going back on the node tree for other programs and such
 
 public class Comp_Paser {
     //lots of global values that will be explained later in the program
@@ -185,7 +186,7 @@ public class Comp_Paser {
             Parse_Statement();
             Parse_Statement_List();
         }else{
-            // it’s a ɛ
+            // it’s a ɛ (empty)
         }
         //go back
         Concreat_Syntax_Tree.end_all_children();
@@ -234,53 +235,72 @@ public class Comp_Paser {
     }
 
     static void Parse_Assignment_Statment(){
+        //adds the node 
         Concreat_Syntax_Tree.addNode("branch", "assignment_statment");
+        //debugginh
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Assignment_Statment()");
         }
+        //rest of the stuff that needs to be checked
         Parse_Id();
         Parse_Match("=");
         Parse_Expr();
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Var_Decl(){
+        //add the new node
         Concreat_Syntax_Tree.addNode("branch", "var_decl");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Var_Decl()");
         }
+        //rest of the stuff to check
         Parse_Type();
         Parse_Id();
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_While_Statment(){
+        //add to the node
         Concreat_Syntax_Tree.addNode("branch", "while_statment");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_While_Statment()");
         }
+        //rest of the stuff that needs to be checked
         Parse_Match("while");
         Parse_Boolean_Expr();
         Parse_Block();
+        //go back 
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_If_Statment(){
+        //add the node
         Concreat_Syntax_Tree.addNode("branch", "if_statment");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_If_Statment()");
         }
+        //rest of the stuff to check
         Parse_Match("if");
         Parse_Boolean_Expr();
         Parse_Block();
+        //gpo back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Expr(){
+        //add the node
         Concreat_Syntax_Tree.addNode("branch", "expr");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Expr()");
         }
+        //check whcih expr it is from the BNF
         if(current_Token.unknown_item.matches("[0-9]+")){
             Parse_Int_Expr();
         }else if(current_Token.unknown_item.equals("\"")){
@@ -290,14 +310,18 @@ public class Comp_Paser {
         }else{
             Parse_Id();
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Int_Expr(){
+        //add the new node
         Concreat_Syntax_Tree.addNode("branch", "int_expr");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Int_Expr()");
         }
+        //int is not strictly ll1 more like ll2 so did this to check for intop or just digit
         if(Parser_Token_List.get(token_place+1).unknown_item.equals("+")){
             Parse_Digit();
             Parse_intop();
@@ -305,25 +329,33 @@ public class Comp_Paser {
         }else{
             Parse_Digit();
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_String_Expr(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "string_expr");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_String_Expr()");
         }
+        //check the rest of the stuff
         Parse_Match("\"");
         Parse_Char_List();
         Parse_Match("\"");
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Boolean_Expr(){
+        //add the node
         Concreat_Syntax_Tree.addNode("branch", "boolean_expr");
+        //debugging
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Boolean_Expr()");
         }
+        //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
             Parse_Match("(");
             Parse_Expr();
@@ -333,23 +365,31 @@ public class Comp_Paser {
         }else{
             Parse_Boolval();
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Id(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "id");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Id()");
         }
+        //rest of stuff to check
         Parse_Char();
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Char_List(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "char_list");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Char_List()");
         }
+        //check which path to take based on BNF
         if (current_Token.unknown_item.matches("[a-z]")){
             Parse_Char();
             Parse_Char_List();
@@ -357,16 +397,20 @@ public class Comp_Paser {
             Parse_Space();
             Parse_Char_List();
         }else{
-            // it’s a ɛ
+            // it’s a ɛ (empty)
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Type(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "type");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Type()");
         }
+        //to get the expected value
         switch (current_Token.unknown_item) {
             case "int":
                 Parse_Match("int");
@@ -381,14 +425,18 @@ public class Comp_Paser {
                 Parse_Match("Type");
                 break;
         }
+        //go back 
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Char(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "char");
+        //debug
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Char()");
         }
+        //get expected
         switch (current_Token.unknown_item) {
             case "a":
                 Parse_Match("a");
@@ -472,14 +520,18 @@ public class Comp_Paser {
                 Parse_Match("Char");
                 break;
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Space(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "space");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Space()");
         }
+        //get the expected
         switch (current_Token.unknown_item) {
             case " ":
                 Parse_Match(" ");
@@ -488,14 +540,18 @@ public class Comp_Paser {
                 Parse_Match("Space");
                 break;
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Digit(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "digit");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Digit()");
         }
+        //get the expected
         switch (current_Token.unknown_item) {
             case "0":
                 Parse_Match("0");
@@ -531,14 +587,18 @@ public class Comp_Paser {
                 Parse_Match("Digit");
                 break;
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Boolop(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "boolop");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Boolop()");
         }
+        //get expected
         switch (current_Token.unknown_item) {
             case "==":
                 Parse_Match("==");
@@ -550,14 +610,18 @@ public class Comp_Paser {
                 Parse_Match("Bool Op");
                 break;
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Boolval(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "boolval");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Boolval()");
         }
+        //get expected
         switch (current_Token.unknown_item) {
             case "false":
                 Parse_Match("false");
@@ -569,14 +633,18 @@ public class Comp_Paser {
                 Parse_Match("Boolean Value");
                 break;
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_intop(){
+        //add node
         Concreat_Syntax_Tree.addNode("branch", "intop");
+        //debugg
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_intop()");
         }
+        //get expected
         switch (current_Token.unknown_item) {
             case "+":
                 Parse_Match("+");
@@ -585,25 +653,30 @@ public class Comp_Paser {
                 Parse_Match("Int Op");
                 break;
         }
+        //go back
         Concreat_Syntax_Tree.end_all_children();
     }
 
     static void Parse_Match(String expected_Token){
+        //will match the expected passed with the current and see
         if(current_Token.unknown_item.equals(expected_Token)){
+            //if match then move to next pointer and add the leaf node to the tree
             token_place++;
+            //end of list was causing problme had to do this to fix
+            //just says at end -1 to see what the last thing is
             if(token_place > Parser_Token_List.size()-1){
                 current_Token = Parser_Token_List.get(token_place-1);
             }else{
                 current_Token = Parser_Token_List.get(token_place);
             }
-
+            //will print out the current token on
             if(debugg_mode_token == 1){
                 System.out.println("Parseing for token " + current_Token.unknown_item);
             }
+            //add the leaf
             Concreat_Syntax_Tree.addNode("leaf", expected_Token);
         }else{
-            //this is the wrong error you need to ouptut what should be there and then what is expected not the null shit
-            //test to see if this works or not
+            //error message as well as keeping track of the amount of error for output
             System.out.println("Parse Error: Expected " + expected_Token + " but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
             parse_num_errors++;
         }
