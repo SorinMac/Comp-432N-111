@@ -68,6 +68,8 @@ public class Wheatley {
 
         //simple way to print out all the tokens in the array list
         if(Lexer_Output_Boolean == 1){
+            List<Comp_Lexer.TokenBuilder> Temp_Token_List = new ArrayList<>();
+            Temp_Token_List.addAll(Tokens_List);
             //output
             for(int i = 0; i < Tokens_List.size(); i++){
                 System.out.println(Tokens_List.get(i).description + " [ " + Tokens_List.get(i).unknown_item + " ] " + "Found at line " + Tokens_List.get(i).line_num + " : " + Tokens_List.get(i).place_num);
@@ -82,7 +84,10 @@ public class Wheatley {
                         System.out.println("Lexer failed :(");
                     }else{
                         System.out.println("Paser starting :)");
-                        Comp_Paser.Parser_Start(Tokens_List);
+                        //this to do the seperate sections
+                        Comp_Paser.Parser_Start(Temp_Token_List);
+                        //Temp_Token_List.addAll(i, Tokens_List);
+                        
                     }
                     lexer_num_of_error = 0;
                     System.out.println("End of program " + num_of_program + "\n");

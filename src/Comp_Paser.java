@@ -166,7 +166,7 @@ public class Comp_Paser {
         if(debugg_mode_function == 1){
             System.out.println("Parseing: Parse_Block()");
         }
-        //reset fo things that are needed in order to do the rest of the work
+        //reset of things that are needed in order to do the rest of the work
         Parse_Match("{");
         Parse_Statement_List();
         Parse_Match("}");
@@ -175,6 +175,11 @@ public class Comp_Paser {
     }
 
     static void Parse_Statement_List(){
+
+        
+        //repeats this twice when it loops back around
+
+
         //add the new node
         Concreat_Syntax_Tree.addNode("branch", "statement_list");
         //debugg
