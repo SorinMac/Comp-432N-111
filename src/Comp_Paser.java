@@ -3,7 +3,6 @@ import java.util.List;
 
 //things to do
 //test to see if the output is correct for larger cases
-//test for mutiple program files
 
 //go back = going back on the node tree for other programs and such
 
@@ -108,7 +107,6 @@ public class Comp_Paser {
         //some default values
         Concreat_Syntax_Tree = new CST();
         Parser_Token_List = Token_List;
-        token_place = 0;
         parse_num_errors = 0;
         Program_Num++;
         current_Token = Token_List.get(token_place);
@@ -178,7 +176,6 @@ public class Comp_Paser {
 
         
         //repeats this twice when it loops back around
-
 
         //add the new node
         Concreat_Syntax_Tree.addNode("branch", "statement_list");
