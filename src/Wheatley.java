@@ -10,6 +10,7 @@ public class Wheatley {
     public static void main(String[] args){
         Comp_Lexer Comp_Lexer = new Comp_Lexer();
         Comp_Paser Comp_Paser = new Comp_Paser();
+
         //sets the value up
         List<String> code = new ArrayList<>();
         List<Comp_Lexer.TokenBuilder> Tokens_List = new ArrayList<>();

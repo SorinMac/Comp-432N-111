@@ -2,9 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //things to do
-//test to see if the output is correct for larger cases
-
-//go back = going back on the node tree for other programs and such
+//fix error messages make them better 
 
 public class Comp_Paser {
     //lots of global values that will be explained later in the program
@@ -173,10 +171,6 @@ public class Comp_Paser {
     }
 
     static void Parse_Statement_List(){
-
-        
-        //repeats this twice when it loops back around
-
         //add the new node
         Concreat_Syntax_Tree.addNode("branch", "statement_list");
         //debugg
@@ -309,8 +303,12 @@ public class Comp_Paser {
             Parse_String_Expr();
         }else if(current_Token.unknown_item.equals("(") || current_Token.unknown_item.equals("true") || current_Token.unknown_item.equals("false")){
             Parse_Boolean_Expr();
-        }else{
+        }else if(current_Token.unknown_item.matches("[a-z]")){
             Parse_Id();
+        }else{
+             //error message as well as keeping track of the amount of error for output
+             System.out.println("Parse Error: Expected [IntExpr, StringExpr, BooleanExpr, ID] but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+             parse_num_errors++;
         }
         //go back
         Concreat_Syntax_Tree.end_all_children();
@@ -328,8 +326,12 @@ public class Comp_Paser {
             Parse_Digit();
             Parse_intop();
             Parse_Expr();
-        }else{
+        }else if(current_Token.unknown_item.matches("[0-9]+")){
             Parse_Digit();
+        }else{
+            //error message as well as keeping track of the amount of error for output
+            System.out.println("Parse Error: Expected [Digit, Intop, Expr] or [Digit] but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+            parse_num_errors++;
         }
         //go back
         Concreat_Syntax_Tree.end_all_children();

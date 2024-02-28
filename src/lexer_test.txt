@@ -1,0 +1,85 @@
+/*Long Test Case - Everything Except Boolean Declaration */
+{
+        /* Int Declaration */
+        int a
+        int b
+        a = 0
+        b=0
+        /* While Loop */
+        while (a != 3) {
+            print(a)
+            while (b != 3) {
+                print(b)
+                b = 1 + b
+                if (b == 2) {
+                    /* Print Statement */
+                    print("there is no spoon" /* This will do nothing */ )
+                }
+            }
+            b = 0
+            a = 1+a
+        }
+    }
+$
+
+/*LongTestCase-EverythingExceptBooleanDeclaration*/{/*IntDeclaration*/intaintba=0b=0/*WhileLoop*/while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){/*PrintStatement*/print("there is no 1spoon"/*Thiswilldonothing*/)}}b=-0a=1+a}}$
+
+{/* Comment!!!*/ () print=whileif"teststring" intstringbooleanfalse true ==!=+ a 0123456789}$
+
+/*  Boolean If Statements output: if statement worked*/
+{
+if true {
+    print("if statement worked")
+}
+if false{
+    print("if statement failed")
+}
+}$
+
+
+/*This is suppose to crash at the top since there is a space before the first line */
+ {
+    
+       int a
+       a = 3
+       int b
+       b = 4
+       a = b
+       print(a)
+       if (a == b) {
+          print(a)
+       }
+     }$
+
+{
+        int a
+        boolean b
+        string c
+       a = 9
+        b = true
+        {
+           print(a)
+           print(b)
+           b = false
+           c = "hello world"
+           int b
+           b = 0
+           {
+              print(c)
+              a = 1 + 2 + a
+              {
+                 print(b)
+              }
+           }
+           b = a
+           print(b)
+        }
+        print(b)
+    
+
+
+
+}$
+
+"a
+b"$
