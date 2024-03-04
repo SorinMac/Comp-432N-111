@@ -115,7 +115,6 @@ public class Comp_Paser {
             System.out.println("Parseing for token " + current_Token.unknown_item);
         }
 
-        System.out.println("Token place is " + token_place + " Done");
         Parse_Program();
         
         
@@ -134,7 +133,6 @@ public class Comp_Paser {
         Parse_Match("$");
         //if it gets to here thats the end of the current program so check for errors and print out tree
         System.out.println("Parse for Program " + Program_Num + " Done");
-        System.out.println("Token place is " + token_place + " Done");
 
         if(parse_num_errors > 0){
             //this will be displayed if there are errors letting the user know

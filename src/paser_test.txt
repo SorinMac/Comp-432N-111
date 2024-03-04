@@ -1,4 +1,4 @@
-/*valid*/
+/*valid 1*/
 {
 print(true)
 print(false)
@@ -12,13 +12,13 @@ print("end")
 print(a)
 }$
 
-/*valid*/
+/*valid 2*/
 {}$
 
-/*valid*/
+/*valid 3*/
 {{{}}}$
 
-/*valid*/
+/*valid 4*/
 /*Long Test Case - Everything Except Boolean Declaration */
 {
         /* Int Declaration */
@@ -43,7 +43,7 @@ print(a)
     }
 $
 
-/*valid*/
+/*valid 5*/
 {
         int a
         boolean b
@@ -59,7 +59,7 @@ $
            b = 0
            {
               print(c)
-              a = 1 + 2 + a
+              a = 1 + 2
               {
                  print(b)
               }
@@ -68,13 +68,14 @@ $
            print(b)
         }
         print(b)
+}$
     
 
 
-/*invalid*/
+/*invalid 6*/
 }$
 
-/*valid*/
+/*valid 7*/
 {
     
        int a
@@ -88,19 +89,18 @@ $
        }
      }$
 
-/*invalid*/
+/*invalid 8*/
 {
     if(!=)
 }$
 
-/*invalid*/
+/*invalid 9*/
 {
-    print(7)
+    print(7 print a)
 }$
 
-/*invalid*/
-/* testing new error messages */
+/*valid 10*/
 {
-    print(!=)
+    print(7)
 }$
 
