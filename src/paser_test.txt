@@ -1,3 +1,4 @@
+/*valid*/
 {
 print(true)
 print(false)
@@ -11,10 +12,13 @@ print("end")
 print(a)
 }$
 
+/*valid*/
 {}$
 
+/*valid*/
 {{{}}}$
 
+/*valid*/
 /*Long Test Case - Everything Except Boolean Declaration */
 {
         /* Int Declaration */
@@ -39,6 +43,7 @@ print(a)
     }
 $
 
+/*valid*/
 {
         int a
         boolean b
@@ -66,9 +71,10 @@ $
     
 
 
-
+/*invalid*/
 }$
 
+/*valid*/
 {
     
        int a
@@ -82,12 +88,19 @@ $
        }
      }$
 
+/*invalid*/
 {
     if(!=)
 }$
 
-/*goes to digit fist since it does not see the plus and then goes through*/
+/*invalid*/
 {
-    print(7 true a)
+    print(7)
+}$
+
+/*invalid*/
+/* testing new error messages */
+{
+    print(!=)
 }$
 

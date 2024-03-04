@@ -115,15 +115,9 @@ public class Comp_Paser {
             System.out.println("Parseing for token " + current_Token.unknown_item);
         }
 
-        //this will check if the start is valid or not
-        switch (Token_List.get(token_place).unknown_item) {
-            case "{":
-                Parse_Program();
-                break;
-            default:
-                Parse_Match("Block");
-                break;
-        }
+        System.out.println("Token place is " + token_place + " Done");
+        Parse_Program();
+        
         
     }
 
@@ -140,6 +134,8 @@ public class Comp_Paser {
         Parse_Match("$");
         //if it gets to here thats the end of the current program so check for errors and print out tree
         System.out.println("Parse for Program " + Program_Num + " Done");
+        System.out.println("Token place is " + token_place + " Done");
+
         if(parse_num_errors > 0){
             //this will be displayed if there are errors letting the user know
             System.out.println("Parse has " + parse_num_errors + " errors :(");
@@ -314,6 +310,7 @@ public class Comp_Paser {
         Concreat_Syntax_Tree.end_all_children();
     }
 
+    //this causes error in the case that when it does not see the plus but there is still more than one thing there
     static void Parse_Int_Expr(){
         //add the new node
         Concreat_Syntax_Tree.addNode("branch", "int_expr");
@@ -366,8 +363,12 @@ public class Comp_Paser {
             Parse_Boolop();
             Parse_Expr();
             Parse_Match(")");
-        }else{
+        }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
             Parse_Boolval();
+        }else{
+            //error message as well as keeping track of the amount of error for output
+            System.out.println("Parse Error: Expected [Expr, boolop, Expr] or [boolval] but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+            parse_num_errors++;
         }
         //go back
         Concreat_Syntax_Tree.end_all_children();
