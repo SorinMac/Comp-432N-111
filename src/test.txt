@@ -1,3 +1,9 @@
-{
-    print(1+2+3+4)
-}$
+{a=12}$
+
+{thisisnotalexeme}$
+
+{a}$
+
+{string 1}$
+
+{print(a+4)}$

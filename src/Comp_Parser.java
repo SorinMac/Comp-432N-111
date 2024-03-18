@@ -103,6 +103,7 @@ public class Comp_Parser {
 
     public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
         //some default values
+        token_place = 0;
         Concreat_Syntax_Tree = new CST();
         Parser_Token_List = Token_List;
         parse_num_errors = 0;

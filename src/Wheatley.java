@@ -14,7 +14,6 @@ public class Wheatley {
         //sets the value up
         List<String> code = new ArrayList<>();
         List<Comp_Lexer.TokenBuilder> Tokens_List = new ArrayList<>();
-        List<Comp_Lexer.TokenBuilder> Temp_Token_Holder = new ArrayList<>();
         //nums of the error and number of programs
         int num_of_program = 1;
         int lexer_num_of_error = 0;
@@ -27,7 +26,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File(args[0]); //"src/parser_test.txt" or args[0]
+            File commandTXT = new File("src/test.txt"); //"src/parser_test.txt" or args[0]
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -54,65 +53,60 @@ public class Wheatley {
                 }
             }
 
-            Temp_Token_Holder = Comp_Lexer.Lexer(code.get(i), i);
+            Tokens_List = Comp_Lexer.Lexer(code.get(i), i);
 
-            if(Temp_Token_Holder.size() > 0){
-                for(int k  = 0; k < Temp_Token_Holder.size(); k++){
-                    //adding to the total holder
-                    Tokens_List.add(Temp_Token_Holder.get(k));
+            //make this so that it only happens
+            if(Tokens_List.size() > 0){
+                    if(Lexer_Output_Boolean == 1){
+                        //output
+                        for(int l = 0; l < Tokens_List.size(); l++){
+                            System.out.println(Tokens_List.get(l).description + " [ " + Tokens_List.get(l).unknown_item + " ] " + "Found at line " + Tokens_List.get(l).line_num + " : " + Tokens_List.get(l).place_num);
+
+                            if(Tokens_List.get(l).description.contains("Error")){
+                                lexer_num_of_error++;
+                            }
+
+                            if(Tokens_List.get(l).unknown_item.equals("$")){
+                                System.out.println("Lexer Number of Errors is " + lexer_num_of_error);
+                                if(lexer_num_of_error > 0){
+                                    System.out.println("Lexer failed :(");
+                                }else{
+                                    System.out.println("Paser starting :)");
+                                    Comp_Paser.Parser_Start(Tokens_List);
+                                }
+                                lexer_num_of_error = 0;
+                                System.out.println("End of program " + num_of_program + "\n");
+                                num_of_program++;
+                            }
+                        }
+
+                        //checking for the error tokens and then removing them 
+                        //makes the for loop get out of order
+                        for(int l = 0; l < Tokens_List.size(); l++){
+                            Comp_Lexer.TokenBuilder Token = Tokens_List.get(l);
+                            if(Token.description.contains("Error")){
+                                Tokens_List.remove(Token);
+                            }
+                        }
+
+                        }else{
+                            for(int l = 0; l < Tokens_List.size(); l++){
+                                if(Tokens_List.get(l).description.contains("Error")){
+                                    lexer_num_of_error++;
+                                }
+                            }
+                            
+                            if(lexer_num_of_error > 0){
+                                System.out.println("Lexer Error did not fully compile :( \n");
+                            }else{
+                                System.out.println("Done");
+                                System.out.println("Paser starting :)");
+                                Comp_Paser.Parser_Start(Tokens_List);
+                            } 
                 }
 
                 //then clearing the temp before i the compiler pulls in a new string
-                Temp_Token_Holder.clear();
-            }
-        }
-
-        //simple way to print out all the tokens in the array list
-        if(Lexer_Output_Boolean == 1){
-            //output
-            for(int i = 0; i < Tokens_List.size(); i++){
-                System.out.println(Tokens_List.get(i).description + " [ " + Tokens_List.get(i).unknown_item + " ] " + "Found at line " + Tokens_List.get(i).line_num + " : " + Tokens_List.get(i).place_num);
-
-                if(Tokens_List.get(i).description.contains("Error")){
-                    lexer_num_of_error++;
-                }
-
-                if(Tokens_List.get(i).unknown_item.equals("$")){
-                    System.out.println("Lexer Number of Errors is " + lexer_num_of_error);
-                    if(lexer_num_of_error > 0){
-                        System.out.println("Lexer failed :(");
-                    }else{
-                        System.out.println("Paser starting :)");
-                        Comp_Paser.Parser_Start(Tokens_List);
-                    }
-                    lexer_num_of_error = 0;
-                    System.out.println("End of program " + num_of_program + "\n");
-                    num_of_program++;
-                }
-            }
-
-            //checking for the error tokens and then removing them 
-            //makes the for loop get out of order
-            for(int i = 0; i < Tokens_List.size(); i++){
-                Comp_Lexer.TokenBuilder Token = Tokens_List.get(i);
-                if(Token.description.contains("Error")){
-                    Tokens_List.remove(Token);
-                }
-            }
-
-        }else{
-            for(int i = 0; i < Tokens_List.size(); i++){
-                if(Tokens_List.get(i).description.contains("Error")){
-                    lexer_num_of_error++;
-                }
-            }
-            
-            if(lexer_num_of_error > 0){
-                System.out.println("Lexer Error did not fully compile :( \n");
-            }else{
-                System.out.println("Done");
-                System.out.println("Paser starting :)");
-                Comp_Paser.Parser_Start(Tokens_List);
+                Tokens_List.clear();
             }
         }
 
