@@ -9,7 +9,7 @@ public class Wheatley {
 
     public static void main(String[] args){
         Comp_Lexer Comp_Lexer = new Comp_Lexer();
-        Comp_Paser Comp_Paser = new Comp_Paser();
+        Comp_Parser Comp_Paser = new Comp_Parser();
 
         //sets the value up
         List<String> code = new ArrayList<>();
