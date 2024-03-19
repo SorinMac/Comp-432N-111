@@ -101,7 +101,7 @@ public class Comp_Parser {
     static CST Concreat_Syntax_Tree;
 
 
-    public void Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
+    public int Parser_Start(List<Comp_Lexer.TokenBuilder> Token_List){
         //some default values
         token_place = 0;
         Concreat_Syntax_Tree = new CST();
@@ -117,6 +117,8 @@ public class Comp_Parser {
         }
 
         Parse_Program();
+
+        return parse_num_errors;
         
         
     }

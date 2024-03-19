@@ -10,6 +10,8 @@ public class Wheatley {
     public static void main(String[] args){
         Comp_Lexer Comp_Lexer = new Comp_Lexer();
         Comp_Parser Comp_Paser = new Comp_Parser();
+        Comp_AST Comp_AST = new Comp_AST();
+        int parse_errors = 0;
 
         //sets the value up
         List<String> code = new ArrayList<>();
@@ -59,6 +61,7 @@ public class Wheatley {
             if(Tokens_List.size() > 0){
                     if(Lexer_Output_Boolean == 1){
                         //output
+                        parse_errors = 0;
                         for(int l = 0; l < Tokens_List.size(); l++){
                             System.out.println(Tokens_List.get(l).description + " [ " + Tokens_List.get(l).unknown_item + " ] " + "Found at line " + Tokens_List.get(l).line_num + " : " + Tokens_List.get(l).place_num);
 
@@ -72,8 +75,16 @@ public class Wheatley {
                                     System.out.println("Lexer failed :(");
                                 }else{
                                     System.out.println("Paser starting :)");
-                                    Comp_Paser.Parser_Start(Tokens_List);
+                                    parse_errors = Comp_Paser.Parser_Start(Tokens_List);
                                 }
+
+                                if(parse_errors == 0){
+                                    System.out.println("Semantic Analysis starting :)");
+                                    
+                                }else{
+                                    System.out.println("Paser Had Errors Ending :(");
+                                }
+                                
                                 lexer_num_of_error = 0;
                                 System.out.println("End of program " + num_of_program + "\n");
                                 num_of_program++;
