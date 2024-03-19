@@ -1,9 +1,6 @@
+{"not a statment"
+}$
+
 {a=12}$
 
-{thisisnotalexeme}$
-
-{a}$
-
-{string 1}$
-
-{print(a+4)}$
+{1 = 2}$
