@@ -16,6 +16,7 @@ public class Wheatley {
         //sets the value up
         List<String> code = new ArrayList<>();
         List<Comp_Lexer.TokenBuilder> Tokens_List = new ArrayList<>();
+        List<Comp_Lexer.TokenBuilder> Token_Holder = new ArrayList<>();
         //nums of the error and number of programs
         int num_of_program = 1;
         int lexer_num_of_error = 0;
@@ -47,7 +48,6 @@ public class Wheatley {
         //going to store all the Tokens into a arraylist so that i do not have to worry about the amount i need alocated to the array
         //Lexer will also be the function in which i will do the Lexer's work
         for(int i = 0; i < code.size(); i++){
-            //temp holder
             //since we go in line by line (as best test case) then i need a temp holder to add to the total holder
             if(code.get(i).isEmpty() && i == code.size()-1){
                 if(!code.get(i-1).contains("$")){
@@ -55,7 +55,18 @@ public class Wheatley {
                 }
             }
 
-            Tokens_List = Comp_Lexer.Lexer(code.get(i), i);
+            for(int l = 0; l < code.size(); l++){
+                //returns a array list to make Tokenlist equal too
+                Tokens_List = Comp_Lexer.Lexer(code.get(l), l);
+
+                for(int k = 0; k < Tokens_List.size(); k++){
+                    Token_Holder.add(Tokens_List.get(k));
+                }
+
+                if(code.get(l).contains("$")){
+                    break;
+                }
+            }
 
             //make this so that it only happens
             if(Tokens_List.size() > 0){
@@ -80,6 +91,7 @@ public class Wheatley {
 
                                 if(parse_errors == 0){
                                     System.out.println("Semantic Analysis starting :)");
+                                    Comp_AST.Start_AST_Build(Tokens_List);
                                     
                                 }else{
                                     System.out.println("Paser Had Errors Ending :(");

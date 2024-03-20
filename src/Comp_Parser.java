@@ -1,9 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-//things to do
-//fix error messages make them better 
-
 public class Comp_Parser {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();

@@ -1,5 +1,4 @@
-{a=2}$
-
-{a=2}$
-
-{1=2}$
+{int a 
+boolean b 
+string c
+}$
