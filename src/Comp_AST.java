@@ -1,6 +1,6 @@
 //things to do 
-//only works one line at a time (fix this for the Wheatley Line 50)
 //rest of logic for AST
+//if, while, a = 1 + 2, !=, ==
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +53,25 @@ public class Comp_AST {
                     Abstract_Syntax_Tree.objects.add(temp_node0);
                     AST_Node temp_node1 = new AST_Node(Token_List.get(i-1).unknown_item, Token_List.get(i-1).line_num, Token_List.get(i-1).place_num);
                     Abstract_Syntax_Tree.objects.add(temp_node1);
-                    AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node2);
+
+                    if(Token_List.get(i+1).unknown_item.equals("\"")){
+                        String holder = "";
+
+                        for(int k = i+2; k < Token_List.size(); k++){
+                            holder = holder + Token_List.get(k).unknown_item;
+
+                            if(Token_List.get(k).unknown_item.equals("\"")){
+                                i = k;
+                                break;
+                            }
+                        }
+
+                        AST_Node temp_node3 = new AST_Node(holder, Token_List.get(i).line_num, Token_List.get(i).place_num);
+                        Abstract_Syntax_Tree.objects.add(temp_node3);
+                    }else{
+                        AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
+                        Abstract_Syntax_Tree.objects.add(temp_node2);
+                    }
                 }else if(Token_List.get(i).unknown_item.equals("string")){
                     AST_Node temp_node0 = new AST_Node("Variable_Decleration", Token_List.get(i).line_num, Token_List.get(i).place_num);
                     Abstract_Syntax_Tree.objects.add(temp_node0);
@@ -76,6 +93,33 @@ public class Comp_AST {
                     Abstract_Syntax_Tree.objects.add(temp_node1);
                     AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
                     Abstract_Syntax_Tree.objects.add(temp_node2);
+                }else if(Token_List.get(i).unknown_item.equals("print")){
+                    AST_Node temp_node0 = new AST_Node("Print_Statment", Token_List.get(i).line_num, Token_List.get(i).place_num);
+                    Abstract_Syntax_Tree.objects.add(temp_node0);
+
+                    String holder = "";
+
+                    if(Token_List.get(i+1).unknown_item.equals("(")){
+                        if(Token_List.get(i+2).unknown_item.equals("\"")){
+                            i = i + 3;
+                            for(int k = i; k < Token_List.size(); k++){
+                                holder = holder + Token_List.get(k).unknown_item;
+
+                                if(Token_List.get(k).unknown_item.equals("\"")){
+                                    i = k;
+                                    break;
+                                }
+                            }
+
+                            AST_Node temp_node3 = new AST_Node(holder, Token_List.get(i).line_num, Token_List.get(i).place_num);
+                            Abstract_Syntax_Tree.objects.add(temp_node3);
+                        }else{
+                            AST_Node temp_node3 = new AST_Node(Token_List.get(i+2).unknown_item, Token_List.get(i+2).line_num, Token_List.get(i+2).place_num);
+                            Abstract_Syntax_Tree.objects.add(temp_node3);
+                        }
+                        
+                    }
+                    
                 }
             }
         }
