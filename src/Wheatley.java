@@ -87,7 +87,7 @@ public class Wheatley {
 
                                 if(parse_errors == 0){
                                     System.out.println("Semantic Analysis starting :)");
-                                    Comp_AST.Start_AST_Build(Tokens_List);
+                                    Comp_AST.AST_Start(Tokens_List);
                                     
                                 }else{
                                     System.out.println("Paser Had Errors Ending :(");

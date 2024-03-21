@@ -1,132 +1,333 @@
-//things to do 
-//rest of logic for AST
-//if, while, a = 1 + 2, !=, ==
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Comp_AST {
+    //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
+    static Comp_Lexer.TokenBuilder current_Token;
+    static List<Comp_Lexer.TokenBuilder> AST_Token_List;
+    static int token_place = 0;
+    static int debugg_mode_token = 0;
+    static int debugg_mode_function = 0;
+    static int Program_Num = 0;
 
-    public class AST_Node{
-        String item;
-        int line_num;
-        int line_place;
 
-        AST_Node(String item, int line_num, int line_place){
-            this.item = item;
-            this.line_num = line_num;
-            this.line_place = line_place;
+    //class for the nodes of the CST
+    public class Tree_Node{
+        String name;
+        Tree_Node parent;
+        ArrayList<Tree_Node> children;
+
+        Tree_Node(){
+            this.name = "";
+            this.parent = null;
+            this.children = new ArrayList<>();
         }
 
     }
 
-    public class AST {
-        AST_Node root;
-        ArrayList<AST_Node> objects;
+    //class for the actual CST and the root and current all that stuff
+    public class AST{
+        Tree_Node root;
+        Tree_Node current;
 
         AST(){
             this.root = null;
-            this.objects = new ArrayList<>();
+            this.current = null;
+        }
+
+        //how we add node taken from https://www.labouseur.com/
+        public void addNode(String kind, String label){
+            //creates a temp node to be used for placment on the cst
+            Tree_Node Temp_Node = new Tree_Node();
+            Temp_Node.name = label;
+
+            //if this is the first run then we just make it the root
+            if(this.root == null){
+                root = Temp_Node;
+            //else we have to add it so that we can account for it 
+            }else{
+                //the parent of this will be the one before or the current current ಠ_ಠ
+                Temp_Node.parent = current;
+                //then the child
+                Temp_Node.parent.children.add(Temp_Node);
+            }
+
+            //if it is not a leaf node then that means we are still traversing down so we make the new current what the temp
+            //node was
+            if (kind != "leaf"){
+                current = Temp_Node;
+            }
+        }
+
+        //this will be used to go back up the tree
+        public void end_all_children(){
+            current = current.parent;
+        }
+
+        //this is to give the output of the tree
+        public void grow(Tree_Node Node, int depth){
+            //default 
+            String output =  "";
+
+            //will make the first set of dashes
+            for(int i = 0; i < depth; i++){
+                output += "-";
+            }
+
+            //something to check if the node is a leaf node (still needs to be fixed i think)
+            if(Node.children.size() == 0){
+                output += "[" + Node.name + "]";
+                output += "\n";
+                System.out.println(output);
+            }else{
+                //else its a branch so just output it
+                output += "<" + Node.name + "> \n";
+                System.out.println(output);
+                for(int i = 0; i < Node.children.size(); i++){
+                    grow(Node.children.get(i), depth + 1);
+                }
+            }
+
         }
         
     }
 
-    public void Start_AST_Build(List<Comp_Lexer.TokenBuilder> Token_List){
+    //decleration of the CST that will be used
+    static AST Abstract_Syntax_Tree;
 
-        AST Abstract_Syntax_Tree = new AST();
 
-        for(int i = 0; i < Token_List.size(); i++){
-            if (Token_List.get(i).unknown_item.equals("{") && Abstract_Syntax_Tree.root == null){
-                AST_Node node = new AST_Node("Block", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                Abstract_Syntax_Tree.root = node;
-            }else{
-                //this will be the logic to handle what else needs to be added
-                if(Token_List.get(i).unknown_item.equals("{")){
-                    AST_Node node = new AST_Node("Block", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(node);
-                }else if(Token_List.get(i).unknown_item.equals("}")){
-                    AST_Node node = new AST_Node("End_Block", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(node);
-                }else if(Token_List.get(i).unknown_item.equals("=")){
-                    AST_Node temp_node0 = new AST_Node("Assignment", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node0);
-                    AST_Node temp_node1 = new AST_Node(Token_List.get(i-1).unknown_item, Token_List.get(i-1).line_num, Token_List.get(i-1).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node1);
+    public void AST_Start(List<Comp_Lexer.TokenBuilder> Token_List){
+        //some default values
+        token_place = 0;
+        Abstract_Syntax_Tree = new AST();
+        AST_Token_List = Token_List;
+        Program_Num++;
+        current_Token = Token_List.get(token_place);
 
-                    if(Token_List.get(i+1).unknown_item.equals("\"")){
-                        String holder = "";
-
-                        for(int k = i+2; k < Token_List.size(); k++){
-                            holder = holder + Token_List.get(k).unknown_item;
-
-                            if(Token_List.get(k).unknown_item.equals("\"")){
-                                i = k;
-                                break;
-                            }
-                        }
-
-                        AST_Node temp_node3 = new AST_Node(holder, Token_List.get(i).line_num, Token_List.get(i).place_num);
-                        Abstract_Syntax_Tree.objects.add(temp_node3);
-                    }else{
-                        AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
-                        Abstract_Syntax_Tree.objects.add(temp_node2);
-                    }
-                }else if(Token_List.get(i).unknown_item.equals("string")){
-                    AST_Node temp_node0 = new AST_Node("Variable_Decleration", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node0);
-                    AST_Node temp_node1 = new AST_Node(Token_List.get(i).unknown_item, Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node1);
-                    AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node2);
-                }else if(Token_List.get(i).unknown_item.equals("int")){
-                    AST_Node temp_node0 = new AST_Node("Variable_Decleration", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node0);
-                    AST_Node temp_node1 = new AST_Node(Token_List.get(i).unknown_item, Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node1);
-                    AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node2);
-                }else if(Token_List.get(i).unknown_item.equals("boolean")){
-                    AST_Node temp_node0 = new AST_Node("Variable_Decleration", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node0);
-                    AST_Node temp_node1 = new AST_Node(Token_List.get(i).unknown_item, Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node1);
-                    AST_Node temp_node2 = new AST_Node(Token_List.get(i+1).unknown_item, Token_List.get(i+1).line_num, Token_List.get(i+1).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node2);
-                }else if(Token_List.get(i).unknown_item.equals("print")){
-                    AST_Node temp_node0 = new AST_Node("Print_Statment", Token_List.get(i).line_num, Token_List.get(i).place_num);
-                    Abstract_Syntax_Tree.objects.add(temp_node0);
-
-                    String holder = "";
-
-                    if(Token_List.get(i+1).unknown_item.equals("(")){
-                        if(Token_List.get(i+2).unknown_item.equals("\"")){
-                            i = i + 3;
-                            for(int k = i; k < Token_List.size(); k++){
-                                holder = holder + Token_List.get(k).unknown_item;
-
-                                if(Token_List.get(k).unknown_item.equals("\"")){
-                                    i = k;
-                                    break;
-                                }
-                            }
-
-                            AST_Node temp_node3 = new AST_Node(holder, Token_List.get(i).line_num, Token_List.get(i).place_num);
-                            Abstract_Syntax_Tree.objects.add(temp_node3);
-                        }else{
-                            AST_Node temp_node3 = new AST_Node(Token_List.get(i+2).unknown_item, Token_List.get(i+2).line_num, Token_List.get(i+2).place_num);
-                            Abstract_Syntax_Tree.objects.add(temp_node3);
-                        }
-                        
-                    }
-                    
-                }
-            }
-        }
+        AST_Program();
     }
-}
 
-/*else if(Token_List.get(i).unknown_item.equals("$")){
-    AST_Node temp_node0 = new AST_Node("End_Of_Program", Token_List.get(i).line_num, Token_List.get(i).place_num);
-    Abstract_Syntax_Tree.objects.add(temp_node0);
-}*/
+    static void AST_Program(){
+        //same kind of pattern
+        //this is the call for the node to be built
+        Abstract_Syntax_Tree.addNode("root", "program");
+        
+        //then calls all the approeratie functions needed for the LL(1) based on the BNF
+        AST_Block();
+        Abstract_Syntax_Tree.addNode("leaf", "$");
+        //if it gets to here thats the end of the current program so check for errors and print out tree
+        System.out.println("AST for Program " + Program_Num + " Done");
+
+        //go back 
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Block(){
+        //add the node when it is made
+        Abstract_Syntax_Tree.addNode("branch", "block");
+        
+        //reset of things that are needed in order to do the rest of the work
+        Abstract_Syntax_Tree.addNode("leaf", "{");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        AST_Statement_List();
+        Abstract_Syntax_Tree.addNode("leaf", "}");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        //gpo back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Statement_List(){
+       
+        //this will check to see what procedure the ASTr should take
+        if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
+            AST_Statement();
+            AST_Statement_List();
+        }else{
+            // it’s a ɛ (empty)
+        }
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Statement(){
+        
+        //this is more checking to see what kind of statment that it is
+        //so that the ASTr cna figure out where to go with ll1
+        if(current_Token.unknown_item.equals("print")){
+            AST_Print_Statment();
+        }else if(current_Token.unknown_item.matches("[a-z]")){
+            AST_Assignment_Statment();
+        }else if(current_Token.unknown_item.matches("int|string|boolean")){
+            AST_Var_Decl();
+        }else if(current_Token.unknown_item.equals("while")){
+            AST_While_Statment();
+        }else if(current_Token.unknown_item.equals("if")){
+            AST_If_Statment();
+        }else if(current_Token.unknown_item.equals("{")){
+            AST_Block();
+        }
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Print_Statment(){
+        //add the node
+        Abstract_Syntax_Tree.addNode("branch", "print_statment");
+        
+        //the other steps that need to be taken based on the bnf
+        Abstract_Syntax_Tree.addNode("leaf", "print");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        Abstract_Syntax_Tree.addNode("leaf", "(");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        AST_Expr();
+        Abstract_Syntax_Tree.addNode("leaf", ")");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Assignment_Statment(){
+        //adds the node 
+        Abstract_Syntax_Tree.addNode("branch", "assignment_statment");
+        
+        //rest of the stuff that needs to be checked
+        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        AST_Expr();
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Var_Decl(){    
+        //rest of the stuff to check
+        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_While_Statment(){
+        //add to the node
+        Abstract_Syntax_Tree.addNode("branch", "while_statment");
+        
+        //rest of the stuff that needs to be checked
+        Abstract_Syntax_Tree.addNode("leaf", "while");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        AST_Boolean_Expr();
+        AST_Block();
+        //go back 
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_If_Statment(){
+        //add the node
+        Abstract_Syntax_Tree.addNode("branch", "if_statment");
+        
+        //rest of the stuff to check
+        Abstract_Syntax_Tree.addNode("leaf", "if");
+        AST_Boolean_Expr();
+        AST_Block();
+        //gpo back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Expr(){
+        
+        //check whcih expr it is from the BNF
+        if(current_Token.unknown_item.matches("[0-9]+")){
+            AST_Int_Expr();
+        }else if(current_Token.unknown_item.equals("\"")){
+            AST_String_Expr();
+        }else if(current_Token.unknown_item.equals("(") || current_Token.unknown_item.equals("true") || current_Token.unknown_item.equals("false")){
+            AST_Boolean_Expr();
+        }else if(current_Token.unknown_item.matches("[a-z]")){
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+        }
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    //this causes error in the case that when it does not see the plus but there is still more than one thing there
+    static void AST_Int_Expr(){
+        
+        //int is not strictly ll1 more like ll2 so did this to check for intop or just digit
+        if(AST_Token_List.get(token_place+1).unknown_item.equals("+")){
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+            AST_Expr();
+        }else if(current_Token.unknown_item.matches("[0-9]+")){
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+        }else{
+            //error message as well as keeping track of the amount of error for output
+            System.out.println("AST Error: Expected [Digit, Intop, Expr] or [Digit] but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+    
+        }
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_String_Expr(){
+        
+        //check the rest of the stuff
+        Abstract_Syntax_Tree.addNode("leaf", "\"");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        Abstract_Syntax_Tree.addNode("leaf", "\"");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+    static void AST_Boolean_Expr(){
+        
+        //check to see which path to take from the BNF
+        if(current_Token.unknown_item.equals("(")){
+            Abstract_Syntax_Tree.addNode("leaf", "(");
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+            AST_Expr();
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+            AST_Expr();
+            Abstract_Syntax_Tree.addNode("leaf", ")");
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+        }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+        }else{
+            //error message as well as keeping track of the amount of error for output
+            System.out.println("AST Error: Expected [Expr, boolop, Expr] or [boolval] but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
+            
+        }
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
+    }
+
+}
