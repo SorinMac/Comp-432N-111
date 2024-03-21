@@ -2,3 +2,8 @@
 boolean b 
 string c
 }$
+
+{int d
+boolean e
+string f
+}$

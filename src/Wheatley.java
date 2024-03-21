@@ -16,7 +16,6 @@ public class Wheatley {
         //sets the value up
         List<String> code = new ArrayList<>();
         List<Comp_Lexer.TokenBuilder> Tokens_List = new ArrayList<>();
-        List<Comp_Lexer.TokenBuilder> Token_Holder = new ArrayList<>();
         //nums of the error and number of programs
         int num_of_program = 1;
         int lexer_num_of_error = 0;
@@ -55,13 +54,10 @@ public class Wheatley {
                 }
             }
 
-            for(int l = 0; l < code.size(); l++){
+            for(int l = i; l < code.size(); l++){
                 //returns a array list to make Tokenlist equal too
                 Tokens_List = Comp_Lexer.Lexer(code.get(l), l);
-
-                for(int k = 0; k < Tokens_List.size(); k++){
-                    Token_Holder.add(Tokens_List.get(k));
-                }
+                i = l;
 
                 if(code.get(l).contains("$")){
                     break;
@@ -112,25 +108,26 @@ public class Wheatley {
                             }
                         }
 
-                        }else{
-                            for(int l = 0; l < Tokens_List.size(); l++){
-                                if(Tokens_List.get(l).description.contains("Error")){
-                                    lexer_num_of_error++;
-                                }
+                    }else{
+                        for(int l = 0; l < Tokens_List.size(); l++){
+                            if(Tokens_List.get(l).description.contains("Error")){
+                                lexer_num_of_error++;
                             }
-                            
-                            if(lexer_num_of_error > 0){
-                                System.out.println("Lexer Error did not fully compile :( \n");
-                            }else{
-                                System.out.println("Done");
-                                System.out.println("Paser starting :)");
-                                Comp_Paser.Parser_Start(Tokens_List);
-                            } 
-                }
-
-                //then clearing the temp before i the compiler pulls in a new string
-                Tokens_List.clear();
+                        }
+                        
+                        if(lexer_num_of_error > 0){
+                            System.out.println("Lexer Error did not fully compile :( \n");
+                        }else{
+                            System.out.println("Done");
+                            System.out.println("Paser starting :)");
+                            Comp_Paser.Parser_Start(Tokens_List);
+                        } 
+                    }
+                        
             }
+            
+            //then clearing the temp before i the compiler pulls in a new string
+            Tokens_List.clear();
         }
 
         System.exit(0);
