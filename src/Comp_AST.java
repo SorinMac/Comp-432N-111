@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
+//after the first line the other stuff it not being added as children of the first block
+//dont think it is adding parent/children correctly
+//break points are set up it backwords to early and thats why it is making it not on the same break
+
 public class Comp_AST {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
@@ -131,11 +135,9 @@ public class Comp_AST {
         Abstract_Syntax_Tree.addNode("branch", "block");
         
         //reset of things that are needed in order to do the rest of the work
-        Abstract_Syntax_Tree.addNode("leaf", "{");
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Statement_List();
-        Abstract_Syntax_Tree.addNode("leaf", "}");
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         //gpo back
@@ -286,13 +288,11 @@ public class Comp_AST {
     static void AST_String_Expr(){
         
         //check the rest of the stuff
-        Abstract_Syntax_Tree.addNode("leaf", "\"");
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
         token_place++;
         current_Token = AST_Token_List.get(token_place);
-        Abstract_Syntax_Tree.addNode("leaf", "\"");
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         //go back

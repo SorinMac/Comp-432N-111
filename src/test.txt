@@ -1,3 +1,5 @@
 {
-print("hello")
+    int a
+    boolean z
+    string b
 }$
