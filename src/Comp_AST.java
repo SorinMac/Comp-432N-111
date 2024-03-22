@@ -2,8 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //after the first line the other stuff it not being added as children of the first block
-//dont think it is adding parent/children correctly
-//break points are set up it backwords to early and thats why it is making it not on the same break
+//making the value a child of the program itself and not the block
 
 public class Comp_AST {
     //lots of global values that will be explained later in the program
@@ -50,7 +49,7 @@ public class Comp_AST {
             if(this.root == null){
                 root = Temp_Node;
             //else we have to add it so that we can account for it 
-            }else{
+            }else {
                 //the parent of this will be the one before or the current current ಠ_ಠ
                 Temp_Node.parent = current;
                 //then the child
@@ -59,7 +58,7 @@ public class Comp_AST {
 
             //if it is not a leaf node then that means we are still traversing down so we make the new current what the temp
             //node was
-            if (kind != "leaf"){
+            if (!kind.equals("leaf")){
                 current = Temp_Node;
             }
         }
@@ -115,10 +114,6 @@ public class Comp_AST {
     }
 
     static void AST_Program(){
-        //same kind of pattern
-        //this is the call for the node to be built
-        Abstract_Syntax_Tree.addNode("root", "program");
-        
         //then calls all the approeratie functions needed for the LL(1) based on the BNF
         AST_Block();
         Abstract_Syntax_Tree.addNode("leaf", "$");
@@ -132,7 +127,7 @@ public class Comp_AST {
 
     static void AST_Block(){
         //add the node when it is made
-        Abstract_Syntax_Tree.addNode("branch", "block");
+        Abstract_Syntax_Tree.addNode("root", "block");
         
         //reset of things that are needed in order to do the rest of the work
         token_place++;
@@ -202,6 +197,7 @@ public class Comp_AST {
         //rest of the stuff that needs to be checked
         Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
         token_place++;
+        token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Expr();
         //go back
@@ -209,6 +205,9 @@ public class Comp_AST {
     }
 
     static void AST_Var_Decl(){    
+        //adds the node 
+        Abstract_Syntax_Tree.addNode("branch", "var_decl");
+
         //rest of the stuff to check
         Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
         token_place++;
@@ -286,13 +285,22 @@ public class Comp_AST {
     }
 
     static void AST_String_Expr(){
-        
-        //check the rest of the stuff
+
         token_place++;
-        current_Token = AST_Token_List.get(token_place);
-        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
-        token_place++;
-        current_Token = AST_Token_List.get(token_place);
+        String holder = "";
+
+        for(int k = token_place; k < AST_Token_List.size(); k++){
+
+            if(AST_Token_List.get(k).unknown_item.equals("\"")){
+                token_place = k;
+                break;
+            }
+
+            holder = holder + AST_Token_List.get(k).unknown_item;
+        }
+
+        Abstract_Syntax_Tree.addNode("leaf", holder);
+
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         //go back
