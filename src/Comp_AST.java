@@ -137,6 +137,9 @@ public class Comp_AST {
         current_Token = AST_Token_List.get(token_place);
         AST_Statement_List();
         token_place++;
+        if(token_place == AST_Token_List.size()){
+            token_place--;
+        }
         current_Token = AST_Token_List.get(token_place);
         //gpo back
         Abstract_Syntax_Tree.end_all_children();
@@ -145,7 +148,9 @@ public class Comp_AST {
     static void AST_Statement_List(){
        
         //this will check to see what procedure the ASTr should take
-        if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
+        if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") 
+            || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") 
+            || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             AST_Statement();
             AST_Statement_List();
         }else{
@@ -173,7 +178,7 @@ public class Comp_AST {
             AST_Block();
         }
         //go back
-        Abstract_Syntax_Tree.end_all_children();
+        //Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Print_Statment(){
@@ -263,7 +268,7 @@ public class Comp_AST {
             current_Token = AST_Token_List.get(token_place);
         }
         //go back
-        Abstract_Syntax_Tree.end_all_children();
+        //Abstract_Syntax_Tree.end_all_children();
     }
 
     //this causes error in the case that when it does not see the plus but there is still more than one thing there
@@ -284,7 +289,7 @@ public class Comp_AST {
             current_Token = AST_Token_List.get(token_place);
         }
         //go back
-        Abstract_Syntax_Tree.end_all_children();
+        //Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_String_Expr(){
@@ -307,13 +312,15 @@ public class Comp_AST {
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         //go back
-        Abstract_Syntax_Tree.end_all_children();
+        //Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Boolean_Expr(){
         
         //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
             AST_Expr();
             Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
             token_place++;
