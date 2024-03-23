@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 //after the first line the other stuff it not being added as children of the first block
-//making the value a child of the program itself and not the block
+//still not making assigning to the right block very annouying bugg
+//over all is getting the right data for everything else so other than parent child should be working fine
 
 public class Comp_AST {
     //lots of global values that will be explained later in the program
@@ -80,7 +81,9 @@ public class Comp_AST {
                 output += "-";
             }
 
-            //something to check if the node is a leaf node (still needs to be fixed i think)
+            //counting anything in child as a leaf node
+            //should be only things that are leaf
+            //how to check for that ??
             if(Node.children.size() == 0){
                 output += "[" + Node.name + "]";
                 output += "\n";
@@ -320,11 +323,8 @@ public class Comp_AST {
             Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
-        }else{
-            //error message as well as keeping track of the amount of error for output
-            System.out.println("AST Error: Expected [Expr, boolop, Expr] or [boolval] but found " + current_Token.unknown_item + " at " + + current_Token.line_num + " : " + current_Token.place_num);
-            
         }
+        
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }

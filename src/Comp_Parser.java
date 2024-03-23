@@ -76,7 +76,7 @@ public class Comp_Parser {
                 output += "-";
             }
 
-            //something to check if the node is a leaf node (still needs to be fixed i think)
+            //something to check if the node is a leaf node
             if(Node.children.size() == 0){
                 output += "[" + Node.name + "]";
                 output += "\n";
