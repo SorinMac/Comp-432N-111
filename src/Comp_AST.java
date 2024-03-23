@@ -247,6 +247,8 @@ public class Comp_AST {
         
         //rest of the stuff to check
         Abstract_Syntax_Tree.addNode("leaf", "if");
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
         AST_Boolean_Expr();
         AST_Block();
         //gpo back
@@ -276,10 +278,10 @@ public class Comp_AST {
         
         //int is not strictly ll1 more like ll2 so did this to check for intop or just digit
         if(AST_Token_List.get(token_place+1).unknown_item.equals("+")){
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place+1).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place-1).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             AST_Expr();
@@ -319,13 +321,15 @@ public class Comp_AST {
         
         //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place+2).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             AST_Expr();
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             AST_Expr();
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
         }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
             Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
             token_place++;

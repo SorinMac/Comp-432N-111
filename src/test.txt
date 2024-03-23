@@ -3,7 +3,7 @@
   int b
   a = 0
   b=0
-  while (a != 3) {
+  while (a != true) {
     print(a)
     while (b != 3) {
       print(b)
