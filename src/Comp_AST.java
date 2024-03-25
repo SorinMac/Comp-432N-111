@@ -1,10 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-//after the first line the other stuff it not being added as children of the first block
-//still not making assigning to the right block very annouying bugg
-//over all is getting the right data for everything else so other than parent child should be working fine
-
 public class Comp_AST {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
@@ -81,9 +77,6 @@ public class Comp_AST {
                 output += "-";
             }
 
-            //counting anything in child as a leaf node
-            //should be only things that are leaf
-            //how to check for that ??
             if(Node.children.size() == 0){
                 output += "[" + Node.name + "]";
                 output += "\n";
@@ -101,7 +94,7 @@ public class Comp_AST {
         
     }
 
-    //decleration of the CST that will be used
+    //decleration of the AST that will be used
     static AST Abstract_Syntax_Tree;
 
 
@@ -177,8 +170,6 @@ public class Comp_AST {
         }else if(current_Token.unknown_item.equals("{")){
             AST_Block();
         }
-        //go back
-        //Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Print_Statment(){
@@ -269,8 +260,6 @@ public class Comp_AST {
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }
-        //go back
-        //Abstract_Syntax_Tree.end_all_children();
     }
 
     //this causes error in the case that when it does not see the plus but there is still more than one thing there
@@ -278,7 +267,7 @@ public class Comp_AST {
         
         //int is not strictly ll1 more like ll2 so did this to check for intop or just digit
         if(AST_Token_List.get(token_place+1).unknown_item.equals("+")){
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place+1).unknown_item);
+            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+1).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place-1).unknown_item);
@@ -290,8 +279,7 @@ public class Comp_AST {
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }
-        //go back
-        //Abstract_Syntax_Tree.end_all_children();
+        
     }
 
     static void AST_String_Expr(){
@@ -313,15 +301,13 @@ public class Comp_AST {
 
         token_place++;
         current_Token = AST_Token_List.get(token_place);
-        //go back
-        //Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Boolean_Expr(){
         
         //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place+2).unknown_item);
+            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+2).unknown_item);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             AST_Expr();
