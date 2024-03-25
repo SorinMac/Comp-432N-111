@@ -15,11 +15,15 @@ public class Comp_AST {
     //class for the nodes of the CST
     public class Tree_Node{
         String name;
+        int line_num;
+        int place_num;
         Tree_Node parent;
         ArrayList<Tree_Node> children;
 
-        Tree_Node(){
+        Tree_Node(int line_num, int place_num){
             this.name = "";
+            this.line_num = line_num;
+            this.place_num = place_num;
             this.parent = null;
             this.children = new ArrayList<>();
         }
@@ -37,9 +41,9 @@ public class Comp_AST {
         }
 
         //how we add node taken from https://www.labouseur.com/
-        public void addNode(String kind, String label){
+        public void addNode(String kind, String label, int line_num, int place_num){
             //creates a temp node to be used for placment on the cst
-            Tree_Node Temp_Node = new Tree_Node();
+            Tree_Node Temp_Node = new Tree_Node(line_num, place_num);
             Temp_Node.name = label;
 
             //if this is the first run then we just make it the root
@@ -77,6 +81,9 @@ public class Comp_AST {
                 output += "-";
             }
 
+            //will print out weather it is a root or a leaf 
+            //leaf []
+            //root <>
             if(Node.children.size() == 0){
                 output += "[" + Node.name + "]";
                 output += "\n";
@@ -106,13 +113,16 @@ public class Comp_AST {
         Program_Num++;
         current_Token = Token_List.get(token_place);
 
+        //start of the frankinstien AST/Parser
         AST_Program();
     }
 
     static void AST_Program(){
         //then calls all the approeratie functions needed for the LL(1) based on the BNF
         AST_Block();
-        Abstract_Syntax_Tree.addNode("leaf", "$");
+        //no need to match so just add
+        Abstract_Syntax_Tree.addNode("leaf", "$", AST_Token_List.get(token_place).line_num, 
+        AST_Token_List.get(token_place).place_num);
         //if it gets to here thats the end of the current program so check for errors and print out tree
         System.out.println("AST for Program " + Program_Num + " Done");
         Abstract_Syntax_Tree.grow(Abstract_Syntax_Tree.root, 0);
@@ -123,12 +133,14 @@ public class Comp_AST {
 
     static void AST_Block(){
         //add the node when it is made
-        Abstract_Syntax_Tree.addNode("root", "block");
+        Abstract_Syntax_Tree.addNode("root", "block", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         
         //reset of things that are needed in order to do the rest of the work
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Statement_List();
+        //have to forcely move it along since there is no match now
         token_place++;
         if(token_place == AST_Token_List.size()){
             token_place--;
@@ -156,7 +168,7 @@ public class Comp_AST {
     static void AST_Statement(){
         
         //this is more checking to see what kind of statment that it is
-        //so that the ASTr cna figure out where to go with ll1
+        //so that the AST can figure out where to go with ll1
         if(current_Token.unknown_item.equals("print")){
             AST_Print_Statment();
         }else if(current_Token.unknown_item.matches("[a-z]")){
@@ -174,10 +186,12 @@ public class Comp_AST {
 
     static void AST_Print_Statment(){
         //add the node
-        Abstract_Syntax_Tree.addNode("branch", "print_statment");
+        Abstract_Syntax_Tree.addNode("branch", "print_statment", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         
         //the other steps that need to be taken based on the bnf
-        Abstract_Syntax_Tree.addNode("leaf", "print");
+        Abstract_Syntax_Tree.addNode("leaf", "print", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         token_place++;
@@ -191,57 +205,70 @@ public class Comp_AST {
 
     static void AST_Assignment_Statment(){
         //adds the node 
-        Abstract_Syntax_Tree.addNode("branch", "assignment_statment");
+        Abstract_Syntax_Tree.addNode("branch", "assignment_statment", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         
         //rest of the stuff that needs to be checked
-        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        Abstract_Syntax_Tree.addNode("leaf", 
+        AST_Token_List.get(token_place).unknown_item, AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         token_place++;
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Expr();
+
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Var_Decl(){    
         //adds the node 
-        Abstract_Syntax_Tree.addNode("branch", "var_decl");
+        Abstract_Syntax_Tree.addNode("branch", "var_decl", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
 
         //rest of the stuff to check
-        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        Abstract_Syntax_Tree.addNode("leaf", 
+        AST_Token_List.get(token_place).unknown_item, AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         token_place++;
         current_Token = AST_Token_List.get(token_place);
-        Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+        Abstract_Syntax_Tree.addNode("leaf", 
+        AST_Token_List.get(token_place).unknown_item, AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         token_place++;
         current_Token = AST_Token_List.get(token_place);
+
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_While_Statment(){
         //add to the node
-        Abstract_Syntax_Tree.addNode("branch", "while_statment");
+        Abstract_Syntax_Tree.addNode("branch", "while_statment", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         
         //rest of the stuff that needs to be checked
-        Abstract_Syntax_Tree.addNode("leaf", "while");
+        Abstract_Syntax_Tree.addNode("leaf", "while", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Boolean_Expr();
         AST_Block();
+
         //go back 
         Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_If_Statment(){
         //add the node
-        Abstract_Syntax_Tree.addNode("branch", "if_statment");
+        Abstract_Syntax_Tree.addNode("branch", "if_statment", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         
         //rest of the stuff to check
-        Abstract_Syntax_Tree.addNode("leaf", "if");
+        Abstract_Syntax_Tree.addNode("leaf", "if", 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Boolean_Expr();
         AST_Block();
+
         //gpo back
         Abstract_Syntax_Tree.end_all_children();
     }
@@ -256,7 +283,8 @@ public class Comp_AST {
         }else if(current_Token.unknown_item.equals("(") || current_Token.unknown_item.equals("true") || current_Token.unknown_item.equals("false")){
             AST_Boolean_Expr();
         }else if(current_Token.unknown_item.matches("[a-z]")){
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
+            AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }
@@ -267,15 +295,18 @@ public class Comp_AST {
         
         //int is not strictly ll1 more like ll2 so did this to check for intop or just digit
         if(AST_Token_List.get(token_place+1).unknown_item.equals("+")){
-            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+1).unknown_item);
+            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+1).unknown_item, 
+            AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place-1).unknown_item);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place-1).unknown_item, 
+            AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             AST_Expr();
         }else if(current_Token.unknown_item.matches("[0-9]+")){
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
+            AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }
@@ -283,22 +314,27 @@ public class Comp_AST {
     }
 
     static void AST_String_Expr(){
-
+        //will create the string instead of the single char as the leaf
         token_place++;
         String holder = "";
 
+        //for loop to add all the things (i could do it as a while but I wanted this so i would avoid infinity if a error occurs)
         for(int k = token_place; k < AST_Token_List.size(); k++){
 
+            //will break out when needed
             if(AST_Token_List.get(k).unknown_item.equals("\"")){
                 token_place = k;
                 break;
             }
 
+            //makes it so the token_place is still on the right number
             holder = holder + AST_Token_List.get(k).unknown_item;
         }
 
-        Abstract_Syntax_Tree.addNode("leaf", holder);
+        Abstract_Syntax_Tree.addNode("leaf", holder, 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
 
+        //moves it one more time
         token_place++;
         current_Token = AST_Token_List.get(token_place);
     }
@@ -307,7 +343,8 @@ public class Comp_AST {
         
         //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
-            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+2).unknown_item);
+            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+2).unknown_item, 
+            AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
             AST_Expr();
@@ -317,7 +354,8 @@ public class Comp_AST {
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item);
+            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
+            AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }
