@@ -5,6 +5,10 @@ import java.util.Map;
 //need to add the rest of the logic for the print, while, if, boolop, addition
 //need to get the scope stuff down
 
+
+//doing a depth first in order search of the AST from the root of the node
+//make a array list for the scope and add other scopes after it
+
 public class Comp_SymbolTable {
     Comp_AST Comp_AST = new Comp_AST();
     int Semantic_Num_Errors = 0;
