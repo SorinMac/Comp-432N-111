@@ -35,6 +35,7 @@ public class Comp_SymbolTable {
 
     public class Symbol_Scope {
         //could we use a array list so that we have all the scopes there and the scope would just be the one you are currenntly on until 0 and just go back
+        //have to do it all in one shot
         ArrayList<Symbole_Node> Scope;
 
         Symbol_Scope(){
