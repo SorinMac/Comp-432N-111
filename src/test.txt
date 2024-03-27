@@ -1,4 +1,6 @@
 {
   int a
-  a = false
+  {
+    int b
+  }
 }$

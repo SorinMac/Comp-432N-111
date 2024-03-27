@@ -1,6 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 //need to add the rest of the logic for the print, while, if, boolop, addition
 //need to get the scope stuff down
@@ -10,9 +10,21 @@ public class Comp_SymbolTable {
     int Semantic_Num_Errors = 0;
     int Scope = 0;
 
+    public class item{
+        String name;
+        Boolean IsUsed;
+        Boolean IsInitalized;
+
+        item(String name){
+            this.name = name;
+            this.IsUsed = false;
+            this.IsInitalized = false;
+        }
+    }
+
     public class Symbole_Node{
         int scope;
-        HashMap<String, String> values;
+        HashMap<String, item> values;
         Comp_AST.Tree_Node parent;
 
         Symbole_Node(int scope){
@@ -21,56 +33,62 @@ public class Comp_SymbolTable {
         }
     }
 
-    public class Symbole_Scope{
-        Symbole_Node parent;
-        Symbole_Node child;
+    public class Symbol_Scope {
+        //could we use a array list so that we have all the scopes there and the scope would just be the one you are currenntly on until 0 and just go back
+        ArrayList<Symbole_Node> Scope;
 
-        Symbole_Scope(){
-            this.parent = null;
-            this.child = null;
+        Symbol_Scope(){
+            this.Scope = new ArrayList<>();
         }
     }
 
-    public void Start_Symbole_Table(Comp_AST.AST Abstract_Syntax_Tree){
-        Symbole_Scope Block  = new Symbole_Scope();
-        Symbole_Node Values = new Symbole_Node(Scope);
+    Symbol_Scope Blocks = new Symbol_Scope();
 
-        if(Abstract_Syntax_Tree.root.children.size() == 0){
-            //nothing in the AST
-        }else{
-            for(int i = 0; i < Abstract_Syntax_Tree.root.children.size(); i++){
-                if(Abstract_Syntax_Tree.root.children.get(i).name.equals("var_decl")){
-                    Values.values.put(Abstract_Syntax_Tree.root.children.get(i).children.get(1).name, Abstract_Syntax_Tree.root.children.get(i).children.get(0).name);
-                }else if(Abstract_Syntax_Tree.root.children.get(i).name.equals("assignment_statment")){
-                    String type1 = Values.values.get(Abstract_Syntax_Tree.root.children.get(i).children.get(0).name);
-                    String type2 = "";
+    public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree){
+        int children_place = 0;
+        Symbole_Node Values_At_Block = new Symbole_Node(Scope);
 
-                    if(Abstract_Syntax_Tree.root.children.get(i).children.get(1).name.matches("[0-9]+")){
-                        type2 = "int";
-                    }else if(Abstract_Syntax_Tree.root.children.get(i).children.get(1).name.matches("true|false")){
-                        type2 = "boolean";
-                    }else{
-                        type2 = "string";
-                    }
+        for(int i = 0; i < Abstract_Syntax_Tree.children.size(); i++){
+            if(Abstract_Syntax_Tree.children.get(i).name.equals("var_decl")){
+                item value = new item(Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")){
+                String type1 = Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).name;
+                String type2 = "";
 
-                    if(!type1.equals(type2)){
-                        Semantic_Num_Errors++;
-                        System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.root.children.get(i).children.get(1).line_num + " at " + Abstract_Syntax_Tree.root.children.get(i).children.get(1).place_num + " delcared " + type1 + " but assigning " + type2 + ".");
-                    }
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[0-9]+")){
+                    type2 = "int";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
+                    type2 = "boolean";
+                }else{
+                    type2 = "string";
+                }
+
+                if(!type1.equals(type2)){
+                    Semantic_Num_Errors++;
+                    System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " + 
+                    Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " delcared " + type1 + " but assigning " + type2 + ".");
                 }
             }
-
-            for(Map.Entry<String, String> entry: Values.values.entrySet()){
-                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-            }
             
+            //find a way to check for the end without having the end block there
+            if(Abstract_Syntax_Tree.children.get(i).name.equals("block") || Abstract_Syntax_Tree.children.size() == i){
 
-            Block.parent = Values;
-            Scope++;
+                for (Map.Entry<String, item> entry : Values_At_Block.values.entrySet()) {
+                    String key = entry.getKey();
+                    item value = entry.getValue();
+                    System.out.println("Key: " + key + ", Value: " + value.name);
+                }
+
+                Scope++;
+                children_place++;
+                Blocks.Scope.add(Values_At_Block);
+
+                Start_Symbole_Table(Abstract_Syntax_Tree.children.get(children_place));
+
+
+                
+            }
         }
-        //as we go through the AST add values as necessary
-        //when you see a new block make a new Symbole_Scope
-            //first add one to scope
-            //then start adding the values
     }
 }
