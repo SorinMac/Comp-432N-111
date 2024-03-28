@@ -1,6 +1,6 @@
 {
-  int a
+  string a
   {
-    int b
+    a = "string"
   }
 }$

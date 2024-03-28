@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-//need to add the rest of the logic for the print, while, if, boolop, addition
-//need to get the scope stuff down
+//need to add the rest of the logic for the while, if, addition
+//need to get the scope stuff back up when needed
+//tell weather things are intilized and used
+//print out
 
+//at the end if back to block and not the parent
 
 //doing a depth first in order search of the AST from the root of the node
 //make a array list for the scope and add other scopes after it
@@ -40,14 +42,15 @@ public class Comp_SymbolTable {
     public class Symbol_Scope {
         //could we use a array list so that we have all the scopes there and the scope would just be the one you are currenntly on until 0 and just go back
         //have to do it all in one shot
-        ArrayList<Symbole_Node> Scope;
+        ArrayList<Symbole_Node> Scopes;
 
         Symbol_Scope(){
-            this.Scope = new ArrayList<>();
+            this.Scopes = new ArrayList<>();
         }
     }
 
     Symbol_Scope Blocks = new Symbol_Scope();
+    Comp_AST.Tree_Node current;
 
     //they are being added for the scope just not printing out right when it goes to the end
 
@@ -59,6 +62,11 @@ public class Comp_SymbolTable {
             if(Abstract_Syntax_Tree.children.get(i).name.equals("var_decl")){
                 item value = new item(Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                 Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
+
+                //testing if things are being added
+                System.out.println(Values_At_Block.scope);
+                System.out.println(Abstract_Syntax_Tree.children.get(i).children.get(1).name + " " + value.name);
+                
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")){
                 String type1 = Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).name;
                 String type2 = "";
@@ -79,17 +87,18 @@ public class Comp_SymbolTable {
             }
             
             //find a way to check for the end without having the end block there
+            //needs to go back 
             if(Abstract_Syntax_Tree.children.get(i).name.equals("block") || Abstract_Syntax_Tree.children.size() == i){
 
-                for (Map.Entry<String, item> entry : Values_At_Block.values.entrySet()) {
+                /*for (Map.Entry<String, item> entry : Values_At_Block.values.entrySet()) {
                     String key = entry.getKey();
                     item value = entry.getValue();
                     System.out.println("Key: " + key + ", Value: " + value.name);
-                }
+                }*/
 
                 Scope++;
                 children_place++;
-                Blocks.Scope.add(Values_At_Block);
+                Blocks.Scopes.add(Values_At_Block);
 
                 Start_Symbole_Table(Abstract_Syntax_Tree.children.get(children_place));
 
