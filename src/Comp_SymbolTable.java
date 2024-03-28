@@ -16,24 +16,24 @@ public class Comp_SymbolTable {
     int Semantic_Num_Errors = 0;
     int Scope = 0;
 
-    public class item{
+    public class item {
         String name;
         Boolean IsUsed;
-        Boolean IsInitalized;
+        Boolean IsInitialized;
 
-        item(String name){
+        item(String name) {
             this.name = name;
             this.IsUsed = false;
-            this.IsInitalized = false;
+            this.IsInitialized = false;
         }
     }
 
-    public class Symbole_Node{
+    public class Symbole_Node {
         int scope;
         HashMap<String, item> values;
         Comp_AST.Tree_Node parent;
 
-        Symbole_Node(int scope){
+        Symbole_Node(int scope) {
             this.scope = scope;
             this.values = new HashMap<>();
         }
@@ -44,7 +44,7 @@ public class Comp_SymbolTable {
         //have to do it all in one shot
         ArrayList<Symbole_Node> Scopes;
 
-        Symbol_Scope(){
+        Symbol_Scope() {
             this.Scopes = new ArrayList<>();
         }
     }
@@ -52,59 +52,59 @@ public class Comp_SymbolTable {
     Symbol_Scope Blocks = new Symbol_Scope();
     Comp_AST.Tree_Node current;
 
-    //they are being added for the scope just not printing out right when it goes to the end
-
-    public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree){
-        int children_place = 0;
+    public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree) {
         Symbole_Node Values_At_Block = new Symbole_Node(Scope);
 
-        for(int i = 0; i < Abstract_Syntax_Tree.children.size(); i++){
-            if(Abstract_Syntax_Tree.children.get(i).name.equals("var_decl")){
+        for (int i = 0; i < Abstract_Syntax_Tree.children.size(); i++) {
+            if (Abstract_Syntax_Tree.children.get(i).name.equals("var_decl")) {
                 item value = new item(Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                 Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
 
                 //testing if things are being added
                 System.out.println(Values_At_Block.scope);
                 System.out.println(Abstract_Syntax_Tree.children.get(i).children.get(1).name + " " + value.name);
-                
-            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")){
-                String type1 = Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).name;
+
+            } else if (Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")) {
+                String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                 String type2 = "";
 
-                if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[0-9]+")){
+                if (Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[0-9]+")) {
                     type2 = "int";
-                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
+                } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")) {
                     type2 = "boolean";
-                }else{
+                } else {
                     type2 = "string";
                 }
 
-                if(!type1.equals(type2)){
+                if (!type1.equals(type2)) {
                     Semantic_Num_Errors++;
-                    System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " + 
-                    Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " delcared " + type1 + " but assigning " + type2 + ".");
+                    System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " +
+                            Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " declared " + type1 + " but assigning " + type2 + ".");
                 }
             }
-            
+
             //find a way to check for the end without having the end block there
             //needs to go back 
-            if(Abstract_Syntax_Tree.children.get(i).name.equals("block") || Abstract_Syntax_Tree.children.size() == i){
-
-                /*for (Map.Entry<String, item> entry : Values_At_Block.values.entrySet()) {
-                    String key = entry.getKey();
-                    item value = entry.getValue();
-                    System.out.println("Key: " + key + ", Value: " + value.name);
-                }*/
-
+            if (Abstract_Syntax_Tree.children.get(i).name.equals("block")) {
                 Scope++;
-                children_place++;
                 Blocks.Scopes.add(Values_At_Block);
-
-                Start_Symbole_Table(Abstract_Syntax_Tree.children.get(children_place));
-
-
-                
+                Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
             }
         }
+    }
+
+    private String getVariableType(Symbole_Node Values_At_Block, String variableName) {
+        if(!Values_At_Block.values.containsKey(variableName)){
+            for (int i = Values_At_Block.scope; i >= 0; i--) {
+                Symbole_Node currentScope = Blocks.Scopes.get(i-1);
+                if (currentScope.values.containsKey(variableName)) {
+                    return currentScope.values.get(variableName).name;
+                }
+            }
+        }else if(Values_At_Block.values.containsKey(variableName)){
+            return Values_At_Block.values.get(variableName).name;
+        }
+
+        return "";
     }
 }
