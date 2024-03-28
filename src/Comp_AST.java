@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+//ast is now boken for example in test
+//not sure why yet
+
 public class Comp_AST {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
@@ -298,7 +301,7 @@ public class Comp_AST {
         
         //int is not strictly ll1 more like ll2 so did this to check for intop or just digit
         if(AST_Token_List.get(token_place+1).unknown_item.equals("+")){
-            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+1).unknown_item, 
+            Abstract_Syntax_Tree.addNode("branch", AST_Token_List.get(token_place+1).unknown_item, 
             AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
@@ -346,7 +349,7 @@ public class Comp_AST {
         
         //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
-            Abstract_Syntax_Tree.addNode("root", AST_Token_List.get(token_place+2).unknown_item, 
+            Abstract_Syntax_Tree.addNode("branch", AST_Token_List.get(token_place+2).unknown_item, 
             AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);

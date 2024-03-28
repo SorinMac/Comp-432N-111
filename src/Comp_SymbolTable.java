@@ -93,6 +93,7 @@ public class Comp_SymbolTable {
         }
     }
 
+    //goes back to early 
     private String getVariableType(Symbole_Node Values_At_Block, String variableName) {
         if(!Values_At_Block.values.containsKey(variableName)){
             for (int i = Values_At_Block.scope; i >= 0; i--) {
