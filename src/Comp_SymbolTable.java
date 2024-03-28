@@ -49,6 +49,8 @@ public class Comp_SymbolTable {
 
     Symbol_Scope Blocks = new Symbol_Scope();
 
+    //they are being added for the scope just not printing out right when it goes to the end
+
     public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree){
         int children_place = 0;
         Symbole_Node Values_At_Block = new Symbole_Node(Scope);
