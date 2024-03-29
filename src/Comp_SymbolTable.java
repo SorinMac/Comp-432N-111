@@ -1,13 +1,30 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//need to add the rest of the logic for the while, if, addition
-//need to get the scope stuff back up when needed
+//need to get the scope stuff back up when needed (fix it up)
 //tell weather things are intilized and used
+//fix ast
+//ie
+/*
+ {
+    int a
+    boolean b
+    {
+        string c
+        a = 5
+        b = true
+        c = "inta"
+        print(c)
+    }
+    print(b)
+    print(a)
+}$ 
+
+*/
 //print out
 
+//notes
 //at the end if back to block and not the parent
-
 //doing a depth first in order search of the AST from the root of the node
 //make a array list for the scope and add other scopes after it
 
@@ -81,6 +98,40 @@ public class Comp_SymbolTable {
                     System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " +
                             Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " declared " + type1 + " but assigning " + type2 + ".");
                 }
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("if_statment")){
+                String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                String type2 = "";
+
+                if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[0-9]+")) {
+                    type2 = "int";
+                } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")) {
+                    type2 = "boolean";
+                } else {
+                    type2 = "string";
+                }
+
+                if (!type1.equals(type2)) {
+                    Semantic_Num_Errors++;
+                    System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " +
+                            Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
+                }
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("while_statment")){
+                String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                String type2 = "";
+
+                if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[0-9]+")) {
+                    type2 = "int";
+                } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")) {
+                    type2 = "boolean";
+                } else {
+                    type2 = "string";
+                }
+
+                if (!type1.equals(type2)) {
+                    Semantic_Num_Errors++;
+                    System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " +
+                            Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
+                }
             }
 
             //find a way to check for the end without having the end block there
@@ -94,16 +145,17 @@ public class Comp_SymbolTable {
     }
 
     //goes back to early 
+    //first needs to check the current scope then go through the for loop to go backwords and shit
     private String getVariableType(Symbole_Node Values_At_Block, String variableName) {
-        if(!Values_At_Block.values.containsKey(variableName)){
+        if(Values_At_Block.values.containsKey(variableName)){
+            return Values_At_Block.values.get(variableName).name;
+        }else{
             for (int i = Values_At_Block.scope; i >= 0; i--) {
-                Symbole_Node currentScope = Blocks.Scopes.get(i-1);
+                Symbole_Node currentScope = Blocks.Scopes.get(i);
                 if (currentScope.values.containsKey(variableName)) {
                     return currentScope.values.get(variableName).name;
                 }
             }
-        }else if(Values_At_Block.values.containsKey(variableName)){
-            return Values_At_Block.values.get(variableName).name;
         }
 
         return "";

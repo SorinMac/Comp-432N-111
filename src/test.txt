@@ -1,6 +1,6 @@
 {
     int a
-    boolean b
-    print(b)
-    print(a)
+    while(a != 2){
+
+    }
 }$ 
