@@ -3,6 +3,7 @@ import java.util.HashMap;
 
 //need to get the scope stuff back up when needed (fix it up)
 //tell weather things are intilized and used
+// if a value is already initlized and waring for unused values
 //fix ast
 //ie
 /*
