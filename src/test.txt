@@ -1,6 +1,6 @@
 {
     int a
-    while(a != 2){
+    while(b != 2){
 
     }
 }$ 
