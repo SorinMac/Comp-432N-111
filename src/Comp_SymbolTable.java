@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//need to get the scope stuff back up when needed (fix it up)
 //fix ast
 
 //ie
@@ -21,13 +20,8 @@ import java.util.HashMap;
 }$ 
 */
 
-//waring for unused variables at the end
 //print out
 
-//notes
-//at the end if back to block and not the parent
-//doing a depth first in order search of the AST from the root of the node
-//make a array list for the scope and add other scopes after it
 
 public class Comp_SymbolTable {
     Comp_AST Comp_AST = new Comp_AST();
@@ -58,8 +52,6 @@ public class Comp_SymbolTable {
     }
 
     public class Symbol_Scope {
-        //could we use a array list so that we have all the scopes there and the scope would just be the one you are currenntly on until 0 and just go back
-        //have to do it all in one shot
         ArrayList<Symbole_Node> Scopes;
 
         Symbol_Scope() {
@@ -77,46 +69,81 @@ public class Comp_SymbolTable {
             if (Abstract_Syntax_Tree.children.get(i).name.equals("var_decl")) {
                 item value = new item(Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                 Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
-
-                //testing if things are being added
-                System.out.println(Values_At_Block.scope);
-                System.out.println(Abstract_Syntax_Tree.children.get(i).children.get(1).name + " " + value.name);
-
+                
             } else if (Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")) {
-                String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.equals("+")){
+                    String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name);
 
-                if (type1 ==  ""){
-                    Semantic_Num_Errors++;
-                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(0).name + ".");
-                }
-
-                String type2 = "";
-
-                if (Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[0-9]+")) {
-                    type2 = "int";
-                } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")) {
-                    type2 = "boolean";
-                } else {
-                    type2 = "string";
-                }
-
-                if (!type1.equals(type2)) {
-                    if(type1 != ""){
+                    if (type1 ==  ""){
                         Semantic_Num_Errors++;
-                        System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " +
-                                Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
-                    }else{
-                        
+                        System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
                     }
+
+                    String type2 = "";
+
+                    if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")) {
+                        type2 = "int";
+                    } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")) {
+                        type2 = "boolean";
+                    } else {
+                        type2 = "string";
+                    }
+
+                    if (!type1.equals(type2)) {
+                        if(type1 != ""){
+                            Semantic_Num_Errors++;
+                            System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
+                            Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
+                        }
+                    }else{
+                        Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name).IsInitialized = true;
+                    }
+                    
                 }else{
-                    Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
+                    String type1;
+                    type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                    
+                    if (type1 ==  ""){
+                        Semantic_Num_Errors++;
+                        System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
+                    }
+
+                    String type2 = "";
+
+                    if (Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[0-9]+")) {
+                        type2 = "int";
+                    } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")) {
+                        type2 = "boolean";
+                    } else {
+                        type2 = "string";
+                    }
+
+                    if (!type1.equals(type2)) {
+                        if(type1 != ""){
+                            Semantic_Num_Errors++;
+                            System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " at " +
+                                    Abstract_Syntax_Tree.children.get(i).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
+                        }
+                    }else{
+                        Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
+                    }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("if_statment")){
-                String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                String type1 = "";
+                
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
+                    type1 = "int";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
+                    type1 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
+                    type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                }else{
+                    type1 = "string";
+                }
 
                 if (type1 ==  ""){
                     Semantic_Num_Errors++;
-                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name + ".");
+                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
                 }
 
                 String type2 = "";
@@ -138,18 +165,32 @@ public class Comp_SymbolTable {
 
                     }
                 }else{
-                    Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed = true;
+                    if(!Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
 
-                    if (Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsInitialized == false && Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed == true) {
-                        System.out.println("Used but not Initialized " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name + ".");
+                    }else{
+                        Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed = true;
+
+                        if (Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsInitialized == false && Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed == true) {
+                            System.out.println("Used but not Initialized " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name + ".");
+                        }
                     }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("while_statment")){
-                String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                String type1 = "";
+                
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
+                    type1 = "int";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
+                    type1 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
+                    type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                }else{
+                    type1 = "string";
+                }
 
                 if (type1 ==  ""){
                     Semantic_Num_Errors++;
-                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name  + ".");
+                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
                 }
 
                 String type2 = "";
@@ -171,10 +212,14 @@ public class Comp_SymbolTable {
                         
                     }
                 }else{
-                    Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed = true;
+                    if(!Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
 
-                    if (Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsInitialized == false && Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed == true) {
-                        System.out.println("Used but not Initialized " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name + ".");
+                    }else{
+                        Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed = true;
+
+                        if (Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsInitialized == false && Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed == true) {
+                            System.out.println("Used but not Initialized " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name + ".");
+                        }
                     }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("print_statment")){
