@@ -1,13 +1,14 @@
+/*Long Test Case - Everything Except Boolean Declaration */
 {
-    int a
-    boolean b
-    {
-        string c
-        a = 5
-        b = true
-        c = "inta"
-        print(c)
-    }
+  int a
+  a = 2
+  while (a == 2){
+    string b
+    string c
+    b = "sorin"
+    c = "hello"
+    print(c)
     print(b)
-    print(a)
-}$ 
+  }
+}
+$

@@ -18,6 +18,8 @@ import java.util.HashMap;
     print(b)
     print(a)
 }$ 
+
+becuse the block is just there on its own and there is no real pattern for it to fallow in the recusion to get it set up right
 */
 
 //print out
@@ -175,6 +177,12 @@ public class Comp_SymbolTable {
                         }
                     }
                 }
+
+                if (Abstract_Syntax_Tree.children.get(i).children.get(3).name.equals("block")) {
+                    Scope++;
+                    Blocks.Scopes.add(Values_At_Block);
+                    Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(2));
+                }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("while_statment")){
                 String type1 = "";
                 
@@ -222,22 +230,20 @@ public class Comp_SymbolTable {
                         }
                     }
                 }
-            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("print_statment")){
-                Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name).IsUsed = true;
-            }
 
-            //find a way to check for the end without having the end block there
-            //needs to go back 
-            if (Abstract_Syntax_Tree.children.get(i).name.equals("block")) {
-                Scope++;
-                Blocks.Scopes.add(Values_At_Block);
-                Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
+                if (Abstract_Syntax_Tree.children.get(i).children.get(2).name.equals("block")) {
+                    Scope++;
+                    Blocks.Scopes.add(Values_At_Block);
+                    Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(2));
+                }
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("print_statment")){
+                Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).name).IsUsed = true;
             }
         }
+
+        System.out.println(Blocks.Scopes.size());
     }
 
-    //goes back to early 
-    //first needs to check the current scope then go through the for loop to go backwords and shit
     private String getVariableType(Symbole_Node Values_At_Block, String variableName) {
         
         if(Values_At_Block.values.containsKey(variableName)){
