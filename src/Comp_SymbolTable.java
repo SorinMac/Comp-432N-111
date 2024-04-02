@@ -29,6 +29,7 @@ public class Comp_SymbolTable {
     Comp_AST Comp_AST = new Comp_AST();
     int Semantic_Num_Errors = 0;
     int Scope = 0;
+    int printOut = 0;
 
     public class item {
         String name;
@@ -237,13 +238,23 @@ public class Comp_SymbolTable {
                     Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(2));
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("print_statment")){
-                Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(1).name).IsUsed = true;
+                String printedVariable = Abstract_Syntax_Tree.children.get(i).children.get(0).name;
+                if (Values_At_Block.values.containsKey(printedVariable)) {
+                    Values_At_Block.values.get(printedVariable).IsUsed = true;
+                } else {
+                    Semantic_Num_Errors++;
+                    System.out.println("Variable " + printedVariable + " used in print statement not found.");
+                }
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){
+                printAllScopes();
             }
         }
 
-        System.out.println(Blocks.Scopes.size());
+        Blocks.Scopes.add(Values_At_Block);
+        
     }
 
+    //can not go backwords yet since the block is not made
     private String getVariableType(Symbole_Node Values_At_Block, String variableName) {
         
         if(Values_At_Block.values.containsKey(variableName)){
@@ -265,5 +276,15 @@ public class Comp_SymbolTable {
         }
 
         return "";
+    }
+
+    public void printAllScopes() {
+        for (Symbole_Node scope : Blocks.Scopes) {
+            System.out.println("Scope " + scope.scope + ":");
+            for (String variableName : scope.values.keySet()) {
+                item currentItem = scope.values.get(variableName);
+                System.out.println("Variable Name: " + variableName + ", IsUsed: " + currentItem.IsUsed + ", IsInitialized: " + currentItem.IsInitialized);
+            }
+        }
     }
 }
