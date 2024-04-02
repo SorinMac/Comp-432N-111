@@ -256,25 +256,22 @@ public class Comp_SymbolTable {
 
     //can not go backwords yet since the block is not made
     private String getVariableType(Symbole_Node Values_At_Block, String variableName) {
+        Symbole_Node currentScope = Values_At_Block;
+    
+        // Check the current scope
+        if(currentScope.values.containsKey(variableName)) {
+            return currentScope.values.get(variableName).name;
+        }
         
-        if(Values_At_Block.values.containsKey(variableName)){
-            return Values_At_Block.values.get(variableName).name;
-        }else{
-            if(Values_At_Block.scope == 0){
-                Symbole_Node currentScope = Values_At_Block;
-                if (currentScope.values.containsKey(variableName)) {
-                    return currentScope.values.get(variableName).name;
-                }
-            }else{
-                for (int i = Values_At_Block.scope; i >= 0; i--) {
-                    Symbole_Node currentScope = Blocks.Scopes.get(i);
-                    if (currentScope.values.containsKey(variableName)) {
-                        return currentScope.values.get(variableName).name;
-                    }
-                }
+        // Traverse through parent scopes
+        for (int i = currentScope.scope - 1; i >= 0; i--) {
+            currentScope = Blocks.Scopes.get(i);
+            if (currentScope.values.containsKey(variableName)) {
+                return currentScope.values.get(variableName).name;
             }
         }
-
+    
+        // Variable not found in any scope
         return "";
     }
 
