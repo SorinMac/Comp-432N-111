@@ -309,6 +309,15 @@ public class Comp_AST {
             AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
+            if(AST_Token_List.get(token_place+1).unknown_item.equals("+")){
+                do{
+                    Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
+                    AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
+                    token_place++;
+                    token_place++;
+                    current_Token = AST_Token_List.get(token_place);
+                }while((current_Token.unknown_item.matches("[0-9]+") || current_Token.unknown_item.matches("[a-z]+") || current_Token.unknown_item.equals("+")) );
+            }
             AST_Expr();
         }else if(current_Token.unknown_item.matches("[0-9]+")){
             Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 

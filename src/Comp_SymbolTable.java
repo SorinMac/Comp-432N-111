@@ -20,9 +20,9 @@ import java.util.HashMap;
 }$ 
 
 becuse the block is just there on its own and there is no real pattern for it to fallow in the recusion to get it set up right
-*/
 
-//make so intop ast can handel a = 1 + 1 + 1 + 1
+//is allowed need to fix the ast
+*/
 
 //the start of the spagetti code
 public class Comp_SymbolTable {
@@ -87,7 +87,18 @@ public class Comp_SymbolTable {
 
                 if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.equals("+")){ //if its a plus
                     //grabs the type of the variable from the hashmap of the scope
-                    String type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name);
+                    String type1;
+
+                    //telling what the type is
+                    if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
+                        type1 = "int";
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
+                        type1 = "boolean";
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
+                        type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                    }else{
+                        type1 = "string";
+                    }
 
                     //if it return "" thats means was not found
                     if (type1 ==  ""){ //error
@@ -95,51 +106,46 @@ public class Comp_SymbolTable {
                         System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
                     }
 
-                    //sets up second type
-                    String type2 = "";
+                    //sets up second type array list to hold all the possible types (more than one number)
+                    ArrayList<String> type2 = new ArrayList<>();
 
-                    //based of what was added as the thing after the + 
-                    if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")) {
-                        type2 = "int";
-                    } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")) {
-                        type2 = "boolean";
-                    } else {
-                        type2 = "string";
+                    for(int q = 0; q < Abstract_Syntax_Tree.children.get(i).children.size(); q++){
+                        //based of what was added as the thing after the + 
+                        if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(q).name.matches("[0-9]+")) {
+                            type2.add("int");
+                        } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(q).name.matches("true|false")) {
+                            type2.add("boolean");
+                        } else if( Abstract_Syntax_Tree.children.get(i).children.get(q).name.matches("[a-z]+")){
+                            type2.add(getVariableType(Values_At_Block,  Abstract_Syntax_Tree.children.get(i).children.get(0).name));
+                        } else {
+                            type2.add("string");
+                        }
                     }
 
-                    //checks if the two types are the same if so then good if not then error
-                    if (!type1.equals(type2)) { //if error then cannot change the initiliazed
-                        if(type1 != ""){
-                            Semantic_Num_Errors++;
-                            System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
-                            Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
-                        }
-                    }else{ //if no error then can chaneg the inistliazed
-                        if (Values_At_Block.values.containsKey(Abstract_Syntax_Tree.children.get(i).children.get(0).name)) { //if current scope has the value then change
-                            Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
-                        } else { //go through previous scopes looking for the variable and change when you find it
-                            int test = 0;
-                            for(int s = Blocks.Scopes.size()-1; s >= 0; s--){
-                                if(Blocks.Scopes.get(s).values.containsKey(Abstract_Syntax_Tree.children.get(i).children.get(0).name)){
-                                    Symbole_Node temp = Blocks.Scopes.get(s);
-                                    temp.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
-                                    test = 1;
-                                }
-                            }
-                            
-                            //back up error if not found
-                            if(test == 0){
+                    for(int w = 0; w < type2.size(); w ++){//goes through all the types in type2 and checks them
+                        //checks if the two types are the same if so then good if not then error
+                        if (!type1.equals(type2.get(w))) { //if error then cannot change the initiliazed
+                            if(type1 != ""){
                                 Semantic_Num_Errors++;
-                                System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(0).name + " used in print statement not found.");
+                                System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
+                                Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
                             }
                         }
-                    }
+                }
                     
                 }else{ //if it is not a plus one
 
                     //gets the string value of the first one (the variable)
                     String type1;
-                    type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                    if( Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[0-9]+")){
+                        type1 = "int";
+                    }else if( Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
+                        type1 = "boolean";
+                    }else if( Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]+")){
+                        type1 = getVariableType(Values_At_Block,  Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                    }else{
+                        type1 = "string";
+                    }
                     
                     //if not found error returns "" if not found
                     if (type1 ==  ""){
@@ -352,13 +358,11 @@ public class Comp_SymbolTable {
                     }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){//siginfies the end print out all scopes and clear the block for the next program
+                Blocks.Scopes.add(Values_At_Block);
                 printAllScopes();
                 Blocks.Scopes.clear();
             }
-        }
-
-        Blocks.Scopes.add(Values_At_Block);
-        
+        }  
     }
 
     //function to get the value at the variable
