@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//intop loop for left of and right of boolop
+//get a == b working recusoion yet again through the blocks checking left and right side && b = true == (true == false)
 //test cases
 //labs
+
+//extra handle intop problem
 
 //the start of the spagetti code
 //this is all super home grown
