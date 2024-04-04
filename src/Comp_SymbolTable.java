@@ -1,31 +1,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//fix ast
-
-//ie
-/*
- {
-    int a
-    boolean b
-    {
-        string c
-        a = 5
-        b = true
-        c = "inta"
-        print(c)
-    }
-    print(b)
-    print(a)
-}$ 
-
-becuse the block is just there on its own and there is no real pattern for it to fallow in the recusion to get it set up right
-
-//is allowed need to fix the ast
-
 //check if both sides are boolops and handle it
 //true as string and bool
-*/
 
 //the start of the spagetti code
 public class Comp_SymbolTable {
@@ -95,12 +72,14 @@ public class Comp_SymbolTable {
                     //telling what the type is
                     if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
                         type1 = "int";
-                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
-                        type1 = "boolean";
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.contains("\"")){
+                        type1 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
-                    }else{
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
                         type1 = "string";
+                    }else{
+                        type1 = "";
                     }
 
                     //if it return "" thats means was not found

@@ -1,11 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-//ast is now boken for example in test
-//not sure why yet
-
-//something to do with bool values in ast
-
 public class Comp_AST {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
@@ -333,6 +328,8 @@ public class Comp_AST {
         token_place++;
         String holder = "";
 
+        holder = holder + "\"";
+
         //for loop to add all the things (i could do it as a while but I wanted this so i would avoid infinity if a error occurs)
         for(int k = token_place; k < AST_Token_List.size(); k++){
 
@@ -345,6 +342,8 @@ public class Comp_AST {
             //makes it so the token_place is still on the right number
             holder = holder + AST_Token_List.get(k).unknown_item;
         }
+
+        holder = holder + "\"";
 
         Abstract_Syntax_Tree.addNode("leaf", holder, 
         AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
@@ -375,8 +374,7 @@ public class Comp_AST {
             current_Token = AST_Token_List.get(token_place);
         }
         
-        //go back
-        Abstract_Syntax_Tree.end_all_children();
+
     }
 
 }
