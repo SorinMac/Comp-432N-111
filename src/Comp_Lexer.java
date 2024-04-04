@@ -86,7 +86,7 @@ public class Comp_Lexer {
                 GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for spaces
-            }else if(tokenFinder.group().matches("\s") && Check_Quote == 1){
+            }else if(tokenFinder.group().matches("\\s") && Check_Quote == 1){
                 GetDescription(tokenFinder.group(), Check_Quote, line_num);
                 continue;
             //logic for everything else
@@ -138,7 +138,7 @@ public class Comp_Lexer {
         }else if(unknown_item.equals("$") && Quote == 0){
             TokenDisc = "END_OF_PROGRAM";
             Token.add(new TokenBuilder(TokenDisc, unknown_item, line_num+1, place));
-        }else if(unknown_item.matches("\s") && Quote == 1){
+        }else if(unknown_item.matches("\\s") && Quote == 1){
             String item = unknown_item;
             String item_decloration = "SPACE";
             Token.add(new TokenBuilder(item_decloration, item, line_num+1, place));
@@ -183,7 +183,7 @@ public class Comp_Lexer {
         
         //anything that is unknown to the lexer is then handled as a error and is give a specific error based on it process
         }else{
-            if(unknown_item.matches("\s")){
+            if(unknown_item.matches("\\s")){
                 
             }else if(unknown_item.matches("[0-9]+")){
                 String item = unknown_item;

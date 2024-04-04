@@ -85,12 +85,12 @@ public class Wheatley {
                                     parse_errors = Comp_Paser.Parser_Start(Tokens_List);
                                 }
 
-                                if(parse_errors == 0){
+                                if(parse_errors == 0 && lexer_num_of_error == 0){
                                     System.out.println("Semantic Analysis starting :)");
-                                    Comp_AST.Start_AST_Build(Tokens_List);
-                                    
-                                }else{
-                                    System.out.println("Paser Had Errors Ending :(");
+                                    Comp_AST.AST_Start(Tokens_List);
+                                    if(parse_errors > 0){
+                                        System.out.println("Paser Had Errors Ending :(");
+                                    }
                                 }
                                 
                                 lexer_num_of_error = 0;

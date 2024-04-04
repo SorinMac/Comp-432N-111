@@ -1,3 +1,7 @@
 {
-print("hello")
-}$
+  int a
+  a = 2
+  while(1+2+3+4 != 4){
+    print(a)
+  }
+}$ 
