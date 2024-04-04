@@ -1,8 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//check if both sides are boolops and handle it
-//true as string and bool
+//print out does not work really (prints out double)
 
 //the start of the spagetti code
 public class Comp_SymbolTable {
@@ -77,7 +76,7 @@ public class Comp_SymbolTable {
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
-                        type1 = "string";
+                        type1 = "boolean";
                     }else{
                         type1 = "";
                     }
@@ -100,7 +99,7 @@ public class Comp_SymbolTable {
                         }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
                             type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
                         }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
-                            type1 = "string";
+                            type1 = "boolean";
                         }else{
                             type1 = "";
                         }
@@ -130,7 +129,7 @@ public class Comp_SymbolTable {
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]+")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
-                        type1 = "string";
+                        type1 = "boolean";
                     }else{
                         type1 = "";
                     }
@@ -152,7 +151,7 @@ public class Comp_SymbolTable {
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[a-z]+")){
                         type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
-                        type2 = "string";
+                        type2 = "boolean";
                     }else{
                         type2 = "";
                     }
@@ -190,12 +189,12 @@ public class Comp_SymbolTable {
                 //telling what the type is
                 if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
                     type1 = "int";
-                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
-                    type1 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.contains("\"")){
+                    type1 = "string";
                 }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
                     type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
-                }else{
-                    type1 = "string";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
+                    type1 = "boolean";
                 }
 
                 //error if the type is not identified
@@ -207,13 +206,15 @@ public class Comp_SymbolTable {
                 //second type
                 String type2 = "";
 
-                //check what type it is 
-                if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[0-9]+")) {
+                //telling what the type is
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[0-9]+")){
                     type2 = "int";
-                } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")) {
-                    type2 = "boolean";
-                } else {
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.contains("\"")){
                     type2 = "string";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[a-z]+")){
+                    type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")){
+                    type2 = "boolean";
                 }
 
                 //if they do not equal error
@@ -221,7 +222,7 @@ public class Comp_SymbolTable {
                     if(type1 != ""){
                         Semantic_Num_Errors++;
                         System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).line_num + " at " +
-                        Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).place_num + " declared " + type1 + " but comparing " + type2 + ".");
+                        Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
                     }else{
 
                     }
@@ -250,25 +251,25 @@ public class Comp_SymbolTable {
                     }
                 }
 
-                //since block after will create a new scope
-                if (Abstract_Syntax_Tree.children.get(i).children.get(3).name.equals("block")) {
+                //since there is always a scope after then just go to the new scope
+                if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(2).name.equals("block")) {
                     Scope++;
                     Blocks.Scopes.add(Values_At_Block);
-                    Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(2));
+                    Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(2));
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("while_statment")){//while statment condition
                 //first type
                 String type1 = "";
                 
-                //decided what is that type
+                //telling what the type is
                 if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
                     type1 = "int";
-                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
-                    type1 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.contains("\"")){
+                    type1 = "string";
                 }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
                     type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
-                }else{
-                    type1 = "string";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
+                    type1 = "boolean";
                 }
 
                 //if the first type is nothing error
@@ -280,13 +281,15 @@ public class Comp_SymbolTable {
                 //second type
                 String type2 = "";
 
-                //check the type
-                if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[0-9]+")) {
+                //telling what the type is
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[0-9]+")){
                     type2 = "int";
-                } else if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")) {
-                    type2 = "boolean";
-                } else {
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.contains("\"")){
                     type2 = "string";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("[a-z]+")){
+                    type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")){
+                    type2 = "boolean";
                 }
 
                 //if not equal error
@@ -294,7 +297,7 @@ public class Comp_SymbolTable {
                     if(type1 != ""){
                         Semantic_Num_Errors++;
                         System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).line_num + " at " +
-                        Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).place_num + " declared " + type1 + " but comparing " + type2 + ".");
+                        Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
                     }else{
                         
                     }
@@ -323,10 +326,10 @@ public class Comp_SymbolTable {
                 }
 
                 //since there is always a scope after then just go to the new scope
-                if (Abstract_Syntax_Tree.children.get(i).children.get(2).name.equals("block")) {
+                if (Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(2).name.equals("block")) {
                     Scope++;
                     Blocks.Scopes.add(Values_At_Block);
-                    Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(2));
+                    Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(2));
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("print_statment")){//for the print statments
                 //what is the variable of the print statment

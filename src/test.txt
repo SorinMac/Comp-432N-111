@@ -1,4 +1,8 @@
 {
-  boolean a
+  string a
   a = "true"
+
+  if(a == "true"){
+    print(a)
+  }
 }$ 
