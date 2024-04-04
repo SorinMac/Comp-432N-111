@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 //print out does not work really (prints out double)
+//intop loop for left of and right of boolop
 
 //the start of the spagetti code
 public class Comp_SymbolTable {
