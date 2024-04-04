@@ -24,6 +24,7 @@ becuse the block is just there on its own and there is no real pattern for it to
 //is allowed need to fix the ast
 
 //check if both sides are boolops and handle it
+//true as string and bool
 */
 
 //the start of the spagetti code
