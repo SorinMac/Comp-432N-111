@@ -7,7 +7,6 @@ import java.util.List;
 public class Comp_AST {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
-    static test test = new test();
     static Comp_SymbolTable Comp_SymbolTable = new Comp_SymbolTable();
     static Comp_Lexer.TokenBuilder current_Token;
     static List<Comp_Lexer.TokenBuilder> AST_Token_List;
@@ -132,7 +131,6 @@ public class Comp_AST {
         System.out.println("AST for Program " + Program_Num + " Done");
         Abstract_Syntax_Tree.grow(Abstract_Syntax_Tree.root, 0);
         Comp_SymbolTable.Start_Symbole_Table(Abstract_Syntax_Tree.root);
-        //test.buildSymbolTable(Abstract_Syntax_Tree.root);
         //go back 
         Abstract_Syntax_Tree.end_all_children();
     }

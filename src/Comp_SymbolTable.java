@@ -22,6 +22,8 @@ import java.util.HashMap;
 becuse the block is just there on its own and there is no real pattern for it to fallow in the recusion to get it set up right
 
 //is allowed need to fix the ast
+
+//check if both sides are boolops and handle it
 */
 
 //the start of the spagetti code
@@ -357,8 +359,11 @@ public class Comp_SymbolTable {
                         System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(0).name + " used in print statement not found.");
                     }
                 }
-            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){//siginfies the end print out all scopes and clear the block for the next program
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("block")){
+                Scope++;
                 Blocks.Scopes.add(Values_At_Block);
+                Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){//siginfies the end print out all scopes and clear the block for the next program
                 printAllScopes();
                 Blocks.Scopes.clear();
             }
