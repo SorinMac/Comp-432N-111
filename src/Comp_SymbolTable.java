@@ -1,10 +1,13 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//print out does not work really (prints out double)
 //intop loop for left of and right of boolop
 
 //the start of the spagetti code
+//this is all super home grown
+
+//depth first throught the ast as a for loop
+//then goes wide when it see a block
 public class Comp_SymbolTable {
     Comp_AST Comp_AST = new Comp_AST();
     int Semantic_Num_Errors = 0;
@@ -48,6 +51,7 @@ public class Comp_SymbolTable {
     //global value to get hold all the blocks
     Symbol_Scope Blocks = new Symbol_Scope();
     Comp_AST.Tree_Node current;
+    boolean scopeAdded = false;
 
     //this will do all the checking and stuff
     public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree) {
@@ -56,7 +60,6 @@ public class Comp_SymbolTable {
 
         //goes through everything and start checking it all
         for (int i = 0; i < Abstract_Syntax_Tree.children.size(); i++) {
-            
             if (Abstract_Syntax_Tree.children.get(i).name.equals("var_decl")) { //if there is a var decl do this
                 //gets the variable as the value 
                 item value = new item(Abstract_Syntax_Tree.children.get(i).children.get(0).name);
@@ -358,9 +361,14 @@ public class Comp_SymbolTable {
                 Blocks.Scopes.add(Values_At_Block);
                 Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){//siginfies the end print out all scopes and clear the block for the next program
-                Blocks.Scopes.add(Values_At_Block);
-                printAllScopes();
-                Blocks.Scopes.clear();
+                if(Scope == 0){
+                    Blocks.Scopes.add(Values_At_Block); 
+                    printAllScopes();
+                    Blocks.Scopes.clear();
+                }else{
+                    printAllScopes();
+                    Blocks.Scopes.clear();
+                }
             }
         }  
     }
@@ -394,7 +402,7 @@ public class Comp_SymbolTable {
                 System.out.println("Scope " + scope.scope + ":");
                 for (String variableName : scope.values.keySet()) { //printing out everything
                     item currentItem = scope.values.get(variableName);
-                    System.out.println("Variable Name: " + variableName + ", IsUsed: " + currentItem.IsUsed + ", IsInitialized: " + currentItem.IsInitialized);
+                    System.out.println("Variable Name: " + variableName + ", Type: " + currentItem.name + ", IsUsed: " + currentItem.IsUsed + ", IsInitialized: " + currentItem.IsInitialized);
                 }
             }
         }
