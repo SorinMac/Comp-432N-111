@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 //intop loop for left of and right of boolop
+//test cases
+//labs
 
 //the start of the spagetti code
 //this is all super home grown
@@ -67,19 +69,18 @@ public class Comp_SymbolTable {
                 Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
 
             } else if (Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")) { //if there is a assignment statment
-
-                if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.equals("+")){ //if its a plus
+                if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.equals("+")){ //if its a plus (intop)
                     //grabs the type of the variable from the hashmap of the scope
                     String type1;
 
                     //telling what the type is
-                    if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
+                    if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[0-9]+")){
                         type1 = "int";
-                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.contains("\"")){
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.contains("\"")){
                         type1 = "string";
-                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
-                        type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
-                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]+")){
+                        type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
                         type1 = "boolean";
                     }else{
                         type1 = "";
@@ -88,7 +89,7 @@ public class Comp_SymbolTable {
                     //if it return "" thats means was not found
                     if (type1 ==  ""){ //error
                         Semantic_Num_Errors++;
-                        System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
+                        System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(0).name  + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(0).line_num + ".");
                     }
 
                     //sets up second type array list to hold all the possible types (more than one number)
@@ -96,16 +97,16 @@ public class Comp_SymbolTable {
 
                     for(int q = 0; q < Abstract_Syntax_Tree.children.get(i).children.size(); q++){
                         //telling what the type is
-                        if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[0-9]+")){
-                            type1 = "int";
-                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.contains("\"")){
-                            type1 = "string";
-                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("[a-z]+")){
-                            type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
-                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
-                            type1 = "boolean";
+                        if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(q).name.matches("[0-9]+")){
+                            type2.add("int");
+                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(q).name.contains("\"")){
+                            type2.add("string");
+                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(q).name.matches("[a-z]+")){
+                            type2.add(getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name));
+                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(q).name.matches("true|false")){
+                            type2.add("boolean");
                         }else{
-                            type1 = "";
+                            type2.add("");
                         }
                     }
 
@@ -141,7 +142,7 @@ public class Comp_SymbolTable {
                     //if not found error returns "" if not found
                     if (type1 ==  ""){
                         Semantic_Num_Errors++;
-                        System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
+                        System.out.println("Not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(0).name  + " line number " + Abstract_Syntax_Tree.children.get(i).children.get(0).line_num + ".");
                     }
                     
                     //this is the looking for type 2
@@ -158,6 +159,12 @@ public class Comp_SymbolTable {
                         type2 = "boolean";
                     }else{
                         type2 = "";
+                    }
+
+                    //if not found error returns "" if not found
+                    if (type2 ==  ""){
+                        Semantic_Num_Errors++;
+                        System.out.println("Not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).name  + " line number " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + ".");
                     }
 
                     if (!type1.equals(type2)) {//check if types match
@@ -204,7 +211,7 @@ public class Comp_SymbolTable {
                 //error if the type is not identified
                 if (type1 ==  ""){
                     Semantic_Num_Errors++;
-                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
+                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name  + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).line_num + ".");
                 }
 
                 //second type
@@ -225,7 +232,7 @@ public class Comp_SymbolTable {
                 if (!type1.equals(type2)) {
                     if(type1 != ""){
                         Semantic_Num_Errors++;
-                        System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).line_num + " at " +
+                        System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
                         Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
                     }else{
 
@@ -279,7 +286,7 @@ public class Comp_SymbolTable {
                 //if the first type is nothing error
                 if (type1 ==  ""){
                     Semantic_Num_Errors++;
-                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name  + " " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + ".");
+                    System.out.println("Variable not found error variable: " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name  + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).line_num + ".");
                 }
 
                 //second type
@@ -339,21 +346,23 @@ public class Comp_SymbolTable {
                 //what is the variable of the print statment
                 String printedVariable = Abstract_Syntax_Tree.children.get(i).children.get(1).name;
 
-                if (Values_At_Block.values.containsKey(printedVariable)) {//if its on the current scope then good
-                    Values_At_Block.values.get(printedVariable).IsUsed = true;
-                } else {//if  not go through the scopes in order to find it
-                    int test = 0;
-                    for(int s = Blocks.Scopes.size()-1; s >= 0; s--){
-                        if(Blocks.Scopes.get(s).values.containsKey(printedVariable)){
-                            Symbole_Node temp = Blocks.Scopes.get(s);
-                            temp.values.get(printedVariable).IsUsed = true;
-                            test = 1;
+                if(printedVariable.matches("[a-z]+")){
+                    if (Values_At_Block.values.containsKey(printedVariable)) {//if its on the current scope then good
+                        Values_At_Block.values.get(printedVariable).IsUsed = true;
+                    } else {//if  not go through the scopes in order to find it
+                        int test = 0;
+                        for(int s = Blocks.Scopes.size()-1; s >= 0; s--){
+                            if(Blocks.Scopes.get(s).values.containsKey(printedVariable)){
+                                Symbole_Node temp = Blocks.Scopes.get(s);
+                                temp.values.get(printedVariable).IsUsed = true;
+                                test = 1;
+                            }
                         }
-                    }
-
-                    if(test == 0){//if not found then error
-                        Semantic_Num_Errors++;
-                        System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(0).name + " used in print statement not found.");
+    
+                        if(test == 0){//if not found then error
+                            Semantic_Num_Errors++;
+                            System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(1).name + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " used in print statement not found.");
+                        }
                     }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("block")){
