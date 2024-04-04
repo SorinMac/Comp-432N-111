@@ -4,6 +4,8 @@ import java.util.List;
 //ast is now boken for example in test
 //not sure why yet
 
+//something to do with bool values in ast
+
 public class Comp_AST {
     //lots of global values that will be explained later in the program
     Comp_Lexer Comp_Lexer = new Comp_Lexer();
