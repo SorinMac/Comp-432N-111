@@ -159,6 +159,14 @@ public class Comp_SymbolTable {
                         type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
                         type2 = "boolean";
+                    }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("!=|==")){
+                        type2 = compare_boolop(Abstract_Syntax_Tree.children.get(i).children.get(1), Values_At_Block);
+
+                        if(type2.matches("int|string|boolean")){
+                            type2 = type1;
+                        }else{
+                            type2 = "";
+                        }
                     }else{
                         type2 = "";
                     }
@@ -417,5 +425,49 @@ public class Comp_SymbolTable {
                 }
             }
         }
+    }
+
+    public String compare_boolop(Comp_AST.Tree_Node Bool_Node, Symbole_Node Values_At_Block){
+        String value1 = Bool_Node.children.get(0).name;
+        String value2 = Bool_Node.children.get(1).name;
+
+        if(Bool_Node.children.get(1).name.matches("!=|==")){
+            value2 = compare_boolop(Bool_Node.children.get(1), Values_At_Block);
+        }
+
+        String bool_type1 = "";
+        String bool_type2 = "";
+
+        if(value1.matches("[0-9]+")){
+            bool_type1 = "int";
+        }else if(value1.matches("\"")){
+            bool_type1 = "string";
+        }else if(value1.matches("[a-z]+")){
+            bool_type1 = getVariableType(Values_At_Block, value1);
+        }else if(value1.matches("true|false")){
+            bool_type1 = "boolean";
+        }else{
+            bool_type1 = "";
+        }
+
+        if(value2.matches("[0-9]+")){
+            bool_type2 = "int";
+        }else if(value2.matches("\"")){
+            bool_type2 = "string";
+        }else if(value2.matches("[a-z]?")){
+            bool_type2 = getVariableType(Values_At_Block, value1);
+        }else if(value2.matches("true|false")){
+            bool_type2 = "boolean";
+        }else if(value2.matches("int|string|boolean")){
+            bool_type2 = value2;
+        }else{
+            bool_type2 = "";
+        }
+
+        if (!bool_type1.equals(bool_type2)) {
+            bool_type1 = "";
+        }
+
+        return bool_type1;
     }
 }
