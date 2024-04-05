@@ -3,8 +3,12 @@ import java.util.HashMap;
 
 //get a == b working recusoion yet again through the blocks checking left and right side && b = true == (true == false)
 //got to get the ast to make the right tree stuff then it should be good to go
+//idea re create the boolop_expr and the boolop and see if that helps
+
 //test cases
 //labs
+
+//extra intop
 
 //the start of the spagetti code
 //this is all super home grown

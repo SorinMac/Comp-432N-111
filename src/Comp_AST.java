@@ -354,39 +354,36 @@ public class Comp_AST {
     }
 
     static void AST_Boolean_Expr(){
-        
         //check to see which path to take from the BNF
         if(current_Token.unknown_item.equals("(")){
-            if(AST_Token_List.get(token_place+2).unknown_item.equals("+")){
-                token_place++;
-                AST_Int_Expr();
-                Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
-                AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
-                token_place++;
-                current_Token = AST_Token_List.get(token_place);
-                AST_Int_Expr();
-                token_place++;
-                current_Token = AST_Token_List.get(token_place);
-            }else{
-                Abstract_Syntax_Tree.addNode("branch", AST_Token_List.get(token_place+2).unknown_item, 
-                AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
-                token_place++;
-                current_Token = AST_Token_List.get(token_place);
-                AST_Expr();
-                token_place++;
-                current_Token = AST_Token_List.get(token_place);
-                AST_Expr();
-                token_place++;
-                current_Token = AST_Token_List.get(token_place);
-            }
-        }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
-            Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
+            Abstract_Syntax_Tree.addNode("branch", AST_Token_List.get(token_place+2).unknown_item, 
             AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
             token_place++;
             current_Token = AST_Token_List.get(token_place);
+            AST_Expr();
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+            AST_Boolop();
+            AST_Expr();
+            token_place++;
+            current_Token = AST_Token_List.get(token_place);
+        }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
+            AST_Boolval();
         }
-        
+    }
 
+    static void AST_Boolop(){
+        Abstract_Syntax_Tree.addNode("branch", AST_Token_List.get(token_place+2).unknown_item, 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
+    }
+
+    static void AST_Boolval(){
+        Abstract_Syntax_Tree.addNode("branch", AST_Token_List.get(token_place+2).unknown_item, 
+        AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
+        token_place++;
+        current_Token = AST_Token_List.get(token_place);
     }
 
 }
