@@ -2,10 +2,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 //get a == b working recusoion yet again through the blocks checking left and right side && b = true == (true == false)
+//got to get the ast to make the right tree stuff then it should be good to go
 //test cases
 //labs
-
-//extra handle intop problem
 
 //the start of the spagetti code
 //this is all super home grown
@@ -216,6 +215,14 @@ public class Comp_SymbolTable {
                     type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
                 }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
                     type1 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("!=|==")){
+                    type1 = compare_boolop(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0), Values_At_Block);
+
+                    if(type1.matches("int|string|boolean")){
+                        
+                    }else{
+                        type1 = "";
+                    }
                 }
 
                 //error if the type is not identified
@@ -236,6 +243,14 @@ public class Comp_SymbolTable {
                     type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
                 }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")){
                     type2 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("!=|==")){
+                    type2 = compare_boolop(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0), Values_At_Block);
+
+                    if(type2.matches("int|string|boolean")){
+                        type2 = type1;
+                    }else{
+                        type2 = "";
+                    }
                 }
 
                 //if they do not equal error
@@ -291,6 +306,14 @@ public class Comp_SymbolTable {
                     type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
                 }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("true|false")){
                     type1 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("!=|==")){
+                    type1 = compare_boolop(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0), Values_At_Block);
+
+                    if(type1.matches("int|string|boolean")){
+                        
+                    }else{
+                        type1 = "";
+                    }
                 }
 
                 //if the first type is nothing error
@@ -311,6 +334,14 @@ public class Comp_SymbolTable {
                     type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name);
                 }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).name.matches("true|false")){
                     type2 = "boolean";
+                }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name.matches("!=|==")){
+                    type2 = compare_boolop(Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0), Values_At_Block);
+
+                    if(type2.matches("int|string|boolean")){
+                        type2 = type1;
+                    }else{
+                        type2 = "";
+                    }
                 }
 
                 //if not equal error
