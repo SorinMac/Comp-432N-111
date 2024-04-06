@@ -386,9 +386,6 @@ public class Comp_AST {
         }else if (current_Token.unknown_item.matches("true") ||current_Token.unknown_item.matches("false")) {
             Abstract_Syntax_Tree.addNode("leaf", AST_Token_List.get(token_place).unknown_item, 
             AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
-            token_place++;
-            current_Token = AST_Token_List.get(token_place);
-            AST_Expr();
         }
     }
 

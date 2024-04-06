@@ -1,14 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//get a == b working recusoion yet again through the blocks checking left and right side && b = true == (true == false)
-//got to get the ast to make the right tree stuff then it should be good to go
-//idea re create the boolop_expr and the boolop and see if that helps
-
 //test cases
-//labs
-
-//extra intop
 
 //the start of the spagetti code
 //this is all super home grown
@@ -73,6 +66,11 @@ public class Comp_SymbolTable {
                 //then puts it in the scope that it is associated too
                 Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
 
+                //if at the end of a scope then add it
+                if(i ==  Abstract_Syntax_Tree.children.size()-1){
+                    Blocks.Scopes.add(Values_At_Block);
+                }
+
             } else if (Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")) { //if there is a assignment statment
                 if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.equals("+")){ //if its a plus (intop)
                     //grabs the type of the variable from the hashmap of the scope
@@ -98,33 +96,20 @@ public class Comp_SymbolTable {
                     }
 
                     //sets up second type array list to hold all the possible types (more than one number)
-                    ArrayList<String> type2 = new ArrayList<>();
+                    String type2 = "";
 
-                    for(int q = 0; q < Abstract_Syntax_Tree.children.get(i).children.size(); q++){
-                        //telling what the type is
-                        if(Abstract_Syntax_Tree.children.get(i).children.get(q).name.matches("[0-9]?")){
-                            type2.add("int");
-                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(q).name.contains("\"")){
-                            type2.add("string");
-                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(q).name.matches("[a-z]?")){
-                            type2.add(getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(0).name));
-                        }else if(Abstract_Syntax_Tree.children.get(i).children.get(q).name.matches("true|false")){
-                            type2.add("boolean");
-                        }else{
-                            type2.add("");
-                        }
+                    type2 = intop_check(Abstract_Syntax_Tree.children.get(i).children.get(1), Values_At_Block);
+
+                    if (!type1.equals(type2)) { //if error then cannot change the initiliazed
+                        Semantic_Num_Errors++;
+                        System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
+                        Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
                     }
 
-                    for(int w = 0; w < type2.size(); w ++){//goes through all the types in type2 and checks them
-                        //checks if the two types are the same if so then good if not then error
-                        if (!type1.equals(type2.get(w))) { //if error then cannot change the initiliazed
-                            if(type1 != ""){
-                                Semantic_Num_Errors++;
-                                System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
-                                Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
-                            }
-                        }
-                }
+                    //if at the end of a scope then add it
+                    if(i ==  Abstract_Syntax_Tree.children.size()-1){
+                        Blocks.Scopes.add(Values_At_Block);
+                    }
                     
                 }else{ //if it is not a plus one
 
@@ -163,6 +148,7 @@ public class Comp_SymbolTable {
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
                         type2 = "boolean";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("!=|==")){
+                        //logic to compare bool ops
                         type2 = compare_boolop(Abstract_Syntax_Tree.children.get(i).children.get(1), Values_At_Block);
 
                         if(type2.matches("int|string|boolean")){
@@ -207,8 +193,10 @@ public class Comp_SymbolTable {
                     }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("if_statment")){ //handel the instance of a if statment
+                //will check to make sure that the whole thing is the same
                 String if_type = compare_boolop(Abstract_Syntax_Tree.children.get(i), Values_At_Block);
 
+                //retrun "" if there was something not matching in the boolop
                 if(if_type.equals("")){
                     Semantic_Num_Errors++;
                     System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).line_num + " at " +
@@ -217,14 +205,17 @@ public class Comp_SymbolTable {
 
                 }
 
+                //handles the new scope for if
                 if (Abstract_Syntax_Tree.children.get(i).children.get(Abstract_Syntax_Tree.children.get(i).children.size()-1).name.equals("block")) {
                     Scope++;
                     Blocks.Scopes.add(Values_At_Block);
                     Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i).children.get(Abstract_Syntax_Tree.children.get(i).children.size()-1));
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("while_statment")){//while statment condition
+                //will check the whole thing making sure that they are all the same
                 String if_type = compare_boolop(Abstract_Syntax_Tree.children.get(i), Values_At_Block);
 
+                //if they miss match will return "" then know its a error
                 if(if_type.equals("")){
                     Semantic_Num_Errors++;
                     System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).line_num + " at " +
@@ -233,6 +224,7 @@ public class Comp_SymbolTable {
 
                 }
 
+                //handles the new scope after  a while
                 if (Abstract_Syntax_Tree.children.get(i).children.get(Abstract_Syntax_Tree.children.get(i).children.size()-1).name.equals("block")) {
                     Scope++;
                     Blocks.Scopes.add(Values_At_Block);
@@ -261,7 +253,7 @@ public class Comp_SymbolTable {
                         }
                     }
                 }
-            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("block")){
+            }else if(Abstract_Syntax_Tree.children.get(i).name.equals("block")){ //if therer is a block will add it
                 Scope++;
                 Blocks.Scopes.add(Values_At_Block);
                 Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
@@ -289,7 +281,7 @@ public class Comp_SymbolTable {
         }
         
         //will go back if needed
-        for (int i = currentScope.scope - 1; i >= 0; i--) {
+        for (int i = Scope-1; i >= 0; i--) {
             currentScope = Blocks.Scopes.get(i);
             if (currentScope.values.containsKey(variableName)) {
                 currentScope.values.get(variableName).IsUsed = true;
@@ -301,10 +293,11 @@ public class Comp_SymbolTable {
         return "";
     }
 
-    public String compare_boolop(Comp_AST.Tree_Node Bool_Node, Symbole_Node Values_At_Block){
-        String bool_type = "";
-        ArrayList<String> types = new ArrayList<>();
+    public String compare_boolop(Comp_AST.Tree_Node Bool_Node, Symbole_Node Values_At_Block){//comparison for a whole boolop
+        String bool_type = ""; //will hold the type
+        ArrayList<String> types = new ArrayList<>(); //will hold all the types
 
+        //will go through all the children of the bool node checking what type they are and adding them to the types array list
         for(int i = 0; i < Bool_Node.children.size(); i++){
             if(Bool_Node.children.get(i).name.matches("!=|==")){
                 if(Bool_Node.children.get(i-1).name.equals(")")){
@@ -339,15 +332,53 @@ public class Comp_SymbolTable {
             }
         }
 
+        //will grab one type
         bool_type = types.get(0);
 
+        //if the type is any different then error or ""
         for(int j = 0; j < types.size(); j++){
             if(!bool_type.equals(types.get(j))){
                 bool_type = "";
             }
         }
 
+        //return found type to the if or while check
         return bool_type;
+    }
+
+    //this will check for intops liek 1+2+3+4
+    public String intop_check(Comp_AST.Tree_Node Intop_Node, Symbole_Node Values_At_Block){
+        String int_type = ""; //will hold the type
+        ArrayList<String> types = new ArrayList<>(); //will hold the types of all 
+
+        //mainly used to check the variables since parse will handle the rest
+        for(int i = 0; i < Intop_Node.children.size(); i++){
+            if(Intop_Node.children.get(i).name.matches("[0-9]?")){
+                types.add("int");
+            }else if(Intop_Node.children.get(i).name.matches("\"")){
+                types.add("string");
+            }else if(Intop_Node.children.get(i).name.matches("[a-z]?")){
+                types.add(getVariableType(Values_At_Block, Intop_Node.children.get(i).name));
+            }else if(Intop_Node.children.get(i).name.matches("true|false")){
+                types.add("boolean");
+            }else{
+                types.add("");
+            }
+        }
+
+        //grab one
+        int_type = types.get(0);
+
+        //make sure they are all the same type
+        for(int j = 0; j < types.size(); j++){
+            if(!int_type.equals(types.get(j))){
+                int_type = "";
+            }
+        }
+
+        //return the correct type
+        return int_type;
+
     }
 
     //will print out all values at the scopes
