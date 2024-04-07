@@ -1,0 +1,111 @@
+/*1 valid*/
+/*Long Test Case - Everything Except Boolean Declaration */
+{
+  /* Int Declaration */
+  int a
+  int b
+  a = 0
+  b=0
+  /* While Loop */
+  while (a != 3) {
+    print(a)
+    while (b != 3) {
+      print(b)
+      b = 1 + b
+      if (b == 2) {
+        /* Print Statement */
+        print("there is no spoon" /* This will do nothing */ )
+      }
+    }
+    b = 0
+    a = 1+a
+  }
+}
+$
+
+/*2 valid*/
+{
+    int a
+    boolean b
+    {
+        string c
+        a = 5
+        b = true /* no comment */
+        c = "inta"
+        print(c)
+    }
+    print(b)
+    print(a)
+}$ 
+
+/*3 invalid (b not in scope)*/
+{
+    int a 
+    {
+        boolean b
+        a = 1 
+    }
+    print(b)
+}$
+
+/*4 valid proof of scope manuvering*/
+{
+int a 
+{
+    boolean b 
+    {
+        string c 
+        {
+            a = 5
+            b = false
+            c = "inta" 
+        }
+        print(c) 
+        }
+    print(b) 
+    }
+print(a)
+}$ 
+
+/*5 valid*/
+{
+    boolean a
+    a = (1 == (2 == 3))
+}$
+
+/*6 invalid type missmatch error*/
+{
+    string a
+    a = 2
+}$
+
+/*7 valid (checking for boolop stuff inside while)*/
+{
+    while((1 == (2 == 3)) != 1){
+        print("hello")
+    }
+}$
+
+/*8 valid (checking for boolop stuff inside if)*/
+{
+    if((1 == (2 == 3)) != 1){
+        print("hello")
+    }
+}$
+
+/*9 for overleaf check of everything at once*/
+
+{
+    int a
+    a = 3
+}$
+
+{
+    int a
+    a = 4
+}$
+
+{
+    int a
+    a = 5
+}$

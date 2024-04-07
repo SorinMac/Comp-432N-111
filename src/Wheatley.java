@@ -28,7 +28,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File("src/test.txt"); //"src/parser_test.txt" or args[0]
+            File commandTXT = new File(args[0]); //"src/semantic.txt" or args[0]
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
