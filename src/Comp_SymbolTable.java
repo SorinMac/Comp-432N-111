@@ -264,11 +264,13 @@ public class Comp_SymbolTable {
                 if(Scope == 0){
                     Blocks.Scopes.add(Values_At_Block); 
                     printAllScopes();
+                    System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
                     Blocks.Scopes.clear();
                     Scope = 0;
                     Semantic_Num_Errors = 0;
                 }else{
                     printAllScopes();
+                    System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
                     Blocks.Scopes.clear();
                     Scope = 0;
                     Semantic_Num_Errors = 0;
