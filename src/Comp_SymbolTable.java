@@ -54,9 +54,10 @@ public class Comp_SymbolTable {
     boolean scopeAdded = false;
 
     //this will do all the checking and stuff
-    public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree) {
+    public int Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree) {
         //makes the first new scope
         Symbole_Node Values_At_Block = new Symbole_Node(Scope);
+        Semantic_Num_Errors = 0;
 
         //goes through everything and start checking it all
         for (int i = 0; i < Abstract_Syntax_Tree.children.size(); i++) {
@@ -267,16 +268,18 @@ public class Comp_SymbolTable {
                     System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
                     Blocks.Scopes.clear();
                     Scope = 0;
-                    Semantic_Num_Errors = 0;
+                    return Semantic_Num_Errors;
                 }else{
                     printAllScopes();
                     System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
                     Blocks.Scopes.clear();
                     Scope = 0;
-                    Semantic_Num_Errors = 0;
+                    return Semantic_Num_Errors;
                 }
             }
-        }  
+        } 
+
+        return Semantic_Num_Errors;
     }
 
     //function to get the value at the variable

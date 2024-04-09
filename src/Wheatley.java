@@ -11,7 +11,9 @@ public class Wheatley {
         Comp_Lexer Comp_Lexer = new Comp_Lexer();
         Comp_Parser Comp_Paser = new Comp_Parser();
         Comp_AST Comp_AST = new Comp_AST();
+        Comp_CodeGen Comp_CodeGen = new Comp_CodeGen();
         int parse_errors = 0;
+        int semantic_errors = 0;
 
         //sets the value up
         List<String> code = new ArrayList<>();
@@ -28,7 +30,7 @@ public class Wheatley {
             //gets the file ready for reading
             //args[0] for when you need to take in a argurment from the command line
             // "src/test.txt" when you want to use the break points
-            File commandTXT = new File(args[0]); //"src/semantic.txt" or args[0]
+            File commandTXT = new File("src/test.txt"); //"src/semantic.txt" or args[0]
             Scanner reader = new Scanner(commandTXT);
 
             //makes is a long string (is that okay or should i have it with the tabs)
@@ -69,6 +71,7 @@ public class Wheatley {
                     if(Lexer_Output_Boolean == 1){
                         //output
                         parse_errors = 0;
+                        semantic_errors = 0;
                         for(int l = 0; l < Tokens_List.size(); l++){
                             System.out.println(Tokens_List.get(l).description + " [ " + Tokens_List.get(l).unknown_item + " ] " + "Found at line " + Tokens_List.get(l).line_num + " : " + Tokens_List.get(l).place_num);
 
@@ -87,7 +90,15 @@ public class Wheatley {
 
                                 if(parse_errors == 0 && lexer_num_of_error == 0){
                                     System.out.println("Semantic Analysis starting :)");
-                                    Comp_AST.AST_Start(Tokens_List);
+                                    semantic_errors = Comp_AST.AST_Start(Tokens_List);
+
+                                    if(semantic_errors > 0){
+                                        System.out.println("Semantics failed :(");
+                                    }else{
+                                        System.out.println("Code Gen starting :)");
+                                        Comp_CodeGen.start_codegen();
+                                    }
+
                                     if(parse_errors > 0){
                                         System.out.println("Paser Had Errors Ending :(");
                                     }
