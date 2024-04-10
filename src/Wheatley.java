@@ -11,7 +11,6 @@ public class Wheatley {
         Comp_Lexer Comp_Lexer = new Comp_Lexer();
         Comp_Parser Comp_Paser = new Comp_Parser();
         Comp_AST Comp_AST = new Comp_AST();
-        Comp_CodeGen Comp_CodeGen = new Comp_CodeGen();
         int parse_errors = 0;
         int semantic_errors = 0;
 
@@ -94,9 +93,6 @@ public class Wheatley {
 
                                     if(semantic_errors > 0){
                                         System.out.println("Semantics failed :(");
-                                    }else{
-                                        System.out.println("Code Gen starting :)");
-                                        Comp_CodeGen.start_codegen();
                                     }
 
                                     if(parse_errors > 0){

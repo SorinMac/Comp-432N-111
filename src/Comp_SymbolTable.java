@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//test cases
-
 //the start of the spagetti code
 //this is all super home grown
 
@@ -10,6 +8,7 @@ import java.util.HashMap;
 //then goes wide when it see a block
 public class Comp_SymbolTable {
     Comp_AST Comp_AST = new Comp_AST();
+    static Comp_CodeGen Comp_CodeGen = new Comp_CodeGen();
     int Semantic_Num_Errors = 0;
     int Scope = 0;
     int printOut = 0;
@@ -268,12 +267,26 @@ public class Comp_SymbolTable {
                     System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
                     Blocks.Scopes.clear();
                     Scope = 0;
+
+                    if(Semantic_Num_Errors > 0){
+
+                    }else{
+                        Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
+                    }
+
                     return Semantic_Num_Errors;
                 }else{
                     printAllScopes();
                     System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
                     Blocks.Scopes.clear();
                     Scope = 0;
+
+                    if(Semantic_Num_Errors > 0){
+
+                    }else{
+                        Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
+                    }
+
                     return Semantic_Num_Errors;
                 }
             }
