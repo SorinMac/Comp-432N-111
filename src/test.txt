@@ -4,5 +4,7 @@
     int b 
     b = 2 
     a = b
-    print(a)
+    if(a == b){
+        print(a)
+    }
 }$
