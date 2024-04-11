@@ -56,11 +56,14 @@ public class Comp_CodeGen {
                 start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable);
             }else if(AST.children.get(i).name.equals("$")){
                 stack_end = code_place;
-                if(stack_end > 256){
+                if(stack_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
                 initialize_varables_place();
                 varaibles_decl_end = code_place;
+                if(varaibles_decl_end >= 256){
+                    System.out.println("Error to many bit not able to be ran :(");
+                }
                 find_and_replace();
 
                 for(int s = 0 ; s < code_array.length; s ++){
@@ -168,20 +171,34 @@ public class Comp_CodeGen {
             if(AST_Node.children.get(i).name.matches("[a-z]?")){
                 uniqueValue = variables.get(AST_Node.children.get(i).name).temp_name;
                 if_place = i;
+                code_array[code_place] = uniqueValue;
+                code_place++;
+                code_array[code_place] = "XX";
+                code_place++;
+                break;
+            }else if(AST_Node.children.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.children.get(i).name;
+                code_place++;
+                if_place = i;
                 break;
             }
         }
-        code_array[code_place] = uniqueValue;
-        code_place++;
-        code_array[code_place] = "XX";
-        code_place++;
 
         code_array[code_place] = "EC";
         code_place++;
 
-        for(int s = if_place; s < AST_Node.children.size(); s++){
-            if(AST_Node.children.get(s).name.matches("[a-z]?")){
-                uniqueValue = variables.get(AST_Node.children.get(s).name).temp_name;
+        for(int i = if_place+1; i < AST_Node.children.size(); i++){
+            if(AST_Node.children.get(i).name.matches("[a-z]?")){
+                uniqueValue = variables.get(AST_Node.children.get(i).name).temp_name;
+                if_place = 0;
+                code_array[code_place] = uniqueValue;
+                code_place++;
+                code_array[code_place] = "XX";
+                code_place++;
+                break;
+            }else if(AST_Node.children.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.children.get(i).name;
+                code_place++;
                 if_place = 0;
                 break;
             }
