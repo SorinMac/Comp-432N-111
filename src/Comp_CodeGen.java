@@ -10,16 +10,18 @@ import java.util.HashMap;
 //add the scopes to the variables
 //handle scoop?
 
-//if is very wrong seems to be missing a lot of stuff
+//does not update distance correctly yet see line 83
 
 public class Comp_CodeGen {
     static int CODE_SIZE = 256;
     static Comp_SymbolTable Comp_SymbolTable = new Comp_SymbolTable();
     Comp_AST Comp_AST = new Comp_AST();
     HashMap<String, address_dets> variables = new HashMap<>();
+    HashMap<String, distance_dets> distance = new HashMap<>();
     String[] code_array = new String[CODE_SIZE];
     boolean check  = true;
     int unique_number = 0;
+    int distance_traveled_number = 0;
     int code_place = 0;
     
 
@@ -32,6 +34,16 @@ public class Comp_CodeGen {
             this.address = "0";
         }
         
+    }
+
+    public class distance_dets {
+        int place;
+        boolean porcessed;
+
+        distance_dets(int place){
+            this.place = place;
+            porcessed = false;
+        }
     }
 
     public void start_codegen(Comp_AST.Tree_Node AST, Comp_SymbolTable.Symbol_Scope SymboleTable){
@@ -64,14 +76,21 @@ public class Comp_CodeGen {
                 if(varaibles_decl_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
-                find_and_replace();
-
-                for(int s = 0 ; s < code_array.length; s ++){
-                    code_array[i] = code_array[i].toUpperCase();
-                }
+                find_and_replace_variables();
+                find_and_replace_distances();
 
                 System.out.println("[" + String.join(" ", code_array) + "]");
                 initialize_code(code_array);
+            }
+        }
+
+        String[] distance_values = new String[distance.keySet().size()];
+        distance_values = distance.keySet().toArray(distance_values);
+
+        for(int o = 0; o < distance_values.length; o++){
+            if(distance.get(distance_values[o]).porcessed == false){
+                distance.get(distance_values[o]).place = code_place - distance.get(distance_values[o]).place;
+                distance.get(distance_values[o]).porcessed = true;
             }
         }
     }
@@ -162,6 +181,7 @@ public class Comp_CodeGen {
 
     public void if_state(Comp_AST.Tree_Node AST_Node){
         String uniqueValue = "";
+        String distance_variable = "";
         int if_place = 0;
 
         code_array[code_place] = "AE";
@@ -203,15 +223,15 @@ public class Comp_CodeGen {
                 break;
             }
         }
-        code_array[code_place] = uniqueValue;
-        code_place++;
-        code_array[code_place] = "XX";
-        code_place++;
 
         code_array[code_place] = "D0";
         code_place++;
 
-        code_array[code_place] = "J0";
+        distance_dets temp_distance = new distance_dets(code_place);
+        distance_variable = "J" + distance_traveled_number;
+        distance.put(distance_variable, temp_distance);
+        code_array[code_place] = distance_variable;
+        distance_traveled_number++;
         code_place++;
     }
 
@@ -232,7 +252,7 @@ public class Comp_CodeGen {
         }
     }
 
-    public void find_and_replace(){
+    public void find_and_replace_variables(){
         String[] lookup_varaibles = new String[variables.keySet().size()];
         lookup_varaibles = variables.keySet().toArray(lookup_varaibles);
 
@@ -244,6 +264,19 @@ public class Comp_CodeGen {
                     if(variables.get(lookup_varaibles[s]).temp_name.equals(code_array[i])){
                         code_array[i] = variables.get(lookup_varaibles[s]).address;
                     }
+                }
+            }
+        }
+    }
+
+    public void find_and_replace_distances(){
+        String[] lookup_distance = new String[distance.keySet().size()];
+        lookup_distance = distance.keySet().toArray(lookup_distance);
+
+        for(int i = 0; i < CODE_SIZE; i++){
+            for(int s = 0; s < distance.keySet().size(); s++){
+                if(lookup_distance[s].equals(code_array[i])){
+                    code_array[i] = "0" + Integer.toString(distance.get(lookup_distance[s]).place);
                 }
             }
         }
