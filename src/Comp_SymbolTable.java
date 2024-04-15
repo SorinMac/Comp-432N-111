@@ -234,22 +234,11 @@ public class Comp_SymbolTable {
                 String printedVariable = Abstract_Syntax_Tree.children.get(i).children.get(1).name;
 
                 if(printedVariable.matches("[a-z]?")){
-                    if (Values_At_Block.values.containsKey(printedVariable)) {//if its on the current scope then good
-                        Values_At_Block.values.get(printedVariable).IsUsed = true;
-                    } else {//if  not go through the scopes in order to find it
-                        int test = 0;
-                        for(int s = Blocks.Scopes.size()-1; s >= 0; s--){
-                            if(Blocks.Scopes.get(s).values.containsKey(printedVariable)){
-                                Symbole_Node temp = Blocks.Scopes.get(s);
-                                temp.values.get(printedVariable).IsUsed = true;
-                                test = 1;
-                            }
-                        }
+                    String test = getVariableType(Values_At_Block, printedVariable);
     
-                        if(test == 0){//if not found then error
-                            Semantic_Num_Errors++;
-                            System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(1).name + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " used in print statement not found.");
-                        }
+                    if(test == " "){//if not found then error
+                        Semantic_Num_Errors++;
+                        System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(1).name + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " used in print statement not found.");
                     }
 
                     if(i ==  Abstract_Syntax_Tree.children.size()-1){
