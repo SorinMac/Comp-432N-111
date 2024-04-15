@@ -144,7 +144,7 @@ public class Comp_SymbolTable {
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.contains("\"")){
                         type2 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[a-z]?")){
-                        type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                        type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).name);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
                         type2 = "boolean";
                     }else{
