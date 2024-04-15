@@ -271,7 +271,7 @@ public class Comp_SymbolTable {
                     if(Semantic_Num_Errors > 0){
 
                     }else{
-                        Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
+                        //Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
                     }
 
                     return Semantic_Num_Errors;
@@ -284,7 +284,7 @@ public class Comp_SymbolTable {
                     if(Semantic_Num_Errors > 0){
 
                     }else{
-                        Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
+                        //Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
                     }
 
                     return Semantic_Num_Errors;
