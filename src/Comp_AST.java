@@ -156,16 +156,18 @@ public class Comp_AST {
     }
 
     static void AST_Statement_List(){
-       
         //this will check to see what procedure the ASTr should take
         if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") 
             || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") 
             || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             AST_Statement();
+            String test = current_Token.unknown_item;
+            //when here it lands on the end brace and not the print
             AST_Statement_List();
         }else{
             // it’s a ɛ (empty)
         }
+
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }
@@ -204,6 +206,7 @@ public class Comp_AST {
         AST_Expr();
         token_place++;
         current_Token = AST_Token_List.get(token_place);
+
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }
@@ -353,6 +356,7 @@ public class Comp_AST {
         AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
 
         //moves it one more time
+        token_place++;
         token_place++;
         current_Token = AST_Token_List.get(token_place);
     }

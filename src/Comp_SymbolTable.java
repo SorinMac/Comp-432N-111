@@ -82,6 +82,7 @@ public class Comp_SymbolTable {
                         type1 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]?")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                        Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
                         type1 = "boolean";
                     }else{
@@ -259,6 +260,7 @@ public class Comp_SymbolTable {
                     for (int s = Values_At_Block.scope-1; s >= 0; s--) {
                         currentScope = Blocks.Scopes.get(s);
                         if (currentScope.values.containsKey(printedVariable)) {
+                            //this is not working now have to look at it
                             if(Values_At_Block.values.get(printedVariable).IsInitialized == false){
                                 System.out.println("Warning " + printedVariable + " has not been initlized.");
                             }
