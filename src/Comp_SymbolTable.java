@@ -260,8 +260,7 @@ public class Comp_SymbolTable {
                     for (int s = Values_At_Block.scope-1; s >= 0; s--) {
                         currentScope = Blocks.Scopes.get(s);
                         if (currentScope.values.containsKey(printedVariable)) {
-                            //this is not working now have to look at it
-                            if(Values_At_Block.values.get(printedVariable).IsInitialized == false){
+                            if(currentScope.values.get(printedVariable).IsInitialized == false){
                                 System.out.println("Warning " + printedVariable + " has not been initlized.");
                             }
                         }

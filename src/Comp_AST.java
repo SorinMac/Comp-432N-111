@@ -161,8 +161,6 @@ public class Comp_AST {
             || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") 
             || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             AST_Statement();
-            String test = current_Token.unknown_item;
-            //when here it lands on the end brace and not the print
             AST_Statement_List();
         }else{
             // it’s a ɛ (empty)
