@@ -82,6 +82,7 @@ public class Comp_SymbolTable {
                         type1 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]?")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                        setInitalized(Abstract_Syntax_Tree.children.get(i).children.get(0).name, Values_At_Block);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
                         type1 = "boolean";
                     }else{
@@ -349,6 +350,7 @@ public class Comp_SymbolTable {
                         types.add("string");
                     }else if(Bool_Node.children.get(i-1).name.matches("[a-z]?")){
                         types.add(getVariableType(Values_At_Block, Bool_Node.children.get(i-1).name));
+                        checkInitialized(Bool_Node.children.get(i-1).name, Values_At_Block);
                     }else if(Bool_Node.children.get(i-1).name.matches("true|false")){
                         types.add("boolean");
                     }
@@ -364,6 +366,7 @@ public class Comp_SymbolTable {
                         types.add("string");
                     }else if(Bool_Node.children.get(i+1).name.matches("[a-z]?")){
                         types.add(getVariableType(Values_At_Block, Bool_Node.children.get(i+1).name));
+                        checkInitialized(Bool_Node.children.get(i+1).name, Values_At_Block);
                     }else if(Bool_Node.children.get(i+1).name.matches("true|false")){
                         types.add("boolean");
                     }
@@ -398,6 +401,7 @@ public class Comp_SymbolTable {
                 types.add("string");
             }else if(Intop_Node.children.get(i).name.matches("[a-z]?")){
                 types.add(getVariableType(Values_At_Block, Intop_Node.children.get(i).name));
+                checkInitialized(Intop_Node.children.get(i-1).name, Values_At_Block);
             }else if(Intop_Node.children.get(i).name.matches("true|false")){
                 types.add("boolean");
             }else{
@@ -433,4 +437,43 @@ public class Comp_SymbolTable {
             }
         }
     }
+
+    public void checkInitialized(String what_to_find, Symbole_Node Values_At_Block){
+        Symbole_Node currentScope = Values_At_Block;
+        
+        //if in current scope then just return
+        if(currentScope.values.containsKey(what_to_find)) {
+            if(currentScope.values.get(what_to_find).IsInitialized == false){
+                System.out.println("Warning " + what_to_find + " has no been intialized.");
+            }
+        }
+        
+        //will go back if needed
+        for (int i = currentScope.scope-1; i >= 0; i--) {
+            currentScope = Blocks.Scopes.get(i);
+            if (currentScope.values.containsKey(what_to_find)) {
+                if(currentScope.values.get(what_to_find).IsInitialized == false){
+                    System.out.println("Warning " + what_to_find + " has no been intialized.");
+                }
+            }
+        }
+    }
+
+    public void setInitalized(String what_to_find, Symbole_Node Values_At_Block){
+        Symbole_Node currentScope = Values_At_Block;
+        
+        //if in current scope then just return
+        if(currentScope.values.containsKey(what_to_find)) {
+            currentScope.values.get(what_to_find).IsInitialized = true;
+        }
+        
+        //will go back if needed
+        for (int i = currentScope.scope-1; i >= 0; i--) {
+            currentScope = Blocks.Scopes.get(i);
+            if (currentScope.values.containsKey(what_to_find)) {
+                currentScope.values.get(what_to_find).IsInitialized = true;
+            }
+        }
+    }
+
 }
