@@ -276,6 +276,8 @@ public class Comp_SymbolTable {
                 Blocks.Scopes.add(Values_At_Block);
                 Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){//siginfies the end print out all scopes and clear the block for the next program
+                //removes all duplicate scopes
+                
                 for (int s = 0; s < Blocks.Scopes.size(); s++){
                     int scope_test = Blocks.Scopes.get(s).scope;
                     for(int o = s+1; o < Blocks.Scopes.size(); o++){
