@@ -355,7 +355,9 @@ public class Comp_AST {
 
         //moves it one more time
         token_place++;
-        token_place++;
+        if(AST_Token_List.get(token_place).unknown_item.equals("}")){
+            token_place++;
+        }
         current_Token = AST_Token_List.get(token_place);
     }
 

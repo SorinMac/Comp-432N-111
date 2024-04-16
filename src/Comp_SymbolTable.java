@@ -82,7 +82,6 @@ public class Comp_SymbolTable {
                         type1 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]?")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
-                        Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
                         type1 = "boolean";
                     }else{
@@ -350,9 +349,6 @@ public class Comp_SymbolTable {
                         types.add("string");
                     }else if(Bool_Node.children.get(i-1).name.matches("[a-z]?")){
                         types.add(getVariableType(Values_At_Block, Bool_Node.children.get(i-1).name));
-                        if(Values_At_Block.values.get(Bool_Node.children.get(i-1).name).IsInitialized == false){
-                            System.out.println("Warning " + Bool_Node.children.get(i-1).name + " has not been initlized.");
-                        }
                     }else if(Bool_Node.children.get(i-1).name.matches("true|false")){
                         types.add("boolean");
                     }
@@ -368,9 +364,6 @@ public class Comp_SymbolTable {
                         types.add("string");
                     }else if(Bool_Node.children.get(i+1).name.matches("[a-z]?")){
                         types.add(getVariableType(Values_At_Block, Bool_Node.children.get(i+1).name));
-                        if(Values_At_Block.values.get(Bool_Node.children.get(i+1).name).IsInitialized == false){
-                            System.out.println("Warning " + Bool_Node.children.get(i+1).name + " has not been initlized.");
-                        }
                     }else if(Bool_Node.children.get(i+1).name.matches("true|false")){
                         types.add("boolean");
                     }
@@ -405,9 +398,6 @@ public class Comp_SymbolTable {
                 types.add("string");
             }else if(Intop_Node.children.get(i).name.matches("[a-z]?")){
                 types.add(getVariableType(Values_At_Block, Intop_Node.children.get(i).name));
-                if(Values_At_Block.values.get(Intop_Node.children.get(i).name).IsInitialized == false){
-                    System.out.println("Warning " + Intop_Node.children.get(i).name + " has not been initlized.");
-                }
             }else if(Intop_Node.children.get(i).name.matches("true|false")){
                 types.add("boolean");
             }else{
