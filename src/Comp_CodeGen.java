@@ -5,16 +5,12 @@ import java.util.HashMap;
 //then right the code as hex ints
 
 //need to figure out
-//heap and stack crash
-    //values to hold the code_place at the points in which there at the end 
 //add the scopes to the variables
 //handle scoop?
-//print out a string
-//print out int a bool
-//set true and false as static
-//make it so print out breaks at the 8th place
-
 //does not update distance correctly yet see line 83
+
+//heap and stack crash
+    //values to hold the code_place at the points in which there at the end 
 
 public class Comp_CodeGen {
     static int CODE_SIZE = 256;
@@ -23,10 +19,14 @@ public class Comp_CodeGen {
     HashMap<String, address_dets> variables = new HashMap<>();
     HashMap<String, distance_dets> distance = new HashMap<>();
     String[] code_array = new String[CODE_SIZE];
+    String[] bool_setup = {"74", "72", "75", "65" , "00", "66", "61", "6C", "73", "65", "00"};
     boolean check  = true;
     int unique_number = 0;
     int distance_traveled_number = 0;
     int code_place = 0;
+    int heap_start = 0;
+    String true_pointer = "";
+    String false_pointer = "";
     
 
     public class address_dets {
@@ -60,6 +60,8 @@ public class Comp_CodeGen {
             initialize_code(code_array);
             check = false;
         }
+
+        set_bool();
 
         for(int i = 0; i < AST.children.size(); i++){
             if(AST.children.get(i).name.equals("var_decl")){
@@ -141,6 +143,7 @@ public class Comp_CodeGen {
     }
 
     //slide 11
+    //need this to assign for string and bools and intops
     public void assign(Comp_AST.Tree_Node AST_Node){
         String uniqueValue = "";
 
@@ -168,31 +171,89 @@ public class Comp_CodeGen {
         code_place++;
     }
     
-    //slide 11  
+    //slide 11 
+    //need this to print ints, string, bools, intops,
+    //as well as all of that from variables
     public void print(Comp_AST.Tree_Node AST_Node){
-        String uniqueValue = "";
 
-        code_array[code_place] = "AC";
-        code_place++;
+        if(AST_Node.children.get(1).name.matches("[0-9]?")){
+            code_array[code_place] = "A0";
+            code_place++;
+            code_array[code_place] = "0" + AST_Node.children.get(1).name;
+            code_place++;
+            code_array[code_place] = "A2";
+            code_place++;
+            code_array[code_place] = "01";
+            code_place++;
+            code_array[code_place] = "FF";
+            code_place++;
+        }else if(AST_Node.children.get(1).name.contains("\"")){
+            String print_out_string = AST_Node.children.get(1).name;
+            StringBuilder print_string = new StringBuilder();
+            print_string.append(print_out_string);
+            print_string.reverse();
 
-        uniqueValue = variables.get(AST_Node.children.get(1).name).temp_name;
-        code_array[code_place] = uniqueValue;
-        code_place++;
-        code_array[code_place] = "XX";
-        code_place++;
+            code_array[code_place] = "A0";
+            code_place++;
 
-        code_array[code_place] = "A2";
-        code_place++;
+            for(int i = 0; i < print_string.length(); i++){
+                if(print_string.charAt(i) != '\"'){
+                    char temp = print_string.charAt(i);
+                    code_array[heap_start-(i+1)] = Integer.toHexString((int) temp);
+                }
+            }
 
-        code_array[code_place] = "01";
-        code_place++;
-
-        code_array[code_place] = "FF";
-        code_place++;
-
-    
+            code_array[code_place] = Integer.toHexString(heap_start-print_string.length()+1);
+            code_place++;
+            code_array[code_place] = "A2";
+            code_place++;
+            code_array[code_place] = "02";
+            code_place++;
+            code_array[code_place] = "FF";
+            code_place++;
+        }else if(AST_Node.children.get(1).name.matches("[a-z]?")){
+            String uniqueValue = "";
+            code_array[code_place] = "AC";
+            code_place++;
+            uniqueValue = variables.get(AST_Node.children.get(1).name).temp_name;
+            code_array[code_place] = uniqueValue;
+            code_place++;
+            code_array[code_place] = "XX";
+            code_place++;
+            code_array[code_place] = "A2";
+            code_place++;
+            code_array[code_place] = "01";
+            code_place++;
+            code_array[code_place] = "FF";
+            code_place++;
+        }else if(AST_Node.children.get(1).name.matches("true|false")){
+            if(AST_Node.children.get(1).name.matches("true")){
+                code_array[code_place] = "A0";
+                code_place++;
+                code_array[code_place] = true_pointer;
+                code_place++;
+                code_array[code_place] = "A2";
+                code_place++;
+                code_array[code_place] = "02";
+                code_place++;
+                code_array[code_place] = "FF";
+                code_place++;
+            }else{
+                code_array[code_place] = "A0";
+                code_place++;
+                code_array[code_place] = false_pointer;
+                code_place++;
+                code_array[code_place] = "A2";
+                code_place++;
+                code_array[code_place] = "02";
+                code_place++;
+                code_array[code_place] = "FF";
+                code_place++;
+            }
+        }
     }
 
+    //will get to next week
     public void if_state(Comp_AST.Tree_Node AST_Node){
         String uniqueValue = "";
         String distance_variable = "";
@@ -294,5 +355,18 @@ public class Comp_CodeGen {
                 }
             }
         }
+    }
+
+    public void set_bool(){
+        for(int i = 0; i < bool_setup.length; i++){
+            if(bool_setup[(bool_setup.length-1)-i].equals("74")){
+                true_pointer = Integer.toHexString((CODE_SIZE-1)-i);
+            }else if(bool_setup[(bool_setup.length-1)-i].equals("66")){
+                false_pointer = Integer.toHexString((CODE_SIZE-1)-i);
+            }
+            code_array[(CODE_SIZE-1)-i] = bool_setup[(bool_setup.length-1)-i];
+        }
+
+        heap_start = CODE_SIZE - bool_setup.length;
     }
 }
