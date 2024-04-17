@@ -9,6 +9,10 @@ import java.util.HashMap;
     //values to hold the code_place at the points in which there at the end 
 //add the scopes to the variables
 //handle scoop?
+//print out a string
+//print out int a bool
+//set true and false as static
+//make it so print out breaks at the 8th place
 
 //does not update distance correctly yet see line 83
 
@@ -47,6 +51,7 @@ public class Comp_CodeGen {
     }
 
     public void start_codegen(Comp_AST.Tree_Node AST, Comp_SymbolTable.Symbol_Scope SymboleTable){
+        String printout = "";
         int stack_end = 0;
         int varaibles_decl_end = 0;
         int heap_end = 0;
@@ -76,10 +81,19 @@ public class Comp_CodeGen {
                 if(varaibles_decl_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
+
                 find_and_replace_variables();
                 find_and_replace_distances();
 
-                System.out.println("[" + String.join(" ", code_array) + "]");
+                printout = "This is the code for program: ";
+                for(int s = 0; s < CODE_SIZE; s++){
+                    if(s % 8 == 0){
+                        printout = printout + "\n";
+                    }
+                    printout = printout + code_array[s] + " ";
+                }
+                System.out.println(printout);
+
                 initialize_code(code_array);
             }
         }
