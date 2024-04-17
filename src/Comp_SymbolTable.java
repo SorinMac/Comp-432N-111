@@ -293,7 +293,6 @@ public class Comp_SymbolTable {
 
                 printAllScopes();
                 System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " ." + "\n");
-                Blocks.Scopes.clear();
                 Scope = 0;
 
                 if(Semantic_Num_Errors > 0){
@@ -302,6 +301,7 @@ public class Comp_SymbolTable {
                     Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
                 }
 
+                Blocks.Scopes.clear();
                 return Semantic_Num_Errors;
             }
         } 
