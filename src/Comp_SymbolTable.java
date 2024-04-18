@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//test cases
-
 //the start of the spagetti code
 //this is all super home grown
 
@@ -10,6 +8,7 @@ import java.util.HashMap;
 //then goes wide when it see a block
 public class Comp_SymbolTable {
     Comp_AST Comp_AST = new Comp_AST();
+    static Comp_CodeGen Comp_CodeGen = new Comp_CodeGen();
     int Semantic_Num_Errors = 0;
     int Scope = 0;
     int printOut = 0;
@@ -54,9 +53,10 @@ public class Comp_SymbolTable {
     boolean scopeAdded = false;
 
     //this will do all the checking and stuff
-    public void Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree) {
+    public int Start_Symbole_Table(Comp_AST.Tree_Node Abstract_Syntax_Tree) {
         //makes the first new scope
         Symbole_Node Values_At_Block = new Symbole_Node(Scope);
+        Semantic_Num_Errors = 0;
 
         //goes through everything and start checking it all
         for (int i = 0; i < Abstract_Syntax_Tree.children.size(); i++) {
@@ -64,13 +64,12 @@ public class Comp_SymbolTable {
                 //gets the variable as the value 
                 item value = new item(Abstract_Syntax_Tree.children.get(i).children.get(0).name);
                 //then puts it in the scope that it is associated too
-                Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
-
-                //if at the end of a scope then add it
-                if(i ==  Abstract_Syntax_Tree.children.size()-1){
-                    Blocks.Scopes.add(Values_At_Block);
+                if(Values_At_Block.values.containsKey(Abstract_Syntax_Tree.children.get(i).children.get(1).name)){
+                    Semantic_Num_Errors++;
+                    System.out.println("Error " + Abstract_Syntax_Tree.children.get(i).children.get(1).name + " has already been declared in this scope");
+                }else{
+                    Values_At_Block.values.put(Abstract_Syntax_Tree.children.get(i).children.get(1).name, value);
                 }
-
             } else if (Abstract_Syntax_Tree.children.get(i).name.equals("assignment_statment")) { //if there is a assignment statment
                 if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.equals("+")){ //if its a plus (intop)
                     //grabs the type of the variable from the hashmap of the scope
@@ -83,6 +82,7 @@ public class Comp_SymbolTable {
                         type1 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("[a-z]?")){
                         type1 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                        setInitalized(Abstract_Syntax_Tree.children.get(i).children.get(0).name, Values_At_Block);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(0).name.matches("true|false")){
                         type1 = "boolean";
                     }else{
@@ -104,13 +104,25 @@ public class Comp_SymbolTable {
                         Semantic_Num_Errors++;
                         System.out.println("Type mis-match error at " + Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).line_num + " at " +
                         Abstract_Syntax_Tree.children.get(i).children.get(1).children.get(1).place_num + " declared " + type1 + " but comparing " + type2 + ".");
-                    }
+                    }else{
+                        if (Values_At_Block.values.containsKey(Abstract_Syntax_Tree.children.get(i).children.get(0).name)) {
+                            Values_At_Block.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
+                        } else { //if they match then change the initialized to true
+                            int test = 0;
+                            for(int s = Scope-1; s >= 0; s--){ //goes through the previous scopes
+                                if(Blocks.Scopes.get(s).values.containsKey(Abstract_Syntax_Tree.children.get(i).children.get(0).name)){
+                                    Symbole_Node temp = Blocks.Scopes.get(s);
+                                    temp.values.get(Abstract_Syntax_Tree.children.get(i).children.get(0).name).IsInitialized = true;
+                                    test = 1;
+                                }
+                            }
 
-                    //if at the end of a scope then add it
-                    if(i ==  Abstract_Syntax_Tree.children.size()-1){
-                        Blocks.Scopes.add(Values_At_Block);
+                            if(test == 0){ //back up error just in case
+                                Semantic_Num_Errors++;
+                                System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(0).name + " used in print statement not found.");
+                            }
+                        }
                     }
-                    
                 }else{ //if it is not a plus one
 
                     //gets the string value of the first one (the variable)
@@ -144,7 +156,7 @@ public class Comp_SymbolTable {
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.contains("\"")){
                         type2 = "string";
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("[a-z]?")){
-                        type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(0).name);
+                        type2 = getVariableType(Values_At_Block, Abstract_Syntax_Tree.children.get(i).children.get(1).name);
                     }else if(Abstract_Syntax_Tree.children.get(i).children.get(1).name.matches("true|false")){
                         type2 = "boolean";
                     }else{
@@ -191,6 +203,7 @@ public class Comp_SymbolTable {
                         }
                     }
                 }
+                
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("if_statment")){ //handel the instance of a if statment
                 //will check to make sure that the whole thing is the same
                 String if_type = compare_boolop(Abstract_Syntax_Tree.children.get(i), Values_At_Block);
@@ -234,26 +247,28 @@ public class Comp_SymbolTable {
                 String printedVariable = Abstract_Syntax_Tree.children.get(i).children.get(1).name;
 
                 if(printedVariable.matches("[a-z]?")){
-                    if (Values_At_Block.values.containsKey(printedVariable)) {//if its on the current scope then good
-                        Values_At_Block.values.get(printedVariable).IsUsed = true;
-                    } else {//if  not go through the scopes in order to find it
-                        int test = 0;
-                        for(int s = Blocks.Scopes.size()-1; s >= 0; s--){
-                            if(Blocks.Scopes.get(s).values.containsKey(printedVariable)){
-                                Symbole_Node temp = Blocks.Scopes.get(s);
-                                temp.values.get(printedVariable).IsUsed = true;
-                                test = 1;
-                            }
-                        }
-    
-                        if(test == 0){//if not found then error
-                            Semantic_Num_Errors++;
-                            System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(1).name + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " used in print statement not found.");
+                    Symbole_Node currentScope = new Symbole_Node(Scope);
+                    String test = getVariableType(Values_At_Block, printedVariable);
+                    
+                    if(Values_At_Block.values.containsKey(printedVariable)) {
+                        if(Values_At_Block.values.get(printedVariable).IsInitialized == false){
+                            System.out.println("Warning " + printedVariable + " has not been initlized.");
                         }
                     }
-
-                    if(i ==  Abstract_Syntax_Tree.children.size()-1){
-                        Blocks.Scopes.add(Values_At_Block);
+                    
+                    //will go back if needed
+                    for (int s = Values_At_Block.scope-1; s >= 0; s--) {
+                        currentScope = Blocks.Scopes.get(s);
+                        if (currentScope.values.containsKey(printedVariable)) {
+                            if(currentScope.values.get(printedVariable).IsInitialized == false){
+                                System.out.println("Warning " + printedVariable + " has not been initlized.");
+                            }
+                        }
+                    }
+    
+                    if(test == ""){//if not found then error
+                        Semantic_Num_Errors++;
+                        System.out.println("Variable " + Abstract_Syntax_Tree.children.get(i).children.get(1).name + " line num " + Abstract_Syntax_Tree.children.get(i).children.get(1).line_num + " used in print statement not found.");
                     }
                 }
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("block")){ //if therer is a block will add it
@@ -261,22 +276,38 @@ public class Comp_SymbolTable {
                 Blocks.Scopes.add(Values_At_Block);
                 Start_Symbole_Table(Abstract_Syntax_Tree.children.get(i));
             }else if(Abstract_Syntax_Tree.children.get(i).name.equals("$")){//siginfies the end print out all scopes and clear the block for the next program
-                if(Scope == 0){
-                    Blocks.Scopes.add(Values_At_Block); 
-                    printAllScopes();
-                    System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
-                    Blocks.Scopes.clear();
-                    Scope = 0;
-                    Semantic_Num_Errors = 0;
-                }else{
-                    printAllScopes();
-                    System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " .");
-                    Blocks.Scopes.clear();
-                    Scope = 0;
-                    Semantic_Num_Errors = 0;
+                //removes all duplicate scopes
+                
+                for (int s = 0; s < Blocks.Scopes.size(); s++){
+                    int scope_test = Blocks.Scopes.get(s).scope;
+                    for(int o = s+1; o < Blocks.Scopes.size(); o++){
+                        if(scope_test == Blocks.Scopes.get(o).scope){
+                            Blocks.Scopes.remove(o);
+                        }
+                    }
                 }
+
+                if(Blocks.Scopes.size() == 0){
+                    Blocks.Scopes.add(Values_At_Block);
+                }
+
+                printAllScopes();
+                System.out.println("The number of errors in semantic anaylsis is " + Semantic_Num_Errors + " ." + "\n");
+                Scope = 0;
+
+                if(Semantic_Num_Errors > 0){
+
+                }else{
+                    Comp_CodeGen.start_codegen(Abstract_Syntax_Tree, Blocks);
+                }
+
+                Blocks.Scopes.clear();
+                return Semantic_Num_Errors;
             }
-        }  
+        } 
+
+        Blocks.Scopes.add(Values_At_Block);
+        return Semantic_Num_Errors;
     }
 
     //function to get the value at the variable
@@ -290,7 +321,7 @@ public class Comp_SymbolTable {
         }
         
         //will go back if needed
-        for (int i = Scope-1; i >= 0; i--) {
+        for (int i = currentScope.scope-1; i >= 0; i--) {
             currentScope = Blocks.Scopes.get(i);
             if (currentScope.values.containsKey(variableName)) {
                 currentScope.values.get(variableName).IsUsed = true;
@@ -315,10 +346,11 @@ public class Comp_SymbolTable {
                    //telling what the type is
                     if(Bool_Node.children.get(i-1).name.matches("[0-9]?")){
                         types.add("int");
-                    }else if(Bool_Node.children.get(i-1).name.matches("\"")){
+                    }else if(Bool_Node.children.get(i-1).name.contains("\"")){
                         types.add("string");
                     }else if(Bool_Node.children.get(i-1).name.matches("[a-z]?")){
                         types.add(getVariableType(Values_At_Block, Bool_Node.children.get(i-1).name));
+                        checkInitialized(Bool_Node.children.get(i-1).name, Values_At_Block);
                     }else if(Bool_Node.children.get(i-1).name.matches("true|false")){
                         types.add("boolean");
                     }
@@ -330,10 +362,11 @@ public class Comp_SymbolTable {
                     //telling what the type is
                     if(Bool_Node.children.get(i+1).name.matches("[0-9]?")){
                         types.add("int");
-                    }else if(Bool_Node.children.get(i+1).name.matches("\"")){
+                    }else if(Bool_Node.children.get(i+1).name.contains("\"")){
                         types.add("string");
                     }else if(Bool_Node.children.get(i+1).name.matches("[a-z]?")){
                         types.add(getVariableType(Values_At_Block, Bool_Node.children.get(i+1).name));
+                        checkInitialized(Bool_Node.children.get(i+1).name, Values_At_Block);
                     }else if(Bool_Node.children.get(i+1).name.matches("true|false")){
                         types.add("boolean");
                     }
@@ -364,10 +397,11 @@ public class Comp_SymbolTable {
         for(int i = 0; i < Intop_Node.children.size(); i++){
             if(Intop_Node.children.get(i).name.matches("[0-9]?")){
                 types.add("int");
-            }else if(Intop_Node.children.get(i).name.matches("\"")){
+            }else if(Intop_Node.children.get(i).name.contains("\"")){
                 types.add("string");
             }else if(Intop_Node.children.get(i).name.matches("[a-z]?")){
                 types.add(getVariableType(Values_At_Block, Intop_Node.children.get(i).name));
+                checkInitialized(Intop_Node.children.get(i-1).name, Values_At_Block);
             }else if(Intop_Node.children.get(i).name.matches("true|false")){
                 types.add("boolean");
             }else{
@@ -403,4 +437,43 @@ public class Comp_SymbolTable {
             }
         }
     }
+
+    public void checkInitialized(String what_to_find, Symbole_Node Values_At_Block){
+        Symbole_Node currentScope = Values_At_Block;
+        
+        //if in current scope then just return
+        if(currentScope.values.containsKey(what_to_find)) {
+            if(currentScope.values.get(what_to_find).IsInitialized == false){
+                System.out.println("Warning " + what_to_find + " has no been intialized.");
+            }
+        }
+        
+        //will go back if needed
+        for (int i = currentScope.scope-1; i >= 0; i--) {
+            currentScope = Blocks.Scopes.get(i);
+            if (currentScope.values.containsKey(what_to_find)) {
+                if(currentScope.values.get(what_to_find).IsInitialized == false){
+                    System.out.println("Warning " + what_to_find + " has no been intialized.");
+                }
+            }
+        }
+    }
+
+    public void setInitalized(String what_to_find, Symbole_Node Values_At_Block){
+        Symbole_Node currentScope = Values_At_Block;
+        
+        //if in current scope then just return
+        if(currentScope.values.containsKey(what_to_find)) {
+            currentScope.values.get(what_to_find).IsInitialized = true;
+        }
+        
+        //will go back if needed
+        for (int i = currentScope.scope-1; i >= 0; i--) {
+            currentScope = Blocks.Scopes.get(i);
+            if (currentScope.values.containsKey(what_to_find)) {
+                currentScope.values.get(what_to_find).IsInitialized = true;
+            }
+        }
+    }
+
 }

@@ -106,7 +106,8 @@ public class Comp_AST {
     static AST Abstract_Syntax_Tree;
 
 
-    public void AST_Start(List<Comp_Lexer.TokenBuilder> Token_List){
+    public int AST_Start(List<Comp_Lexer.TokenBuilder> Token_List){
+        int semantic_errors_pass = 0;
         //some default values
         token_place = 0;
         Abstract_Syntax_Tree = new AST();
@@ -115,10 +116,13 @@ public class Comp_AST {
         current_Token = Token_List.get(token_place);
 
         //start of the frankinstien AST/Parser
-        AST_Program();
+        semantic_errors_pass = AST_Program();
+
+        return semantic_errors_pass;
     }
 
-    static void AST_Program(){
+    static int AST_Program(){
+        int semantic_errors = 0;
         //then calls all the approeratie functions needed for the LL(1) based on the BNF
         AST_Block();
         //no need to match so just add
@@ -127,9 +131,11 @@ public class Comp_AST {
         //if it gets to here thats the end of the current program so check for errors and print out tree
         System.out.println("AST for Program " + Program_Num + " Done");
         Abstract_Syntax_Tree.grow(Abstract_Syntax_Tree.root, 0);
-        Comp_SymbolTable.Start_Symbole_Table(Abstract_Syntax_Tree.root);
+        semantic_errors = Comp_SymbolTable.Start_Symbole_Table(Abstract_Syntax_Tree.root);
         //go back 
         Abstract_Syntax_Tree.end_all_children();
+
+        return semantic_errors;
     }
 
     static void AST_Block(){
@@ -150,7 +156,6 @@ public class Comp_AST {
     }
 
     static void AST_Statement_List(){
-       
         //this will check to see what procedure the ASTr should take
         if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") 
             || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") 
@@ -160,6 +165,7 @@ public class Comp_AST {
         }else{
             // it’s a ɛ (empty)
         }
+
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }
@@ -198,6 +204,7 @@ public class Comp_AST {
         AST_Expr();
         token_place++;
         current_Token = AST_Token_List.get(token_place);
+
         //go back
         Abstract_Syntax_Tree.end_all_children();
     }
@@ -348,6 +355,9 @@ public class Comp_AST {
 
         //moves it one more time
         token_place++;
+        if(AST_Token_List.get(token_place).unknown_item.equals("}")){
+            token_place++;
+        }
         current_Token = AST_Token_List.get(token_place);
     }
 
