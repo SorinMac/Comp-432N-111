@@ -5,12 +5,11 @@ import java.util.HashMap;
 //then right the code as hex ints
 
 //need to figure out
-//add the scopes to the variables
-//handle scoop?
-//does not update distance correctly yet see line 83
 
+//does not update distance correctly yet see line 83
 //heap and stack crash
     //values to hold the code_place at the points in which there at the end 
+//does not print out when scope involved but is fine when no scope is involved
 
 public class Comp_CodeGen {
     //constant for the size of the code
@@ -83,10 +82,10 @@ public class Comp_CodeGen {
             if(AST.children.get(i).name.equals("var_decl")){
                 declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place));
             }else if(AST.children.get(i).name.equals("assignment_statment")){
-                assign(AST.children.get(i));
+                assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place));
             }else if(AST.children.get(i).name.equals("print_statment")){
-                print(AST.children.get(i), SymboleTable);
-            }else if(AST.children.get(i).name.equals("if_statment")){
+                print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
+            }else if(AST.children.get(i).name.equals("if_statment")){ //work in progress
                 if_state(AST.children.get(i));
                 start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable);
             }else if(AST.children.get(i).name.equals("block")){
@@ -107,8 +106,6 @@ public class Comp_CodeGen {
                 if(varaibles_decl_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
-
-                HashMap<String, address_dets> test = variables;
 
                 find_and_replace_variables(); //replaces the temp name with the real ones
 
@@ -178,7 +175,7 @@ public class Comp_CodeGen {
     }
 
     //need this to assign intops
-    public void assign(Comp_AST.Tree_Node AST_Node){
+    public void assign(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope){
         if(AST_Node.children.get(1).name.matches("[0-9]?")){
             String uniqueValue = "";
 
@@ -188,7 +185,7 @@ public class Comp_CodeGen {
             code_place++;
             code_array[code_place] = "8D";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -208,13 +205,11 @@ public class Comp_CodeGen {
 
             code_array[code_place] = Integer.toHexString(heap_start);
             code_place++;
-
-            heap_start = heap_start - assign_string.length()+1;
             
             code_array[code_place] = "8D";
             code_place++;
 
-            uniqueValue = variables.get(AST_Node.children.get(0).name).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -226,14 +221,14 @@ public class Comp_CodeGen {
             code_array[code_place] = "A9";
             code_place++;
             code_array[code_place-1] = "AD";
-            uniqueValue = variables.get(AST_Node.children.get(1).name).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + current_scope.scope).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
             code_place++;
             code_array[code_place] = "8D";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -255,7 +250,7 @@ public class Comp_CodeGen {
 
             code_array[code_place] = "8D";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -265,7 +260,7 @@ public class Comp_CodeGen {
     
 
     //print intops
-    public void print(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbol_Scope SymboleTable){
+    public void print(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbol_Scope SymboleTable, Comp_SymbolTable.Symbole_Node current_scope){
 
         if(AST_Node.children.get(1).name.matches("[0-9]?")){
             code_array[code_place] = "A0";
@@ -288,8 +283,6 @@ public class Comp_CodeGen {
             code_place++;
 
             set_string_heap(print_string);
-            
-            heap_start = heap_start - print_string.length()+1;
 
             code_array[code_place] = Integer.toHexString(heap_start);
             code_place++;
@@ -305,7 +298,7 @@ public class Comp_CodeGen {
             String uniqueValue = "";
             code_array[code_place] = "AC";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(1).name).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + current_scope.scope).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -479,7 +472,7 @@ public class Comp_CodeGen {
                 code_array[heap_start-(i+1)] = Integer.toHexString((int) temp);
             }
         }
-        
+
         heap_start = heap_start - set_this_string.length()+1;
     }
 

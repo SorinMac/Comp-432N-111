@@ -1,6 +1,14 @@
 {
-   int a
-   {
-    int a 
-   }
-}$
+   string a
+   a = "sorin"
+   print(a)
+   
+   string b
+   b = "magnus"
+   print(b)
+   
+   string c
+   c = "macaluso"
+   print(c)
+   
+}$ 
