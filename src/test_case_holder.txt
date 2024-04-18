@@ -68,3 +68,10 @@
     print(b)
     print(a)
 }$
+
+{
+   int a
+   {
+    int a 
+   }
+}$

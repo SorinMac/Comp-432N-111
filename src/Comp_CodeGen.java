@@ -13,22 +13,33 @@ import java.util.HashMap;
     //values to hold the code_place at the points in which there at the end 
 
 public class Comp_CodeGen {
-    static int CODE_SIZE = 256;
+    //constant for the size of the code
+    static final int CODE_SIZE = 256;
+
+    //allows this file to get the symbole table from the Comp_SymbolTable file
+    //allows this file to get the AST from the Comp_AST file
     static Comp_SymbolTable Comp_SymbolTable = new Comp_SymbolTable();
     Comp_AST Comp_AST = new Comp_AST();
+
+    //hashmaps to hold the values stuff like temp name and other data
+    //the second one is to old the distance for if and while statments
     HashMap<String, address_dets> variables = new HashMap<>();
     HashMap<String, distance_dets> distance = new HashMap<>();
-    String[] code_array = new String[CODE_SIZE];
-    String[] bool_setup = {"74", "72", "75", "65" , "00", "66", "61", "6C", "73", "65", "00"};
-    boolean check  = true;
-    int unique_number = 0;
-    int distance_traveled_number = 0;
-    int code_place = 0;
-    int heap_start = 0;
-    String true_pointer = "";
-    String false_pointer = "";
-    
 
+    //the code array itself
+    String[] code_array = new String[CODE_SIZE];
+    String[] bool_setup = {"74", "72", "75", "65" , "00", "66", "61", "6C", "73", "65", "00"}; //set up for true and false static values
+
+    boolean check  = true; //this is to set up the array only once
+    int unique_number = 0; //this is used to make the unique names
+    int distance_traveled_number = 0; //this is used to make the distance travled unqiue value
+    int code_place = 0; //the place that you are at in the code array
+    int heap_start = 0; //where the heap will start
+    String true_pointer = ""; //static for true pointer to the start of the true ouput in the heap
+    String false_pointer = ""; //static for false pointer to the start of the false ouput in the heap
+    int scope_place = 0;
+    
+    //class to hold all the details of the address stuff for variables hashmap
     public class address_dets {
         String temp_name;
         String address;
@@ -40,6 +51,7 @@ public class Comp_CodeGen {
         
     }
 
+    //class to hold all the details of the distance stuff for distance hashmap
     public class distance_dets {
         int place;
         boolean porcessed;
@@ -50,22 +62,26 @@ public class Comp_CodeGen {
         }
     }
 
+    //start of the code gen
     public void start_codegen(Comp_AST.Tree_Node AST, Comp_SymbolTable.Symbol_Scope SymboleTable){
-        String printout = "";
-        int stack_end = 0;
-        int varaibles_decl_end = 0;
-        int heap_end = 0;
+        String printout = ""; //the code that will need to get printed out
+        int stack_end = 0; //keep track of the stack end
+        int varaibles_decl_end = 0; //keep track of the variable declare end
+        int heap_end = 0; //keep track of the heap
 
+        //will do the first intilize
         if(check == true){
             initialize_code(code_array);
             check = false;
         }
 
+        //sets up where the bools need to be
         set_bool();
 
+        //goes through the AST and starts making code for everything
         for(int i = 0; i < AST.children.size(); i++){
             if(AST.children.get(i).name.equals("var_decl")){
-                declare(AST.children.get(i));
+                declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place));
             }else if(AST.children.get(i).name.equals("assignment_statment")){
                 assign(AST.children.get(i));
             }else if(AST.children.get(i).name.equals("print_statment")){
@@ -73,25 +89,51 @@ public class Comp_CodeGen {
             }else if(AST.children.get(i).name.equals("if_statment")){
                 if_state(AST.children.get(i));
                 start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable);
+            }else if(AST.children.get(i).name.equals("block")){
+                scope_place++;
+                start_codegen(AST.children.get(i), SymboleTable);
             }else if(AST.children.get(i).name.equals("$")){
                 stack_end = code_place;
+
+                //work in progress
                 if(stack_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
-                initialize_varables_place();
+
+                initialize_varables_place(); //gets the true places of the values
+
+                //work in progress
                 varaibles_decl_end = code_place;
                 if(varaibles_decl_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
 
-                find_and_replace_variables();
-                find_and_replace_distances();
-                output_code(printout);
+                HashMap<String, address_dets> test = variables;
 
-                initialize_code(code_array);
+                find_and_replace_variables(); //replaces the temp name with the real ones
+
+                //work in progress
+                find_and_replace_distances();
+
+                output_code(printout); //prints out all the code
+                
+                //resets all necessary values
+                initialize_code(code_array); 
+                check  = true; 
+                unique_number = 0; 
+                distance_traveled_number = 0;
+                code_place = 0; 
+                heap_start = 0; 
+                true_pointer = ""; 
+                false_pointer = ""; 
+                variables.clear();
+                distance.clear();
+                scope_place = 0;
+    
             }
         }
 
+        //work in progess
         String[] distance_values = new String[distance.keySet().size()];
         distance_values = distance.keySet().toArray(distance_values);
 
@@ -103,13 +145,15 @@ public class Comp_CodeGen {
         }
     }
 
+    //sets all thing in the code_array array to 00
     public void initialize_code(String[] code_array){
         for(int i = 0; i < CODE_SIZE; i++){
             code_array[i] = "00";
         }
     }
 
-    public void declare(Comp_AST.Tree_Node AST_Node){
+    //how to declare something
+    public void declare(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope){
         String uniqueValue = "";
 
         code_array[code_place] = "A9";
@@ -130,11 +174,10 @@ public class Comp_CodeGen {
 
         address_dets temp  = new address_dets(uniqueValue);
 
-        variables.put(AST_Node.children.get(1).name, temp);
+        variables.put(AST_Node.children.get(1).name + "@" + current_scope.scope, temp);
     }
 
-    //slide 11
-    //need this to assign for bools and intops
+    //need this to assign intops
     public void assign(Comp_AST.Tree_Node AST_Node){
         if(AST_Node.children.get(1).name.matches("[0-9]?")){
             String uniqueValue = "";
@@ -197,7 +240,26 @@ public class Comp_CodeGen {
             code_place++;
             
         }else if(AST_Node.children.get(1).name.matches("true|false")){
+            String uniqueValue = "";
+
+            code_array[code_place] = "A9";
+            code_place++;
             
+            if(AST_Node.children.get(1).name.matches("true")){
+                code_array[code_place] = true_pointer;
+                code_place++;
+            }else{
+                code_array[code_place] = false_pointer;
+                code_place++;
+            }
+
+            code_array[code_place] = "8D";
+            code_place++;
+            uniqueValue = variables.get(AST_Node.children.get(0).name).temp_name;
+            code_array[code_place] = uniqueValue;
+            code_place++;
+            code_array[code_place] = "XX";
+            code_place++;
         }
     }
     
@@ -345,6 +407,7 @@ public class Comp_CodeGen {
         code_place++;
     }
 
+    //will set the place to its true place rather than the temp varaibles
     public void initialize_varables_place(){
         code_place++;
         String[] lookup_varaibles = new String[variables.keySet().size()];
@@ -362,6 +425,7 @@ public class Comp_CodeGen {
         }
     }
 
+    //will perform the find a repalce for the temp to there true place
     public void find_and_replace_variables(){
         String[] lookup_varaibles = new String[variables.keySet().size()];
         lookup_varaibles = variables.keySet().toArray(lookup_varaibles);
@@ -379,6 +443,7 @@ public class Comp_CodeGen {
         }
     }
 
+    //work in progress
     public void find_and_replace_distances(){
         String[] lookup_distance = new String[distance.keySet().size()];
         lookup_distance = distance.keySet().toArray(lookup_distance);
@@ -392,6 +457,7 @@ public class Comp_CodeGen {
         }
     }
 
+    //set up where the bools are and then change the heap_start place to match the change
     public void set_bool(){
         for(int i = 0; i < bool_setup.length; i++){
             if(bool_setup[(bool_setup.length-1)-i].equals("74")){
@@ -405,6 +471,7 @@ public class Comp_CodeGen {
         heap_start = CODE_SIZE - bool_setup.length;
     }
 
+    //set up the string and then change the heap_start place to make the change
     public void set_string_heap(StringBuilder set_this_string){
         for(int i = 0; i < set_this_string.length(); i++){
             if(set_this_string.charAt(i) != '\"'){
@@ -416,6 +483,8 @@ public class Comp_CodeGen {
         heap_start = heap_start - set_this_string.length()+1;
     }
 
+
+    //will output the code 
     public void output_code(String printout){
         printout = "This is the code for program: ";
         for(int s = 0; s < CODE_SIZE; s++){
@@ -427,6 +496,7 @@ public class Comp_CodeGen {
         System.out.println(printout);
     }
 
+    //will get the varaible type to check wheather load a 02 or 01
     private String getVariableType(Comp_SymbolTable.Symbol_Scope Blocks, String variableName){  
         String type = "";
 

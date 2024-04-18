@@ -1,5 +1,6 @@
 {
-    boolean a
-    a = true
-    print(a)
+   int a
+   {
+    int a 
+   }
 }$
