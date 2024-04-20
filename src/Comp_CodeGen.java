@@ -72,25 +72,26 @@ public class Comp_CodeGen {
         if(check == true){
             initialize_code(code_array);
             check = false;
+            //sets up where the bools need to be
+            set_bool();
         }
-
-        //sets up where the bools need to be
-        set_bool();
 
         //goes through the AST and starts making code for everything
         for(int i = 0; i < AST.children.size(); i++){
             if(AST.children.get(i).name.equals("var_decl")){
-                declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place));
+                declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
             }else if(AST.children.get(i).name.equals("assignment_statment")){
-                assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place));
+                assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
             }else if(AST.children.get(i).name.equals("print_statment")){
                 print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
             }else if(AST.children.get(i).name.equals("if_statment")){ //work in progress
                 if_state(AST.children.get(i));
                 start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable);
             }else if(AST.children.get(i).name.equals("block")){
+                //go foward in scope but not backwordws
                 scope_place++;
                 start_codegen(AST.children.get(i), SymboleTable);
+                scope_place--;
             }else if(AST.children.get(i).name.equals("$")){
                 stack_end = code_place;
 
@@ -128,6 +129,7 @@ public class Comp_CodeGen {
                 scope_place = 0;
     
             }
+            
         }
 
         //work in progess
@@ -150,7 +152,7 @@ public class Comp_CodeGen {
     }
 
     //how to declare something
-    public void declare(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope){
+    public void declare(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
         String uniqueValue = "";
 
         code_array[code_place] = "A9";
@@ -171,11 +173,11 @@ public class Comp_CodeGen {
 
         address_dets temp  = new address_dets(uniqueValue);
 
-        variables.put(AST_Node.children.get(1).name + "@" + current_scope.scope, temp);
+        variables.put(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place), temp);
     }
 
     //need this to assign intops
-    public void assign(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope){
+    public void assign(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
         if(AST_Node.children.get(1).name.matches("[0-9]?")){
             String uniqueValue = "";
 
@@ -185,7 +187,7 @@ public class Comp_CodeGen {
             code_place++;
             code_array[code_place] = "8D";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -209,7 +211,7 @@ public class Comp_CodeGen {
             code_array[code_place] = "8D";
             code_place++;
 
-            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -221,14 +223,14 @@ public class Comp_CodeGen {
             code_array[code_place] = "A9";
             code_place++;
             code_array[code_place-1] = "AD";
-            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + current_scope.scope).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
             code_place++;
             code_array[code_place] = "8D";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -250,7 +252,7 @@ public class Comp_CodeGen {
 
             code_array[code_place] = "8D";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + current_scope.scope).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -298,7 +300,7 @@ public class Comp_CodeGen {
             String uniqueValue = "";
             code_array[code_place] = "AC";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + current_scope.scope).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -499,5 +501,17 @@ public class Comp_CodeGen {
             }
         }    
         return type;
+    }
+
+    //will get the scope of the variable
+    private int getScope(Comp_SymbolTable.Symbol_Scope Blocks, String variableName, int scope){  
+        int start_Scope = scope;
+
+        for(int i = start_Scope; i >= 0; i--){
+            if(Blocks.Scopes.get(i).values.containsKey(variableName)){
+                scope = Blocks.Scopes.get(i).scope;
+            }
+        }    
+        return scope;
     }
 }

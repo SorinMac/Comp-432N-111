@@ -1,14 +1,12 @@
 {
    string a
-   a = "sorin"
+   {
+      string b
+      {
+         a = "sorin"
+         b = "magnus"
+      }
+      print(b)
+   }
    print(a)
-   
-   string b
-   b = "magnus"
-   print(b)
-   
-   string c
-   c = "macaluso"
-   print(c)
-   
-}$ 
+}$
