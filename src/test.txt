@@ -1,12 +1,11 @@
 {
-   string a
+   
+   boolean a
+   a  = true
+   print(a)
    {
-      string b
-      {
-         a = "sorin"
-         b = "magnus"
-      }
+      boolean b
+      b = a
       print(b)
    }
-   print(a)
 }$

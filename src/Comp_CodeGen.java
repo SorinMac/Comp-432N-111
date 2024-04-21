@@ -1,15 +1,12 @@
 import java.util.HashMap;
 
-//plan is to go through the list again and do the for loop like semantic anaylsis
-//when see a delcare, print, assign (go to appropreate function)
-//then right the code as hex ints
-
 //need to figure out
 
-//does not update distance correctly yet see line 83
 //heap and stack crash
     //values to hold the code_place at the points in which there at the end 
-//does not print out when scope involved but is fine when no scope is involved
+//if and while
+//intop assignment
+
 
 public class Comp_CodeGen {
     //constant for the size of the code
@@ -173,7 +170,7 @@ public class Comp_CodeGen {
 
         address_dets temp  = new address_dets(uniqueValue);
 
-        variables.put(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place), temp);
+        variables.put(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place), temp);
     }
 
     //need this to assign intops
@@ -223,7 +220,7 @@ public class Comp_CodeGen {
             code_array[code_place] = "A9";
             code_place++;
             code_array[code_place-1] = "AD";
-            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
@@ -300,7 +297,7 @@ public class Comp_CodeGen {
             String uniqueValue = "";
             code_array[code_place] = "AC";
             code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
+            uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
