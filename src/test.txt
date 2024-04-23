@@ -1,11 +1,6 @@
 {
-   
-   boolean a
-   a  = true
-   print(a)
-   {
-      boolean b
-      b = a
-      print(b)
+   if(1 == 2){
+      print(1)
    }
+   print(2)
 }$

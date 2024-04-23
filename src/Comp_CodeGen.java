@@ -75,37 +75,44 @@ public class Comp_CodeGen {
 
         //goes through the AST and starts making code for everything
         for(int i = 0; i < AST.children.size(); i++){
+            String a = AST.children.get(i).name; //testing
             if(AST.children.get(i).name.equals("var_decl")){
                 declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
             }else if(AST.children.get(i).name.equals("assignment_statment")){
                 assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
             }else if(AST.children.get(i).name.equals("print_statment")){
                 print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
-            }else if(AST.children.get(i).name.equals("if_statment")){ //work in progress
+            }else if(AST.children.get(i).name.equals("if_statment")){
                 if_state(AST.children.get(i));
-                start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable);
+                start_codegen(AST.children.get(i), SymboleTable); //work in progress
             }else if(AST.children.get(i).name.equals("block")){
                 //go foward in scope but not backwordws
                 scope_place++;
                 start_codegen(AST.children.get(i), SymboleTable);
                 scope_place--;
             }else if(AST.children.get(i).name.equals("$")){
-                stack_end = code_place;
 
                 //work in progress
+                /*stack_end = code_place;
                 if(stack_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
-                }
+                }*/
 
                 initialize_varables_place(); //gets the true places of the values
 
                 //work in progress
-                varaibles_decl_end = code_place;
+                /*varaibles_decl_end = code_place;
                 if(varaibles_decl_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
-                }
+                }*/
 
                 find_and_replace_variables(); //replaces the temp name with the real ones
+
+                //work in progress
+                /*heap_end = heap_start;
+                if(heap_end <= 256){
+                    System.out.println("Error to many bit not able to be ran :(");
+                }*/
 
                 //work in progress
                 find_and_replace_distances();
@@ -114,7 +121,7 @@ public class Comp_CodeGen {
                 
                 //resets all necessary values
                 initialize_code(code_array); 
-                check  = true; 
+                check = true; 
                 unique_number = 0; 
                 distance_traveled_number = 0;
                 code_place = 0; 
@@ -342,25 +349,21 @@ public class Comp_CodeGen {
         }
     }
 
-    //will get to next week
-    public void if_state(Comp_AST.Tree_Node AST_Node){
-        String uniqueValue = "";
+    public void if_state(Comp_AST.Tree_Node AST_Node){ //will handle the if statment stuff
+        //8D 00 00 EC 00 00 D0 05
+        //what is the 8D 00 00 and EC 00 00 DO 05 what does that do
+            //can this be static or need to change with the program as well as the A2
+        //the scope afterwords is just completely breaking 
+
         String distance_variable = "";
         int if_place = 0;
 
-        code_array[code_place] = "AE";
+        //is this static or changing
+        code_array[code_place] = "A2";
         code_place++;
 
         for(int i = 0; i < AST_Node.children.size(); i++){
-            if(AST_Node.children.get(i).name.matches("[a-z]?")){
-                uniqueValue = variables.get(AST_Node.children.get(i).name).temp_name;
-                if_place = i;
-                code_array[code_place] = uniqueValue;
-                code_place++;
-                code_array[code_place] = "XX";
-                code_place++;
-                break;
-            }else if(AST_Node.children.get(i).name.matches("[0-9]?")){
+            if(AST_Node.children.get(i).name.matches("[0-9]?")){
                 code_array[code_place] = "0" + AST_Node.children.get(i).name;
                 code_place++;
                 if_place = i;
@@ -368,25 +371,31 @@ public class Comp_CodeGen {
             }
         }
 
-        code_array[code_place] = "EC";
+        code_array[code_place] = "A9";
         code_place++;
 
         for(int i = if_place+1; i < AST_Node.children.size(); i++){
-            if(AST_Node.children.get(i).name.matches("[a-z]?")){
-                uniqueValue = variables.get(AST_Node.children.get(i).name).temp_name;
-                if_place = 0;
-                code_array[code_place] = uniqueValue;
-                code_place++;
-                code_array[code_place] = "XX";
-                code_place++;
-                break;
-            }else if(AST_Node.children.get(i).name.matches("[0-9]?")){
+           if(AST_Node.children.get(i).name.matches("[0-9]?")){
                 code_array[code_place] = "0" + AST_Node.children.get(i).name;
                 code_place++;
                 if_place = 0;
                 break;
             }
         }
+
+        code_array[code_place] = "8D";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "EC";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+
 
         code_array[code_place] = "D0";
         code_place++;
@@ -435,7 +444,7 @@ public class Comp_CodeGen {
         }
     }
 
-    //work in progress
+    //will perfrom the find and replace of the distance that is need to go to if there is a not equals or equals
     public void find_and_replace_distances(){
         String[] lookup_distance = new String[distance.keySet().size()];
         lookup_distance = distance.keySet().toArray(lookup_distance);
@@ -443,7 +452,11 @@ public class Comp_CodeGen {
         for(int i = 0; i < CODE_SIZE; i++){
             for(int s = 0; s < distance.keySet().size(); s++){
                 if(lookup_distance[s].equals(code_array[i])){
-                    code_array[i] = "0" + Integer.toString(distance.get(lookup_distance[s]).place);
+                    if(Integer.toString(distance.get(lookup_distance[s]).place).length() >= 2){
+                        code_array[i] = Integer.toString(distance.get(lookup_distance[s]).place);
+                    }else{
+                        code_array[i] = "0" + Integer.toString(distance.get(lookup_distance[s]).place);
+                    }
                 }
             }
         }
