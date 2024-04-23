@@ -157,13 +157,18 @@ public class Comp_AST {
 
     static void AST_Statement_List(){
         //this will check to see what procedure the ASTr should take
-        if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]") 
+        if(current_Token.unknown_item.equals("print") || current_Token.unknown_item.matches("[a-z]?") 
             || current_Token.unknown_item.matches("int|string|boolean") || current_Token.unknown_item.equals("while") 
             || current_Token.unknown_item.equals("if") || current_Token.unknown_item.equals("{")){
             AST_Statement();
             AST_Statement_List();
         }else{
-            // it’s a ɛ (empty)
+            if(token_place != AST_Token_List.size()-1){
+                Abstract_Syntax_Tree.end_all_children();
+                token_place++;
+                current_Token = AST_Token_List.get(token_place);
+                AST_Statement_List();
+            }
         }
 
         //go back
@@ -176,7 +181,7 @@ public class Comp_AST {
         //so that the AST can figure out where to go with ll1
         if(current_Token.unknown_item.equals("print")){
             AST_Print_Statment();
-        }else if(current_Token.unknown_item.matches("[a-z]")){
+        }else if(current_Token.unknown_item.matches("[a-z]?")){
             AST_Assignment_Statment();
         }else if(current_Token.unknown_item.matches("int|string|boolean")){
             AST_Var_Decl();
@@ -355,9 +360,6 @@ public class Comp_AST {
 
         //moves it one more time
         token_place++;
-        if(AST_Token_List.get(token_place).unknown_item.equals("}")){
-            token_place++;
-        }
         current_Token = AST_Token_List.get(token_place);
     }
 
