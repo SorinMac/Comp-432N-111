@@ -75,17 +75,19 @@ public class Comp_CodeGen {
 
         //goes through the AST and starts making code for everything
         for(int i = 0; i < AST.children.size(); i++){
-            String a = AST.children.get(i).name; //testing
             if(AST.children.get(i).name.equals("var_decl")){
                 declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
             }else if(AST.children.get(i).name.equals("assignment_statment")){
                 assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
             }else if(AST.children.get(i).name.equals("print_statment")){
-                print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
+                if(scope_place == SymboleTable.Scopes.size()){
+                    print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place-1));
+                }else{
+                    print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
+                }
             }else if(AST.children.get(i).name.equals("if_statment")){
                 if_state(AST.children.get(i));
-                Comp_AST.Tree_Node b = AST.children.get(i).children.get(AST.children.get(i).children.size()-1);
-                start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable); //work in progress
+                start_codegen(AST.children.get(i), SymboleTable); //work in progress
             }else if(AST.children.get(i).name.equals("block")){
                 //go foward in scope but not backwordws
                 scope_place++;
@@ -454,9 +456,9 @@ public class Comp_CodeGen {
             for(int s = 0; s < distance.keySet().size(); s++){
                 if(lookup_distance[s].equals(code_array[i])){
                     if(Integer.toString(distance.get(lookup_distance[s]).place).length() >= 2){
-                        code_array[i] = Integer.toString(distance.get(lookup_distance[s]).place);
+                        code_array[i] = Integer.toString(distance.get(lookup_distance[s]).place-1);
                     }else{
-                        code_array[i] = "0" + Integer.toString(distance.get(lookup_distance[s]).place);
+                        code_array[i] = "0" + Integer.toString(distance.get(lookup_distance[s]).place-1);
                     }
                 }
             }
