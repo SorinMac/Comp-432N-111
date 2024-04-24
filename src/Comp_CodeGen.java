@@ -84,7 +84,8 @@ public class Comp_CodeGen {
                 print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
             }else if(AST.children.get(i).name.equals("if_statment")){
                 if_state(AST.children.get(i));
-                start_codegen(AST.children.get(i), SymboleTable); //work in progress
+                Comp_AST.Tree_Node b = AST.children.get(i).children.get(AST.children.get(i).children.size()-1);
+                start_codegen(AST.children.get(i).children.get(AST.children.get(i).children.size()-1), SymboleTable); //work in progress
             }else if(AST.children.get(i).name.equals("block")){
                 //go foward in scope but not backwordws
                 scope_place++;
