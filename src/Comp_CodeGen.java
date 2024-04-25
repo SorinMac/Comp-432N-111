@@ -288,17 +288,43 @@ public class Comp_CodeGen {
     //print intops
     public void print(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbol_Scope SymboleTable, Comp_SymbolTable.Symbole_Node current_scope){
 
-        if(AST_Node.children.get(1).name.matches("[0-9]?")){
-            code_array[code_place] = "A0";
-            code_place++;
-            code_array[code_place] = "0" + AST_Node.children.get(1).name;
-            code_place++;
-            code_array[code_place] = "A2";
-            code_place++;
-            code_array[code_place] = "01";
-            code_place++;
-            code_array[code_place] = "FF";
-            code_place++;
+        if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
+
+            if(AST_Node.children.get(1).name.matches("[0-9]?")){
+                code_array[code_place] = "A0";
+                code_place++;
+                code_array[code_place] = "0" + AST_Node.children.get(1).name;
+                code_place++;
+                code_array[code_place] = "A2";
+                code_place++;
+                code_array[code_place] = "01";
+                code_place++;
+                code_array[code_place] = "FF";
+                code_place++;
+            }else{
+                intop_Code(AST_Node.children.get(1), current_scope, SymboleTable);
+
+                code_array[code_place] = "8D";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+
+                code_array[code_place] = "AC";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+
+                code_array[code_place] = "A2";
+                code_place++;
+                code_array[code_place] = "01";
+                code_place++;
+                code_array[code_place] = "FF";
+                code_place++;
+            }
         }else if(AST_Node.children.get(1).name.contains("\"")){
             String print_out_string = AST_Node.children.get(1).name;
             StringBuilder print_string = new StringBuilder();
@@ -570,8 +596,6 @@ public class Comp_CodeGen {
 
                 String uniqueValue = "";
 
-                //String test = AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place);
-                //HashMap<String, address_dets> test2 = variables;
                 uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place)).temp_name;
                 code_array[code_place] = uniqueValue;
                 code_place++;
