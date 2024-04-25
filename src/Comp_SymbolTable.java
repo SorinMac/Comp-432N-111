@@ -404,8 +404,6 @@ public class Comp_SymbolTable {
                 checkInitialized(Intop_Node.children.get(i-1).name, Values_At_Block);
             }else if(Intop_Node.children.get(i).name.matches("true|false")){
                 types.add("boolean");
-            }else{
-                types.add("");
             }
         }
 

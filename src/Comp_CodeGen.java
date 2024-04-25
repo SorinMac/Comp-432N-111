@@ -34,6 +34,8 @@ public class Comp_CodeGen {
     String true_pointer = ""; //static for true pointer to the start of the true ouput in the heap
     String false_pointer = ""; //static for false pointer to the start of the false ouput in the heap
     int scope_place = 0;
+    int intop_place = 0;
+    int intop_run = 0;
     
     //class to hold all the details of the address stuff for variables hashmap
     public class address_dets {
@@ -185,20 +187,34 @@ public class Comp_CodeGen {
 
     //need this to assign intops
     public void assign(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
-        if(AST_Node.children.get(1).name.matches("[0-9]?")){
-            String uniqueValue = "";
+        if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
+            if(AST_Node.children.get(1).name.equals("+")){
+                String uniqueValue = "";
+                intop_Code(AST_Node.children.get(1), current_scope, SymboleTable);
 
-            code_array[code_place] = "A9";
-            code_place++;
-            code_array[code_place] = "0" + AST_Node.children.get(1).name;
-            code_place++;
-            code_array[code_place] = "8D";
-            code_place++;
-            uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
-            code_array[code_place] = uniqueValue;
-            code_place++;
-            code_array[code_place] = "XX";
-            code_place++;
+                code_array[code_place] = "8D";
+                code_place++;
+
+                uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
+                code_array[code_place] = uniqueValue;
+                code_place++;
+                code_array[code_place] = "XX";
+                code_place++;
+            }else{
+                String uniqueValue = "";
+
+                code_array[code_place] = "A9";
+                code_place++;
+                code_array[code_place] = "0" + AST_Node.children.get(1).name;
+                code_place++;
+                code_array[code_place] = "8D";
+                code_place++;
+                uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
+                code_array[code_place] = uniqueValue;
+                code_place++;
+                code_array[code_place] = "XX";
+                code_place++;
+            }
 
         }else if(AST_Node.children.get(1).name.contains("\"")){
             String uniqueValue = "";
@@ -526,5 +542,65 @@ public class Comp_CodeGen {
             }
         }    
         return scope;
+    }
+
+    private void intop_Code(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+        
+        if(intop_run == 0){
+            code_array[code_place] = "A9";
+            code_place++;
+
+            code_array[code_place] = "0" + AST_Node.children.get(intop_place).name;
+            intop_place++;
+            code_place++;
+
+            code_array[code_place] = "8D";
+            code_place++;
+
+            code_array[code_place] = "00";
+            code_place++;
+            code_array[code_place] = "00";
+            code_place++;
+
+        }else if(intop_run > 0){
+            code_array[code_place] = "A9";
+            code_place++;
+
+            code_array[code_place] = "0" + AST_Node.children.get(intop_place).name;
+            intop_place++;
+            code_place++;
+
+            code_array[code_place] = "6D";
+            code_place++;
+
+            code_array[code_place] = "00";
+            code_place++;
+            code_array[code_place] = "00";
+            code_place++;
+
+            code_array[code_place] = "8D";
+            code_place++;
+
+            code_array[code_place] = "00";
+            code_place++;
+            code_array[code_place] = "00";
+            code_place++;
+        }
+
+        if(intop_place == AST_Node.children.size()){
+            intop_place = 0;
+            intop_run = 0;
+        }else{
+            if(AST_Node.children.get(intop_place).name.matches("[0-9]?") || AST_Node.children.get(intop_place).name.equals("+")){
+                if(AST_Node.children.get(intop_place).name.equals("+")){
+                    intop_place++;
+                    intop_run++;
+                    intop_Code(AST_Node, current_scope, SymboleTable);
+                }else{
+                    intop_run++;
+                    intop_Code(AST_Node, current_scope, SymboleTable);
+                }
+            }
+        }
     }
 }
