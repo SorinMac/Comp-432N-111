@@ -299,6 +299,10 @@ public class Comp_AST {
             token_place++;
             current_Token = AST_Token_List.get(token_place);
         }
+
+        //gpo back
+        Abstract_Syntax_Tree.end_all_children();
+
     }
 
     //this causes error in the case that when it does not see the plus but there is still more than one thing there

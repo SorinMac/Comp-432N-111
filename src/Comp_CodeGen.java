@@ -97,6 +97,7 @@ public class Comp_CodeGen {
                 scope_place--;
             }else if(AST.children.get(i).name.equals("$")){
 
+                HashMap<String, address_dets> a = variables;
                 //work in progress
                 /*stack_end = code_place;
                 if(stack_end >= 256){
@@ -563,35 +564,54 @@ public class Comp_CodeGen {
             code_place++;
 
         }else if(intop_run > 0){
-            code_array[code_place] = "A9";
-            code_place++;
+            if(AST_Node.children.get(intop_place).name.matches("[a-z]?")){
+                code_array[code_place] = "6D";
+                code_place++;
 
-            code_array[code_place] = "0" + AST_Node.children.get(intop_place).name;
-            intop_place++;
-            code_place++;
+                String uniqueValue = "";
 
-            code_array[code_place] = "6D";
-            code_place++;
+                //String test = AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place);
+                //HashMap<String, address_dets> test2 = variables;
+                uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place)).temp_name;
+                code_array[code_place] = uniqueValue;
+                code_place++;
+                code_array[code_place] = "XX";
+                code_place++;
 
-            code_array[code_place] = "00";
-            code_place++;
-            code_array[code_place] = "00";
-            code_place++;
+                intop_place++;
+            }else{
+                code_array[code_place] = "A9";
+                code_place++;
 
-            code_array[code_place] = "8D";
-            code_place++;
+            
+                code_array[code_place] = "0" + AST_Node.children.get(intop_place).name;
+                intop_place++;
+                code_place++;
+                
 
-            code_array[code_place] = "00";
-            code_place++;
-            code_array[code_place] = "00";
-            code_place++;
+                code_array[code_place] = "6D";
+                code_place++;
+
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+
+                code_array[code_place] = "8D";
+                code_place++;
+
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+            }
         }
 
         if(intop_place == AST_Node.children.size()){
             intop_place = 0;
             intop_run = 0;
         }else{
-            if(AST_Node.children.get(intop_place).name.matches("[0-9]?") || AST_Node.children.get(intop_place).name.equals("+")){
+            if(AST_Node.children.get(intop_place).name.matches("[0-9]?") || AST_Node.children.get(intop_place).name.equals("+") || AST_Node.children.get(intop_place).name.matches("[a-z]?")){
                 if(AST_Node.children.get(intop_place).name.equals("+")){
                     intop_place++;
                     intop_run++;
