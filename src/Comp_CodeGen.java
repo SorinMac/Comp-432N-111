@@ -182,11 +182,8 @@ public class Comp_CodeGen {
         code_place++;
 
         address_dets temp  = new address_dets(uniqueValue);
-        int test = getScope(SymboleTable, AST_Node.children.get(1).name, scope_place);
 
         variables.put(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place), temp);
-        HashMap<String, address_dets> a = variables;
-        HashMap<String, address_dets> b = variables;
     }
 
     //need this to assign intops
@@ -569,6 +566,7 @@ public class Comp_CodeGen {
         for(int i = start_Scope; i >= 0; i--){
             if(Blocks.Scopes.get(i).values.containsKey(variableName)){
                 scope = Blocks.Scopes.get(i).scope;
+                break;
             }
         }    
         return scope;
