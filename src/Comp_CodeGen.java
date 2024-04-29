@@ -186,7 +186,7 @@ public class Comp_CodeGen {
         variables.put(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place), temp);
     }
 
-    //need this to assign intops
+    //how to assign something //assign boolop
     public void assign(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
         if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
             if(AST_Node.children.get(1).name.equals("+")){
@@ -281,13 +281,13 @@ public class Comp_CodeGen {
             code_place++;
             code_array[code_place] = "XX";
             code_place++;
-        }else if(AST_Node.children.get(1).name.matches("(")){
-            
+        }else if(AST_Node.children.get(1).name.equals("(")){
+            boolop_Code(AST_Node.children.get(1), current_scope, SymboleTable);
         }
     }
     
 
-    //print intops
+    //print out stuff //print boolops
     public void print(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbol_Scope SymboleTable, Comp_SymbolTable.Symbole_Node current_scope){
 
         if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
@@ -398,11 +398,6 @@ public class Comp_CodeGen {
     }
 
     public void if_state(Comp_AST.Tree_Node AST_Node){ //will handle the if statment stuff
-        //8D 00 00 EC 00 00 D0 05
-        //what is the 8D 00 00 and EC 00 00 DO 05 what does that do
-            //can this be static or need to change with the program as well as the A2
-        //the scope afterwords is just completely breaking 
-
         String distance_variable = "";
         int if_place = 0;
 
@@ -649,5 +644,46 @@ public class Comp_CodeGen {
                 }
             }
         }
+    }
+
+    private void boolop_Code(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+        int if_place = 0;
+
+        code_array[code_place] = "A2";
+        code_place++;
+
+        for(int i = 0; i < AST_Node.children.size(); i++){
+            if(AST_Node.children.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.children.get(i).name;
+                code_place++;
+                if_place = i;
+                break;
+            }
+        }
+
+        code_array[code_place] = "A9";
+        code_place++;
+
+        for(int i = if_place+1; i < AST_Node.children.size(); i++){
+           if(AST_Node.children.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.children.get(i).name;
+                code_place++;
+                if_place = 0;
+                break;
+            }
+        }
+
+        code_array[code_place] = "8D";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "EC";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
     }
 }
