@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 //need to figure out
@@ -97,14 +98,15 @@ public class Comp_CodeGen {
                 scope_place--;
             }else if(AST.children.get(i).name.equals("$")){
 
-                HashMap<String, address_dets> a = variables;
                 //work in progress
-                /*stack_end = code_place;
+                stack_end = code_place;
                 if(stack_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
-                }*/
+                }
 
                 initialize_varables_place(); //gets the true places of the values
+
+                initialize_boolop_place(stack_end);
 
                 //work in progress
                 /*varaibles_decl_end = code_place;
@@ -282,7 +284,7 @@ public class Comp_CodeGen {
             code_array[code_place] = "XX";
             code_place++;
         }else if(AST_Node.children.get(1).name.equals("(")){
-            boolop_Code(AST_Node.children.get(1), current_scope, SymboleTable);
+            boolop_Code(AST_Node.children, current_scope, SymboleTable);
         }
     }
     
@@ -469,6 +471,14 @@ public class Comp_CodeGen {
         }
     }
 
+    public void initialize_boolop_place(int stack_end){
+        for(int i = 0; i < CODE_SIZE; i++){
+            if(code_array[i].equals("S0")){
+                code_array[i] = Integer.toHexString(stack_end);
+            }
+        }
+    }
+
     //will perform the find a repalce for the temp to there true place
     public void find_and_replace_variables(){
         String[] lookup_varaibles = new String[variables.keySet().size()];
@@ -646,15 +656,16 @@ public class Comp_CodeGen {
         }
     }
 
-    private void boolop_Code(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+    private void boolop_Code(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+        String unique_string = "";
         int if_place = 0;
 
         code_array[code_place] = "A2";
         code_place++;
 
-        for(int i = 0; i < AST_Node.children.size(); i++){
-            if(AST_Node.children.get(i).name.matches("[0-9]?")){
-                code_array[code_place] = "0" + AST_Node.children.get(i).name;
+        for(int i = 0; i < AST_Node.size(); i++){
+            if(AST_Node.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.get(i).name;
                 code_place++;
                 if_place = i;
                 break;
@@ -664,9 +675,9 @@ public class Comp_CodeGen {
         code_array[code_place] = "A9";
         code_place++;
 
-        for(int i = if_place+1; i < AST_Node.children.size(); i++){
-           if(AST_Node.children.get(i).name.matches("[0-9]?")){
-                code_array[code_place] = "0" + AST_Node.children.get(i).name;
+        for(int i = if_place+1; i < AST_Node.size(); i++){
+           if(AST_Node.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.get(i).name;
                 code_place++;
                 if_place = 0;
                 break;
@@ -683,6 +694,38 @@ public class Comp_CodeGen {
         code_place++;
         code_array[code_place] = "00";
         code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+
+        /* A9 FA D0 02 A9 F5 8D 1F 00 AC 1F 00  */
+        code_array[code_place] = "A9";
+        code_place++;
+        code_array[code_place] = false_pointer;
+        code_place++;
+        code_array[code_place] = "D0";
+        code_place++;
+        code_array[code_place] = "02";
+        code_place++;
+        code_array[code_place] = "A9";
+        code_place++;
+        code_array[code_place] = true_pointer;
+        code_place++;
+        code_array[code_place] = "8D";
+        code_place++;
+        
+        unique_string = variables.get(AST_Node.get(0).name + "@" + getScope(SymboleTable, AST_Node.get(0).name, scope_place)).temp_name;
+        code_array[code_place] = unique_string;
+        code_place++;
+
+        code_array[code_place] = "00";
+        code_place++;
+
+        code_array[code_place] = "AC";
+        code_place++;
+
+        code_array[code_place] = unique_string;
+        code_place++;
+
         code_array[code_place] = "00";
         code_place++;
     }
