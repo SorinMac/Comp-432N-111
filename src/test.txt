@@ -1,8 +1,5 @@
 {
-   int a
-   a = 1
-   {
-      int a
-      a = 5
-   }
+   boolean a
+   a = (1 == 2)
+   print(a)
 }$
