@@ -291,9 +291,9 @@ public class Comp_CodeGen {
     //print out stuff
     public void print(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbol_Scope SymboleTable, Comp_SymbolTable.Symbole_Node current_scope){
 
-        if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
+        if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){ //print out a int or a intop
 
-            if(AST_Node.children.get(1).name.matches("[0-9]?")){
+            if(AST_Node.children.get(1).name.matches("[0-9]?")){ //opcode for printing a int
                 code_array[code_place] = "A0";
                 code_place++;
                 code_array[code_place] = "0" + AST_Node.children.get(1).name;
@@ -304,7 +304,7 @@ public class Comp_CodeGen {
                 code_place++;
                 code_array[code_place] = "FF";
                 code_place++;
-            }else{
+            }else{ //opcode for printout a intop
                 intop_Code(AST_Node.children.get(1), current_scope, SymboleTable);
 
                 code_array[code_place] = "8D";
@@ -328,18 +328,18 @@ public class Comp_CodeGen {
                 code_array[code_place] = "FF";
                 code_place++;
             }
-        }else if(AST_Node.children.get(1).name.contains("\"")){
+        }else if(AST_Node.children.get(1).name.contains("\"")){ //opcode for printing out a string
             String print_out_string = AST_Node.children.get(1).name;
-            StringBuilder print_string = new StringBuilder();
+            StringBuilder print_string = new StringBuilder(); //make the string reverse so that we can input this in properly
             print_string.append(print_out_string);
             print_string.reverse();
 
             code_array[code_place] = "A0";
             code_place++;
 
-            set_string_heap(print_string);
+            set_string_heap(print_string); //sets up the string in the heap
 
-            code_array[code_place] = Integer.toHexString(heap_start);
+            code_array[code_place] = Integer.toHexString(heap_start); //get the address as the heap start and then assigns it
             code_place++;
             code_array[code_place] = "A2";
             code_place++;
@@ -347,12 +347,13 @@ public class Comp_CodeGen {
             code_place++;
             code_array[code_place] = "FF";
             code_place++;
-        }else if(AST_Node.children.get(1).name.matches("[a-z]?")){
-            String check = getVariableType(SymboleTable, AST_Node.children.get(1).name);
+        }else if(AST_Node.children.get(1).name.matches("[a-z]?")){ //print out a variable 
+            String check = getVariableType(SymboleTable, AST_Node.children.get(1).name); //gets the varaible type use for a2 01 or a2 02
 
             String uniqueValue = "";
             code_array[code_place] = "AC";
             code_place++;
+            //gets the memeory address of the address
             uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
@@ -361,6 +362,7 @@ public class Comp_CodeGen {
             code_array[code_place] = "A2";
             code_place++;
 
+            //if a string that needs a 02 for the print out and needs a 01 for the int print out
             if(check.matches("string|boolean")){
                 code_array[code_place] = "02";
                 code_place++;
@@ -371,8 +373,8 @@ public class Comp_CodeGen {
 
             code_array[code_place] = "FF";
             code_place++;
-        }else if(AST_Node.children.get(1).name.matches("true|false")){
-            if(AST_Node.children.get(1).name.matches("true")){
+        }else if(AST_Node.children.get(1).name.matches("true|false")){//print out a boolean op
+            if(AST_Node.children.get(1).name.matches("true")){ //if its true set up the true pointer
                 code_array[code_place] = "A0";
                 code_place++;
                 code_array[code_place] = true_pointer;
@@ -383,7 +385,7 @@ public class Comp_CodeGen {
                 code_place++;
                 code_array[code_place] = "FF";
                 code_place++;
-            }else{
+            }else{ //if its false set up the false pointer
                 code_array[code_place] = "A0";
                 code_place++;
                 code_array[code_place] = false_pointer;
@@ -395,7 +397,7 @@ public class Comp_CodeGen {
                 code_array[code_place] = "FF";
                 code_place++;
             }
-        }else if(AST_Node.children.get(1).name.equals("(")){
+        }else if(AST_Node.children.get(1).name.equals("(")){ //sets up the boolop
             boolop_Code(AST_Node.children, current_scope, SymboleTable);
             code_array[code_place] = "A2";
             code_place++;
@@ -461,12 +463,12 @@ public class Comp_CodeGen {
     }
 
     //will set the place to its true place rather than the temp varaibles
-    public void initialize_varables_place(){
+    public void initialize_varables_place(){ //at the end of the stack will go from there in order to make the varaibles
         code_place++;
         String[] lookup_varaibles = new String[variables.keySet().size()];
         lookup_varaibles = variables.keySet().toArray(lookup_varaibles);
 
-        for(int i = 0; i < lookup_varaibles.length; i++){
+        for(int i = 0; i < lookup_varaibles.length; i++){ //this will go through all the address dets hashmap and make the temp name the actuall address
             String check = Integer.toHexString(code_place);
 
             if(check.length() < 2){
@@ -478,7 +480,7 @@ public class Comp_CodeGen {
         }
     }
 
-    public void initialize_boolop_place(int stack_end){
+    public void initialize_boolop_place(int stack_end){ //this will set the static boolops from print statments for the print statments
         for(int i = 0; i < CODE_SIZE; i++){
             if(code_array[i].equals("S0")){
                 code_array[i] = Integer.toHexString(stack_end);
@@ -488,15 +490,15 @@ public class Comp_CodeGen {
     }
 
     //will perform the find a repalce for the temp to there true place
-    public void find_and_replace_variables(){
+    public void find_and_replace_variables(){ //this will change the the temp names to the actual addresses
         String[] lookup_varaibles = new String[variables.keySet().size()];
         lookup_varaibles = variables.keySet().toArray(lookup_varaibles);
 
         for(int i = 0; i < CODE_SIZE; i++){
-            if(code_array[i].equals("XX")){
+            if(code_array[i].equals("XX")){ //makes the XX to 00
                 code_array[i] = "00";
             }else{
-                for(int s = 0; s < variables.keySet().size(); s++){
+                for(int s = 0; s < variables.keySet().size(); s++){ //makes the temp name into the actaull address in the code array.
                     if(variables.get(lookup_varaibles[s]).temp_name.equals(code_array[i])){
                         code_array[i] = variables.get(lookup_varaibles[s]).address;
                     }
@@ -524,7 +526,7 @@ public class Comp_CodeGen {
     }
 
     //set up where the bools are and then change the heap_start place to match the change
-    public void set_bool(){
+    public void set_bool(){ //this will set up the static pointers for the boolop
         for(int i = 0; i < bool_setup.length; i++){
             if(bool_setup[(bool_setup.length-1)-i].equals("74")){
                 true_pointer = Integer.toHexString((CODE_SIZE-1)-i);
