@@ -32,24 +32,24 @@ public class Comp_CodeGen {
     
     //class to hold all the details of the address stuff for variables hashmap
     public class address_dets {
-        String temp_name;
-        String address;
+        String temp_name; //the temp name   
+        String address; //the actaul address that it will have to b
 
         address_dets(String temp_name){
-            this.temp_name = temp_name;
-            this.address = "0";
+            this.temp_name = temp_name; //the temp name 
+            this.address = "0"; // temp address amount
         }
         
     }
 
     //class to hold all the details of the distance stuff for distance hashmap
     public class distance_dets {
-        int place;
-        boolean porcessed;
+        int place; //place at which to jump
+        boolean porcessed; //if processed or not 
 
         distance_dets(int place){
-            this.place = place;
-            porcessed = false;
+            this.place = place; //the int place in which the jump might be
+            porcessed = false; //if process is set to false
         }
     }
 
@@ -71,24 +71,23 @@ public class Comp_CodeGen {
         //goes through the AST and starts making code for everything
         for(int i = 0; i < AST.children.size(); i++){
             if(AST.children.get(i).name.equals("var_decl")){
-                declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
+                declare(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable); //call for when a declare is ran
             }else if(AST.children.get(i).name.equals("assignment_statment")){
-                assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable);
+                assign(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable); //call for when a assignment statments
             }else if(AST.children.get(i).name.equals("print_statment")){
                 if(scope_place == SymboleTable.Scopes.size()){
-                    print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place-1));
+                    print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place-1)); //print out for the scope if at the end
                 }else{
-                    print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place));
+                    print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place)); //print out of the scope if not at the end
                 }
             }else if(AST.children.get(i).name.equals("if_statment")){
-                if_state(AST.children.get(i));
-                start_codegen(AST.children.get(i), SymboleTable);
+                if_state(AST.children.get(i)); //if there is a if statment
+                start_codegen(AST.children.get(i), SymboleTable); //then we start again to get the stuff in the block
                 find_and_replace_distances(); //will give the jump place of the if and while loops
             }else if(AST.children.get(i).name.equals("block")){
-                //go foward in scope but not backwordws
-                scope_place++;
-                start_codegen(AST.children.get(i), SymboleTable);
-                scope_place--;
+                scope_place++; //go foward in the scope
+                start_codegen(AST.children.get(i), SymboleTable); //start code gen again for the new scope
+                scope_place--; //go backword in the scope
             }else if(AST.children.get(i).name.equals("$")){
 
                 initialize_varables_place(); //gets the true places of the values
@@ -158,6 +157,7 @@ public class Comp_CodeGen {
     public void declare(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
         String uniqueValue = "";
 
+        //opcode needed
         code_array[code_place] = "A9";
         code_place++;
         code_array[code_place] = "00";
@@ -165,24 +165,27 @@ public class Comp_CodeGen {
         code_array[code_place] = "8D";
         code_place++;
 
-        uniqueValue = "T" + unique_number;
+        uniqueValue = "T" + unique_number; //this will make the temp value for the variable to be later replaced with a actual point
         unique_number++;
 
         code_array[code_place] = uniqueValue;
         code_place++;
 
-        code_array[code_place] = "XX";
+        code_array[code_place] = "XX"; //this will be replaceed with 00
         code_place++;
 
+        //set up the add it to the address_dets hashmap
         address_dets temp  = new address_dets(uniqueValue);
 
+        //add to the hashmap
         variables.put(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place), temp);
     }
 
-    //how to assign something //assign boolop
+    //how to assign something
     public void assign(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
-        if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
-            if(AST_Node.children.get(1).name.equals("+")){
+        if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){ //if a int or a intop
+            if(AST_Node.children.get(1).name.equals("+")){//if a intop
+                //run these opcodes
                 String uniqueValue = "";
                 intop_Code(AST_Node.children.get(1), current_scope, SymboleTable);
 
@@ -194,7 +197,8 @@ public class Comp_CodeGen {
                 code_place++;
                 code_array[code_place] = "XX";
                 code_place++;
-            }else{
+            }else{ //if not a intop
+                //run these opcodes
                 String uniqueValue = "";
 
                 code_array[code_place] = "A9";
@@ -210,36 +214,38 @@ public class Comp_CodeGen {
                 code_place++;
             }
 
-        }else if(AST_Node.children.get(1).name.contains("\"")){
+        }else if(AST_Node.children.get(1).name.contains("\"")){ //if a string
             String uniqueValue = "";
             String assign_setup = AST_Node.children.get(1).name;
-            StringBuilder assign_string = new StringBuilder();
+            StringBuilder assign_string = new StringBuilder(); //this will reverse the string so that i can input it properly
             assign_string.append(assign_setup);
             assign_string.reverse();
 
             code_array[code_place] = "A9";
             code_place++;
 
-            set_string_heap(assign_string);
+            set_string_heap(assign_string); //will set up the string in the heap
 
-            code_array[code_place] = Integer.toHexString(heap_start);
+            code_array[code_place] = Integer.toHexString(heap_start); //make the memory address for the variable the start of that string
             code_place++;
             
             code_array[code_place] = "8D";
             code_place++;
 
+            //will get the unique name for that variable and then add it so that that temp name gets the address of the string
             uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
             code_place++;
 
-        }else if(AST_Node.children.get(1).name.matches("[a-z]?")){
+        }else if(AST_Node.children.get(1).name.matches("[a-z]?")){ //if a variable 
             String uniqueValue = "";
 
             code_array[code_place] = "A9";
             code_place++;
             code_array[code_place-1] = "AD";
+            //grab the memeory address of the left side and 
             uniqueValue = variables.get(AST_Node.children.get(1).name + "@" + getScope(SymboleTable, AST_Node.children.get(1).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
@@ -247,19 +253,20 @@ public class Comp_CodeGen {
             code_place++;
             code_array[code_place] = "8D";
             code_place++;
+            //give it to the right side
             uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
             code_place++;
             
-        }else if(AST_Node.children.get(1).name.matches("true|false")){
+        }else if(AST_Node.children.get(1).name.matches("true|false")){ //if a bool
             String uniqueValue = "";
 
             code_array[code_place] = "A9";
             code_place++;
             
-            if(AST_Node.children.get(1).name.matches("true")){
+            if(AST_Node.children.get(1).name.matches("true")){ //set up the true and false static pointers
                 code_array[code_place] = true_pointer;
                 code_place++;
             }else{
@@ -269,18 +276,19 @@ public class Comp_CodeGen {
 
             code_array[code_place] = "8D";
             code_place++;
+            //then assigns it to the temp place of the variable on the right side
             uniqueValue = variables.get(AST_Node.children.get(0).name + "@" + getScope(SymboleTable, AST_Node.children.get(0).name, scope_place)).temp_name;
             code_array[code_place] = uniqueValue;
             code_place++;
             code_array[code_place] = "XX";
             code_place++;
-        }else if(AST_Node.children.get(1).name.equals("(")){
-            boolop_Code(AST_Node.children, current_scope, SymboleTable);
+        }else if(AST_Node.children.get(1).name.equals("(")){ //if a boolop
+            boolop_Code(AST_Node.children, current_scope, SymboleTable); //will handle the boolop stuff
         }
     }
     
 
-    //print out stuff //print boolops
+    //print out stuff
     public void print(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbol_Scope SymboleTable, Comp_SymbolTable.Symbole_Node current_scope){
 
         if(AST_Node.children.get(1).name.matches("[0-9]?") || AST_Node.children.get(1).name.equals("+")){
