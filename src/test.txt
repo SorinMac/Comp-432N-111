@@ -1,5 +1,3 @@
 {
-   boolean a
-   a = (true == false)
-   print(a)
+
 }$

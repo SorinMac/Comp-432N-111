@@ -1,14 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//need to figure out
-
-//heap and stack crash
-    //values to hold the code_place at the points in which there at the end 
-//if and while
-//intop assignment
-
-
 public class Comp_CodeGen {
     //constant for the size of the code
     static final int CODE_SIZE = 256;
@@ -34,9 +26,9 @@ public class Comp_CodeGen {
     int heap_start = 0; //where the heap will start
     String true_pointer = ""; //static for true pointer to the start of the true ouput in the heap
     String false_pointer = ""; //static for false pointer to the start of the false ouput in the heap
-    int scope_place = 0;
-    int intop_place = 0;
-    int intop_run = 0;
+    int scope_place = 0; //scope place
+    int intop_place = 0; //where is the program in the intop
+    int intop_run = 0; //checks the switch up for intop from the first run to the recusive other runs
     
     //class to hold all the details of the address stuff for variables hashmap
     public class address_dets {
@@ -90,7 +82,8 @@ public class Comp_CodeGen {
                 }
             }else if(AST.children.get(i).name.equals("if_statment")){
                 if_state(AST.children.get(i));
-                start_codegen(AST.children.get(i), SymboleTable); //work in progress
+                start_codegen(AST.children.get(i), SymboleTable);
+                find_and_replace_distances(); //will give the jump place of the if and while loops
             }else if(AST.children.get(i).name.equals("block")){
                 //go foward in scope but not backwordws
                 scope_place++;
@@ -98,15 +91,14 @@ public class Comp_CodeGen {
                 scope_place--;
             }else if(AST.children.get(i).name.equals("$")){
 
-                //work in progress
-                stack_end = code_place;
+                initialize_varables_place(); //gets the true places of the values
+
+                stack_end = code_place; //sets up the stack place and then checks it
                 if(stack_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
                 }
 
-                initialize_varables_place(); //gets the true places of the values
-
-                initialize_boolop_place(stack_end);
+                initialize_boolop_place(stack_end); //set the boolop place mainly for printout
 
                 //work in progress
                 /*varaibles_decl_end = code_place;
@@ -122,9 +114,6 @@ public class Comp_CodeGen {
                     System.out.println("Error to many bit not able to be ran :(");
                 }*/
 
-                //work in progress
-                find_and_replace_distances();
-
                 output_code(printout); //prints out all the code
                 
                 //resets all necessary values
@@ -139,12 +128,15 @@ public class Comp_CodeGen {
                 variables.clear();
                 distance.clear();
                 scope_place = 0;
+                scope_place = 0;
+                intop_place = 0;
+                intop_run = 0;
     
             }
             
         }
 
-        //work in progess
+        //work in progess (not sure if this is needed or not)
         String[] distance_values = new String[distance.keySet().size()];
         distance_values = distance.keySet().toArray(distance_values);
 
@@ -396,6 +388,14 @@ public class Comp_CodeGen {
                 code_array[code_place] = "FF";
                 code_place++;
             }
+        }else if(AST_Node.children.get(1).name.equals("(")){
+            boolop_Code(AST_Node.children, current_scope, SymboleTable);
+            code_array[code_place] = "A2";
+            code_place++;
+            code_array[code_place] = "02";
+            code_place++;
+            code_array[code_place] = "FF";
+            code_place++;
         }
     }
 
@@ -658,7 +658,7 @@ public class Comp_CodeGen {
 
     private void boolop_Code(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
         String unique_string = "";
-        int if_place = 0;
+        int bool_place = 0;
 
         code_array[code_place] = "A2";
         code_place++;
@@ -667,7 +667,35 @@ public class Comp_CodeGen {
             if(AST_Node.get(i).name.matches("[0-9]?")){
                 code_array[code_place] = "0" + AST_Node.get(i).name;
                 code_place++;
-                if_place = i;
+                bool_place = i;
+                break;
+            }else if(AST_Node.get(i).name.matches("true|false")){
+                if(AST_Node.get(i).name.equals("true")){
+                    code_array[code_place] = true_pointer;
+                    code_place++;
+                    bool_place = i;
+                    break;
+                }else{
+                    code_array[code_place] = false_pointer;
+                    code_place++;
+                    bool_place = i;
+                    break;
+                }
+            }else if(AST_Node.get(i).name.matches("[a-z]?")){
+                unique_string = variables.get(AST_Node.get(i).name + "@" + getScope(SymboleTable, AST_Node.get(i).name, scope_place)).temp_name;
+                code_array[code_place] = unique_string;
+                code_place++;
+                bool_place = i;
+                break;
+            }else if(AST_Node.get(i).name.contains("\"")){
+                String print_out_string = AST_Node.get(i).name;
+                StringBuilder print_string = new StringBuilder();
+                print_string.append(print_out_string);
+                print_string.reverse();
+                set_string_heap(print_string);
+                code_array[code_place] = Integer.toHexString(heap_start);
+                code_place++;
+                bool_place = i;
                 break;
             }
         }
@@ -675,11 +703,39 @@ public class Comp_CodeGen {
         code_array[code_place] = "A9";
         code_place++;
 
-        for(int i = if_place+1; i < AST_Node.size(); i++){
+        for(int i = bool_place+1; i < AST_Node.size(); i++){
            if(AST_Node.get(i).name.matches("[0-9]?")){
                 code_array[code_place] = "0" + AST_Node.get(i).name;
                 code_place++;
-                if_place = 0;
+                bool_place = 0;
+                break;
+            }else if(AST_Node.get(i).name.matches("true|false")){
+                if(AST_Node.get(i).name.equals("true")){
+                    code_array[code_place] = true_pointer;
+                    code_place++;
+                    bool_place = 0;
+                    break;
+                }else{
+                    code_array[code_place] = false_pointer;
+                    code_place++;
+                    bool_place = 0;
+                    break;
+                }
+            }else if(AST_Node.get(i).name.matches("[a-z]?")){
+                unique_string = variables.get(AST_Node.get(i).name + "@" + getScope(SymboleTable, AST_Node.get(i).name, scope_place)).temp_name;
+                code_array[code_place] = unique_string;
+                code_place++;
+                bool_place = 0;
+                break;
+            }else if(AST_Node.get(i).name.contains("\"")){
+                String print_out_string = AST_Node.get(i).name;
+                StringBuilder print_string = new StringBuilder();
+                print_string.append(print_out_string);
+                print_string.reverse();
+                set_string_heap(print_string);
+                code_array[code_place] = Integer.toHexString(heap_start);
+                code_place++;
+                bool_place = 0;
                 break;
             }
         }
@@ -697,7 +753,6 @@ public class Comp_CodeGen {
         code_array[code_place] = "00";
         code_place++;
 
-        /* A9 FA D0 02 A9 F5 8D 1F 00 AC 1F 00  */
         code_array[code_place] = "A9";
         code_place++;
         code_array[code_place] = false_pointer;
@@ -713,9 +768,15 @@ public class Comp_CodeGen {
         code_array[code_place] = "8D";
         code_place++;
         
-        unique_string = variables.get(AST_Node.get(0).name + "@" + getScope(SymboleTable, AST_Node.get(0).name, scope_place)).temp_name;
-        code_array[code_place] = unique_string;
-        code_place++;
+        if(AST_Node.get(0).name.matches("[a-z]?")){
+            unique_string = variables.get(AST_Node.get(0).name + "@" + getScope(SymboleTable, AST_Node.get(0).name, scope_place)).temp_name;
+            code_array[code_place] = unique_string;
+            code_place++;
+        } else {
+            unique_string = "S0";
+            code_array[code_place] = unique_string;
+            code_place++;
+        }
 
         code_array[code_place] = "00";
         code_place++;
