@@ -1,3 +1,7 @@
 {
-
+   print("sorin")
+   print(" ")
+   print("magnus")
+   print(" ")
+   print("macaluso")
 }$

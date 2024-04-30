@@ -100,19 +100,18 @@ public class Comp_CodeGen {
 
                 initialize_boolop_place(stack_end); //set the boolop place mainly for printout
 
-                //work in progress
-                /*varaibles_decl_end = code_place;
+                
+                varaibles_decl_end = code_place; //sets up the var place and checks it
                 if(varaibles_decl_end >= 256){
                     System.out.println("Error to many bit not able to be ran :(");
-                }*/
+                }
 
                 find_and_replace_variables(); //replaces the temp name with the real ones
 
-                //work in progress
-                /*heap_end = heap_start;
-                if(heap_end <= 256){
+                heap_end = heap_start;//sets up the heap place and checks it
+                if(heap_end < varaibles_decl_end){
                     System.out.println("Error to many bit not able to be ran :(");
-                }*/
+                }
 
                 output_code(printout); //prints out all the code
                 
@@ -477,6 +476,7 @@ public class Comp_CodeGen {
                 code_array[i] = Integer.toHexString(stack_end);
             }
         }
+        code_place++;
     }
 
     //will perform the find a repalce for the temp to there true place
