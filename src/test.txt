@@ -1,9 +1,9 @@
 { 
+   print(2)
+   if(true == false){
+      print("match")
+   }
    int a
    a = 2
    print(a)
-   if(1 == 1){
-      print("match")
-   }
-   print("no match")
 }$

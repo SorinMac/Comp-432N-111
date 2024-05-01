@@ -84,7 +84,7 @@ public class Comp_CodeGen {
                 
                 //use boolop to do the different comparisons
 
-                if_state(AST.children.get(i)); //if there is a if statment
+                if_state(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable); //if there is a if statment
                 start_codegen(AST.children.get(i), SymboleTable); //then we start again to get the stuff in the block
                 find_and_replace_distances(); //will give the jump place of the if and while loops
             }else if(AST.children.get(i).name.equals("block")){
@@ -411,47 +411,9 @@ public class Comp_CodeGen {
         }
     }
 
-    public void if_state(Comp_AST.Tree_Node AST_Node){ //will handle the if statment stuff
+    public void if_state(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //will handle the if statment stuff
         String distance_variable = "";
-        int if_place = 0;
-
-        //is this static or changing
-        code_array[code_place] = "A2";
-        code_place++;
-
-        for(int i = 0; i < AST_Node.children.size(); i++){
-            if(AST_Node.children.get(i).name.matches("[0-9]?")){
-                code_array[code_place] = "0" + AST_Node.children.get(i).name;
-                code_place++;
-                if_place = i;
-                break;
-            }
-        }
-
-        code_array[code_place] = "A9";
-        code_place++;
-
-        for(int i = if_place+1; i < AST_Node.children.size(); i++){
-           if(AST_Node.children.get(i).name.matches("[0-9]?")){
-                code_array[code_place] = "0" + AST_Node.children.get(i).name;
-                code_place++;
-                if_place = 0;
-                break;
-            }
-        }
-
-        code_array[code_place] = "8D";
-        code_place++;
-        code_array[code_place] = "00";
-        code_place++;
-        code_array[code_place] = "00";
-        code_place++;
-        code_array[code_place] = "EC";
-        code_place++;
-        code_array[code_place] = "00";
-        code_place++;
-        code_array[code_place] = "00";
-        code_place++;
+        boolop_Code(AST_Node.children, current_scope, SymboleTable);
 
 
         code_array[code_place] = "D0";
