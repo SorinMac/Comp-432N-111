@@ -81,6 +81,9 @@ public class Comp_CodeGen {
                     print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place)); //print out of the scope if not at the end
                 }
             }else if(AST.children.get(i).name.equals("if_statment")){
+                
+                //use boolop to do the different comparisons
+
                 if_state(AST.children.get(i)); //if there is a if statment
                 start_codegen(AST.children.get(i), SymboleTable); //then we start again to get the stuff in the block
                 find_and_replace_distances(); //will give the jump place of the if and while loops
