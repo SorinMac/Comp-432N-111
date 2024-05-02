@@ -116,7 +116,7 @@ public class Comp_CodeGen {
                 code_array[code_place] = "D0";
                 code_place++;
 
-                code_array[code_place] = Integer.toHexString((255-code_place)-3);
+                code_array[code_place] = Integer.toHexString((255-code_place)+2);
                 code_place++;
 
                 find_and_replace_distances(); //will give the jump place of the if and while loops
@@ -462,11 +462,6 @@ public class Comp_CodeGen {
     }
 
     public void while_state(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //will handle the while statment stuff
-        //A9 00 A2 01 A9 01 8D 00 00 EC 00 00 A9 fa D0 02 A9 f5 8D 2c 00 AC 2c 00 D0 05 A0 ef A2 02 FF A9 00 8D 00 00 A2 01 EC 00 00 D0 d2 //mine
-        //missing a a2 and a 00 and the number are all off
-        //need to chaneg boolop_Code_while to opperate differently for while loops
-
-        //A9 00 A2 01 A9 01 8D 00 00 EC 00 00 A9 01 D0 02 A9 00 A2 00 8D 00 00 EC 00 00 D0 11 A0 EF A2 02 FF A9 00 8D 00 00 A2 01 EC 00 00 D0 D5 //correct one
         String distance_variable = "";
         boolop_Code_while(AST_Node.children, current_scope, SymboleTable);
 
@@ -785,7 +780,7 @@ public class Comp_CodeGen {
 
         code_array[code_place] = "A9";
         code_place++;
-        code_array[code_place] = false_pointer;
+        code_array[code_place] = "01";
         code_place++;
         code_array[code_place] = "D0";
         code_place++;
@@ -793,28 +788,23 @@ public class Comp_CodeGen {
         code_place++;
         code_array[code_place] = "A9";
         code_place++;
-        code_array[code_place] = true_pointer;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "A2";
+        code_place++;
+        code_array[code_place] = "00";
         code_place++;
         code_array[code_place] = "8D";
         code_place++;
-        
-        if(AST_Node.get(0).name.matches("[a-z]?")){
-            unique_string = variables.get(AST_Node.get(0).name + "@" + getScope(SymboleTable, AST_Node.get(0).name, scope_place)).temp_name;
-            code_array[code_place] = unique_string;
-            code_place++;
-        } else {
-            unique_string = "S0";
-            code_array[code_place] = unique_string;
-            code_place++;
-        }
-
+        code_array[code_place] = "00";
+        code_place++;
         code_array[code_place] = "00";
         code_place++;
 
-        code_array[code_place] = "AC";
+        code_array[code_place] = "EC";
         code_place++;
 
-        code_array[code_place] = unique_string;
+        code_array[code_place] = "00";
         code_place++;
 
         code_array[code_place] = "00";
@@ -920,7 +910,7 @@ public class Comp_CodeGen {
 
         code_array[code_place] = "A9";
         code_place++;
-        code_array[code_place] = "00";
+        code_array[code_place] = "01";
         code_place++;
         code_array[code_place] = "D0";
         code_place++;
