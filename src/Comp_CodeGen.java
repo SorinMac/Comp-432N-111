@@ -320,7 +320,7 @@ public class Comp_CodeGen {
             code_array[code_place] = "XX";
             code_place++;
         }else if(AST_Node.children.get(1).name.equals("(")){ //if a boolop
-            boolop_Code(AST_Node.children, current_scope, SymboleTable); //will handle the boolop stuff
+            boolop_Code_if(AST_Node.children, current_scope, SymboleTable); //will handle the boolop stuff
         }
     }
     
@@ -435,7 +435,7 @@ public class Comp_CodeGen {
                 code_place++;
             }
         }else if(AST_Node.children.get(1).name.equals("(")){ //sets up the boolop
-            boolop_Code(AST_Node.children, current_scope, SymboleTable);
+            boolop_Code_if(AST_Node.children, current_scope, SymboleTable);
             code_array[code_place] = "A2";
             code_place++;
             code_array[code_place] = "02";
@@ -447,7 +447,7 @@ public class Comp_CodeGen {
 
     public void if_state(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //will handle the if statment stuff
         String distance_variable = "";
-        boolop_Code(AST_Node.children, current_scope, SymboleTable);
+        boolop_Code_if(AST_Node.children, current_scope, SymboleTable);
 
 
         code_array[code_place] = "D0";
@@ -604,8 +604,7 @@ public class Comp_CodeGen {
         return scope;
     }
 
-    private void intop_Code(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
-        
+    private void intop_Code(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //this will handle the intops
         if(intop_run == 0){
             code_array[code_place] = "A9";
             code_place++;
@@ -681,7 +680,7 @@ public class Comp_CodeGen {
         }
     }
 
-    private void boolop_Code_while(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+    private void boolop_Code_while(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){//this is special setup for while
         String unique_string = "";
         int bool_place = 0;
 
@@ -811,7 +810,7 @@ public class Comp_CodeGen {
         code_place++;
     }
 
-    private void boolop_Code(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+    private void boolop_Code_if(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){//special setup for if 
         String unique_string = "";
         int bool_place = 0;
 
