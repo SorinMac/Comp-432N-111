@@ -464,10 +464,11 @@ public class Comp_CodeGen {
     public void while_state(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //will handle the while statment stuff
         //A9 00 A2 01 A9 01 8D 00 00 EC 00 00 A9 fa D0 02 A9 f5 8D 2c 00 AC 2c 00 D0 05 A0 ef A2 02 FF A9 00 8D 00 00 A2 01 EC 00 00 D0 d2 //mine
         //missing a a2 and a 00 and the number are all off
+        //need to chaneg boolop_Code_while to opperate differently for while loops
 
         //A9 00 A2 01 A9 01 8D 00 00 EC 00 00 A9 01 D0 02 A9 00 A2 00 8D 00 00 EC 00 00 D0 11 A0 EF A2 02 FF A9 00 8D 00 00 A2 01 EC 00 00 D0 D5 //correct one
         String distance_variable = "";
-        boolop_Code(AST_Node.children, current_scope, SymboleTable);
+        boolop_Code_while(AST_Node.children, current_scope, SymboleTable);
 
 
         code_array[code_place] = "D0";
@@ -685,7 +686,7 @@ public class Comp_CodeGen {
         }
     }
 
-    private void boolop_Code(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+    private void boolop_Code_while(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
         String unique_string = "";
         int bool_place = 0;
 
@@ -793,6 +794,141 @@ public class Comp_CodeGen {
         code_array[code_place] = "A9";
         code_place++;
         code_array[code_place] = true_pointer;
+        code_place++;
+        code_array[code_place] = "8D";
+        code_place++;
+        
+        if(AST_Node.get(0).name.matches("[a-z]?")){
+            unique_string = variables.get(AST_Node.get(0).name + "@" + getScope(SymboleTable, AST_Node.get(0).name, scope_place)).temp_name;
+            code_array[code_place] = unique_string;
+            code_place++;
+        } else {
+            unique_string = "S0";
+            code_array[code_place] = unique_string;
+            code_place++;
+        }
+
+        code_array[code_place] = "00";
+        code_place++;
+
+        code_array[code_place] = "AC";
+        code_place++;
+
+        code_array[code_place] = unique_string;
+        code_place++;
+
+        code_array[code_place] = "00";
+        code_place++;
+    }
+
+    private void boolop_Code(ArrayList<Comp_AST.Tree_Node> AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){
+        String unique_string = "";
+        int bool_place = 0;
+
+        code_array[code_place] = "A2";
+        code_place++;
+
+        for(int i = 0; i < AST_Node.size(); i++){
+            if(AST_Node.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.get(i).name;
+                code_place++;
+                bool_place = i;
+                break;
+            }else if(AST_Node.get(i).name.matches("true|false")){
+                if(AST_Node.get(i).name.equals("true")){
+                    code_array[code_place] = true_pointer;
+                    code_place++;
+                    bool_place = i;
+                    break;
+                }else{
+                    code_array[code_place] = false_pointer;
+                    code_place++;
+                    bool_place = i;
+                    break;
+                }
+            }else if(AST_Node.get(i).name.matches("[a-z]?")){
+                unique_string = variables.get(AST_Node.get(i).name + "@" + getScope(SymboleTable, AST_Node.get(i).name, scope_place)).temp_name;
+                code_array[code_place] = unique_string;
+                code_place++;
+                bool_place = i;
+                break;
+            }else if(AST_Node.get(i).name.contains("\"")){
+                String print_out_string = AST_Node.get(i).name;
+                StringBuilder print_string = new StringBuilder();
+                print_string.append(print_out_string);
+                print_string.reverse();
+                set_string_heap(print_string);
+                code_array[code_place] = Integer.toHexString(heap_start);
+                code_place++;
+                bool_place = i;
+                break;
+            }
+        }
+
+        code_array[code_place] = "A9";
+        code_place++;
+
+        for(int i = bool_place+1; i < AST_Node.size(); i++){
+           if(AST_Node.get(i).name.matches("[0-9]?")){
+                code_array[code_place] = "0" + AST_Node.get(i).name;
+                code_place++;
+                bool_place = 0;
+                break;
+            }else if(AST_Node.get(i).name.matches("true|false")){
+                if(AST_Node.get(i).name.equals("true")){
+                    code_array[code_place] = true_pointer;
+                    code_place++;
+                    bool_place = 0;
+                    break;
+                }else{
+                    code_array[code_place] = false_pointer;
+                    code_place++;
+                    bool_place = 0;
+                    break;
+                }
+            }else if(AST_Node.get(i).name.matches("[a-z]?")){
+                unique_string = variables.get(AST_Node.get(i).name + "@" + getScope(SymboleTable, AST_Node.get(i).name, scope_place)).temp_name;
+                code_array[code_place] = unique_string;
+                code_place++;
+                bool_place = 0;
+                break;
+            }else if(AST_Node.get(i).name.contains("\"")){
+                String print_out_string = AST_Node.get(i).name;
+                StringBuilder print_string = new StringBuilder();
+                print_string.append(print_out_string);
+                print_string.reverse();
+                set_string_heap(print_string);
+                code_array[code_place] = Integer.toHexString(heap_start);
+                code_place++;
+                bool_place = 0;
+                break;
+            }
+        }
+
+        code_array[code_place] = "8D";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "EC";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+
+        code_array[code_place] = "A9";
+        code_place++;
+        code_array[code_place] = "00";
+        code_place++;
+        code_array[code_place] = "D0";
+        code_place++;
+        code_array[code_place] = "02";
+        code_place++;
+        code_array[code_place] = "A9";
+        code_place++;
+        code_array[code_place] = "00";
         code_place++;
         code_array[code_place] = "8D";
         code_place++;
