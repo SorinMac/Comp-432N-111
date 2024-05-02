@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//since if uses boolop then there is the true and false set up as well which is a waste of opcodes might want to fix that
+
 public class Comp_CodeGen {
     //constant for the size of the code
     static final int CODE_SIZE = 256;
