@@ -66,6 +66,11 @@ public class Comp_CodeGen {
             check = false;
             //sets up where the bools need to be
             set_bool();
+
+            code_array[code_place] = "A9";
+            code_place++;
+            code_array[code_place] = "00";
+            code_place++;
         }
 
         //goes through the AST and starts making code for everything
@@ -81,12 +86,41 @@ public class Comp_CodeGen {
                     print(AST.children.get(i), SymboleTable, SymboleTable.Scopes.get(scope_place)); //print out of the scope if not at the end
                 }
             }else if(AST.children.get(i).name.equals("if_statment")){
-                
-                //use boolop to do the different comparisons
-
                 if_state(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable); //if there is a if statment
                 start_codegen(AST.children.get(i), SymboleTable); //then we start again to get the stuff in the block
                 find_and_replace_distances(); //will give the jump place of the if and while loops
+            }else if(AST.children.get(i).name.equals("while_statment")){
+                while_state(AST.children.get(i), SymboleTable.Scopes.get(scope_place), SymboleTable); //if there is a while statment
+                start_codegen(AST.children.get(i), SymboleTable); //then we start again to get the stuff in the block
+                
+                code_array[code_place] = "A9";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "8D";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "A2";
+                code_place++;
+                code_array[code_place] = "01";
+                code_place++;
+                code_array[code_place] = "EC";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "00";
+                code_place++;
+                code_array[code_place] = "D0";
+                code_place++;
+
+                code_array[code_place] = Integer.toHexString((255-code_place)-3);
+                code_place++;
+
+                find_and_replace_distances(); //will give the jump place of the if and while loops
+
             }else if(AST.children.get(i).name.equals("block")){
                 scope_place++; //go foward in the scope
                 start_codegen(AST.children.get(i), SymboleTable); //start code gen again for the new scope
@@ -412,6 +446,26 @@ public class Comp_CodeGen {
     }
 
     public void if_state(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //will handle the if statment stuff
+        String distance_variable = "";
+        boolop_Code(AST_Node.children, current_scope, SymboleTable);
+
+
+        code_array[code_place] = "D0";
+        code_place++;
+
+        distance_dets temp_distance = new distance_dets(code_place);
+        distance_variable = "J" + distance_traveled_number;
+        distance.put(distance_variable, temp_distance);
+        code_array[code_place] = distance_variable;
+        distance_traveled_number++;
+        code_place++;
+    }
+
+    public void while_state(Comp_AST.Tree_Node AST_Node, Comp_SymbolTable.Symbole_Node current_scope, Comp_SymbolTable.Symbol_Scope SymboleTable){ //will handle the while statment stuff
+        //A9 00 A2 01 A9 01 8D 00 00 EC 00 00 A9 fa D0 02 A9 f5 8D 2c 00 AC 2c 00 D0 05 A0 ef A2 02 FF A9 00 8D 00 00 A2 01 EC 00 00 D0 d2 //mine
+        //missing a a2 and a 00 and the number are all off
+
+        //A9 00 A2 01 A9 01 8D 00 00 EC 00 00 A9 01 D0 02 A9 00 A2 00 8D 00 00 EC 00 00 D0 11 A0 EF A2 02 FF A9 00 8D 00 00 A2 01 EC 00 00 D0 D5 //correct one
         String distance_variable = "";
         boolop_Code(AST_Node.children, current_scope, SymboleTable);
 
