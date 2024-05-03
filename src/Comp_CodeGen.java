@@ -816,6 +816,7 @@ public class Comp_CodeGen {
         String unique_string = "";
         int bool_place = 0;
 
+        //change so that varaables actually check the value cna go this my makeing the a2 a ae and give the memeory address 
         code_array[code_place] = "A2";
         code_place++;
 
