@@ -372,6 +372,10 @@ public class Comp_SymbolTable {
                     }
                 }
             }
+
+            if(Bool_Node.children.get(1).name.matches("true|false")){
+                types.add("boolean");
+            }
         }
 
         //will grab one type
