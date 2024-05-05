@@ -11,6 +11,7 @@ public class Comp_AST {
     static int debugg_mode_token = 0;
     static int debugg_mode_function = 0;
     static int Program_Num = 0;
+    static int if_or_while = 0;
 
 
     //class for the nodes of the CST
@@ -110,6 +111,7 @@ public class Comp_AST {
         int semantic_errors_pass = 0;
         //some default values
         token_place = 0;
+        if_or_while = 0;
         Abstract_Syntax_Tree = new AST();
         AST_Token_List = Token_List;
         Program_Num++;
@@ -224,8 +226,11 @@ public class Comp_AST {
         current_Token = AST_Token_List.get(token_place);
         AST_Expr(0);
 
+
         //go back
-        Abstract_Syntax_Tree.end_all_children();
+        if(if_or_while == 1){
+            Abstract_Syntax_Tree.end_all_children();
+        }
     }
 
     static void AST_Var_Decl(){    
@@ -248,6 +253,7 @@ public class Comp_AST {
     }
 
     static void AST_While_Statment(){
+        if_or_while = 1;
         //add to the node
         Abstract_Syntax_Tree.addNode("branch", "while_statment", 
         AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);
@@ -265,6 +271,7 @@ public class Comp_AST {
     }
 
     static void AST_If_Statment(){
+        if_or_while = 1;
         //add the node
         Abstract_Syntax_Tree.addNode("branch", "if_statment", 
         AST_Token_List.get(token_place).line_num, AST_Token_List.get(token_place).place_num);

@@ -1,6 +1,22 @@
 {
    int a
    a = 1
+      {
+      int a
+      a = 2
+         {
+            int a 
+            a = 3
+            print(a)
+         }
+      print(a)
+   }
+   print(a)
+}$
+
+{
+   int a
+   a = 1
    int b
    b = 0
 
