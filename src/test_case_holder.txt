@@ -1,6 +1,22 @@
 {
    int a
    a = 1
+      {
+      int a
+      a = 2
+         {
+            int a 
+            a = 3
+            print(a)
+         }
+      print(a)
+   }
+   print(a)
+}$
+
+{
+   int a
+   a = 1
    int b
    b = 0
 
@@ -18,17 +34,31 @@
 }$
 
 {
-   int a
-   a = 1
-   print(a)
-   {
-      int a
-      a = 2
-      print(a)
-      {
-         int a 
-         a = 3
-         print(a)
-      }
+   if(1 == 1){
+      print("compared")
    }
+}$
+
+{
+   if true{
+      print("base case")
+   }
+}$
+
+{
+   while true{
+      print("base case")
+   }
+}$
+
+{
+   print(1+2+3)
+}$
+
+{
+   print((true == false))
+}$
+
+{
+   print("hello")
 }$
