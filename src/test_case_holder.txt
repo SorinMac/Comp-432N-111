@@ -3,6 +3,7 @@
    a = 1
    int b
    b = 0
+
    while(a == 1){
 
       b = 1+b
@@ -12,6 +13,8 @@
          a = 2
       }
    }
+   
+   print("done")
 }$
 
 {

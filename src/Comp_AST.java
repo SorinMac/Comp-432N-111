@@ -223,6 +223,9 @@ public class Comp_AST {
         token_place++;
         current_Token = AST_Token_List.get(token_place);
         AST_Expr(0);
+
+        //go back
+        Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Var_Decl(){    
