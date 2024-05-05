@@ -211,7 +211,7 @@ public class Comp_AST {
         current_Token = AST_Token_List.get(token_place);
 
         //go back
-        Abstract_Syntax_Tree.end_all_children();
+        //Abstract_Syntax_Tree.end_all_children();
     }
 
     static void AST_Assignment_Statment(){
