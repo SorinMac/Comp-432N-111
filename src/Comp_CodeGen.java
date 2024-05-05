@@ -212,6 +212,7 @@ public class Comp_CodeGen {
                 scope_place = 0;
                 intop_place = 0;
                 intop_run = 0;
+                if_state = 0;
     
             }
             
